@@ -2,155 +2,48 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Ropa Virtual 18 Usuarios</title>
+<title>Ropa Virtual - Login</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f0f4f8;
-    text-align: center;
-    padding: 50px;
-  }
-  h1, h2, h3 { color: #333; }
-  .form-container {
-    background: #fff;
-    padding: 25px;
-    margin: 20px auto;
-    border-radius: 12px;
-    max-width: 350px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-  }
-  input {
-    width: 90%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
-  button {
-    padding: 10px 25px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 6px;
-    background: #007bff;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  button:hover { background: #0056b3; }
-  .message { margin: 10px 0; font-weight: bold; }
-  .message.error { color: red; }
-  .message.success { color: green; }
-  #contenido {
-    display: none;
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 10px;
-    background: #d4edda;
-    color: #155724;
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  body { font-family: Arial; text-align: center; padding: 50px; background: #f0f0f0; }
+  h1 { color: #333; }
+  input { padding: 10px; margin: 5px; width: 200px; }
+  button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+  .message { color: red; font-weight: bold; }
 </style>
 </head>
 <body>
 
 <h1>Bienvenido a Ropa Virtual 18</h1>
 
-<div class="form-container" id="login-container">
-  <h2>Ingreso de Usuarios</h2>
-  <input type="text" id="username" placeholder="Usuario"><br>
-  <input type="password" id="password" placeholder="Clave"><br>
-  <button onClick="login()">Ingresar</button>
-  <p id="message" class="message"></p>
-
-  <div id="contenido">
-    <h3>�Bienvenido usuario autorizado! </h3>
-    <button onClick="logout()">Cerrar sesi�n</button>
-  </div>
-
-
-  <hr style="margin:30px 0;">
-  <p>Para registrarse por WhatsApp: 
-    <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a>
-  </p>
-</div>
+<h2>Ingreso de Usuarios</h2>
+<input type="text" id="username" placeholder="Usuario"><br>
+<input type="password" id="password" placeholder="Clave"><br>
+<button onclick="login()">Ingresar</button>
+<p id="message" class="message"></p>
 
 <script>
-(function(){
-  const inicialUsuarios = [
+  // Array de usuarios válidos
+  const usuarios = [
     {user: "jorge", pass: "1234"},
     {user: "maria", pass: "abcd"},
     {user: "pepe", pass: "pass123"}
   ];
 
-  let usuarios = JSON.parse(localStorage.getItem("usuarios")) || inicialUsuarios;
-
-  function guardarUsuarios() {
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
-  }
-
-  window.login = function() {
+  function login() {
     const u = document.getElementById("username").value.trim();
     const p = document.getElementById("password").value.trim();
     const msg = document.getElementById("message");
-    const contenido = document.getElementById("contenido");
 
     const encontrado = usuarios.find(obj => obj.user === u && obj.pass === p);
 
-    if(encontrado) {
-      msg.textContent = "";
-      contenido.style.display = "block";
+    if(encontrado){
+      // Redirigir a la nueva página
+      window.location.href = "probador_7_con_memoria"; 
     } else {
-      msg.textContent = "Usuario o clave incorrecta ?";
-      msg.className = "message error";
-      contenido.style.display = "none";
+      msg.textContent = "Usuario o clave incorrecta ❌";
     }
   }
-
-  window.logout = function() {
-    document.getElementById("contenido").style.display = "none";
-    document.getElementById("username").value = "";
-    document.getElementById("password").value = "";
-    document.getElementById("message").textContent = "Has cerrado sesi�n ?";
-    document.getElementById("message").className = "message success";
-  }
-
-  window.registrar = function() {
-    const newUser = document.getElementById("newUser").value.trim();
-    const newPass = document.getElementById("newPass").value.trim();
-    const msg = document.getElementById("register-msg");
-
-    if(!newUser || !newPass) {
-      msg.textContent = "Debe llenar ambos campos ?";
-      msg.className = "message error";
-      return;
-    }
-
-    if(usuarios.some(u => u.user === newUser)) {
-      msg.textContent = "El usuario ya existe ?";
-      msg.className = "message error";
-      return;
-    }
-
-    usuarios.push({user: newUser, pass: newPass});
-    guardarUsuarios();
-    msg.textContent = `Usuario "${newUser}" registrado ?`;
-    msg.className = "message success";
-
-    document.getElementById("newUser").value = "";
-    document.getElementById("newPass").value = "";
-  }
-})();
 </script>
 
 </body>
 </html>
-
-
-
