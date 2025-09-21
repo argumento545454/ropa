@@ -1,0 +1,68 @@
+<!--
+Script para ver si funciona JavaScript en WordPress.com
+-->
+
+
+
+<div id="app">
+  <h1>Bienvenido a mi página</h1>
+  <p>Este bloque combina <b>HTML, CSS y JS</b> en un solo lugar.</p>
+  <button id="btn">Haz clic aquí</button>
+  <p id="msg"></p>
+</div>
+
+<style>
+  #app {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, #f0f0f0, #d0eaff);
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  h1 {
+    color: #0066cc;
+    margin-bottom: 10px;
+    animation: fadeIn 2s ease-in-out;
+  }
+
+  #btn {
+    padding: 12px 25px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background: #28a745;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  #btn:hover {
+    background: #218838;
+  }
+
+  #msg {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const btn = document.getElementById("btn");
+    const msg = document.getElementById("msg");
+
+    btn.addEventListener("click", function() {
+      msg.textContent = "?? ¡Funciona el JavaScript en WordPress.com!";
+    });
+  });
+</script>
+
+
