@@ -1,0 +1,189 @@
+<!--Si quieres que las im�genes se mantengan aunque cierres el navegador, se puede mejorar con localStorage (guardando las im�genes en el almacenamiento interno del navegador).
+
+�Quieres que te haga esa versi�n tambi�n, para que el armario recuerde las im�genes aunque cierres y abras de nuevo el HTML?.  por favor maestro
+ChatGPT dijo:
+
+�Excelente, Maestro! ??
+Vamos a mejorar el script para que el armario recuerde las im�genes aunque cierres y abras de nuevo el navegador.
+
+Esto lo haremos usando localStorage:
+
+Cada franja (sombrero, logo, blusa, pantalon, zapatos) tendr� su propio arreglo de im�genes guardadas.
+
+Cuando subas im�genes, se almacenar�n en localStorage en base64.
+
+Al volver a abrir la p�gina, se cargar�n autom�ticamente.
+
+El bot�n Vaciar Armario tambi�n borrar� las im�genes de localStorage.
+
+Aqu� te dejo el script completo actualizado:
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Probador 7 con Memoria </title>
+<style>
+body{font-family:Arial,sans-serif; display:flex; flex-direction:column; align-items:center; margin-top:30px;}
+h1{text-align:center;margin-bottom:30px;}
+.armario-seccion{display:flex; align-items:flex-start; gap:20px; margin-bottom:40px;}
+.cuadro{width:200px;height:200px; border:2px solid #333; display:flex; justify-content:center; align-items:center; background-color:#f5f5f5; overflow:hidden;}
+.cuadro img{max-width:100%; max-height:100%; transform-origin:center center; transition:transform .2s;}
+.botones{display:flex; flex-direction:column; justify-content:center; gap:10px;}
+button{padding:10px 12px; cursor:pointer; border-radius:5px; border:1px solid #333; background-color:#f0f0f0; transition:background .2s;}
+button:hover{background-color:#ddd;}
+.armario{border:1px solid #ccc; padding:20px; max-width:600px; min-height:140px; overflow-x:auto; white-space:nowrap; display:flex; align-items:center; gap:10px;}
+.armario img{width:100px; height:100px; object-fit:cover; cursor:pointer; border:2px solid transparent; transition:transform .2s,border .2s;}
+.armario img:hover{transform:scale(2.2); border:2px solid #333;}
+input[type="file"]{display:none;}
+</style>
+</head>
+<body>
+Probador 7 con Memoria recuerda images
+
+<div id="contenedor-franjas"></div>
+
+<script>
+const franjas = ["sombrero","logo","blusa","pantalon","zapatos"];
+let estados = {}; // rotaci�n y escala por franja
+
+// ----- Gesti�n con localStorage -----
+function guardarEnLocal(franja){
+  const imgs = Array.from(document.getElementById("armario-"+franja).querySelectorAll("img"))
+    .map(img=>img.src);
+  localStorage.setItem("armario-"+franja, JSON.stringify(imgs));
+}
+
+function cargarDeLocal(franja){
+  const data = localStorage.getItem("armario-"+franja);
+  if(!data) return;
+  const imgs = JSON.parse(data);
+  imgs.forEach(src=>{
+    const img=document.createElement("img");
+    img.src=src;
+    img.onclick=()=>mostrarEnCuadro(franja,src);
+    img.onmouseover=()=>mostrarEnCuadro(franja,src);
+    document.getElementById("armario-"+franja).appendChild(img);
+  });
+}
+
+// ----- Crear UI de cada franja -----
+function crearFranja(franja){
+  const seccion = document.createElement("div");
+  seccion.className="armario-seccion";
+
+  // cuadro
+  const cuadro = document.createElement("div");
+  cuadro.className="cuadro";
+  cuadro.id="cuadro-"+franja;
+  cuadro.innerHTML = franja==="logo" ? "<p>Logo</p>" : "";
+
+  // botones
+  const botones = document.createElement("div");
+  botones.className="botones";
+
+  const input = document.createElement("input");
+  input.type="file"; input.multiple=true; input.accept="image/*";
+  input.id="file-"+franja;
+
+  const btnSelect=document.createElement("button");
+  btnSelect.innerText="Select";
+  btnSelect.onclick=()=>input.click();
+
+  const btnAdd=document.createElement("button");
+  btnAdd.innerText="Add";
+  btnAdd.onclick=()=>{
+    if(input.files.length===0) return alert("Selecciona im�genes primero");
+    for(const file of input.files){
+      const reader=new FileReader();
+      reader.onload=e=>{
+        const img=document.createElement("img");
+        img.src=e.target.result;
+        img.onclick=()=>mostrarEnCuadro(franja,img.src);
+        img.onmouseover=()=>mostrarEnCuadro(franja,img.src);
+        document.getElementById("armario-"+franja).appendChild(img);
+        guardarEnLocal(franja); // guardar inmediatamente
+      };
+      reader.readAsDataURL(file);
+    }
+    input.value="";
+  };
+
+  const btnRotIzq=document.createElement("button");
+  btnRotIzq.innerText="<";
+  btnRotIzq.onclick=()=>rotar(franja,-15);
+
+  const btnRotDer=document.createElement("button");
+  btnRotDer.innerText=">";
+  btnRotDer.onclick=()=>rotar(franja,15);
+
+  botones.append(input,btnSelect,btnAdd,btnRotIzq,btnRotDer);
+
+  // armario
+  const armario = document.createElement("div");
+  armario.className="armario";
+  armario.id="armario-"+franja;
+
+  // bot�n vaciar
+  const btnVaciar=document.createElement("button");
+  btnVaciar.innerText="Vaciar Armario";
+  btnVaciar.onclick=()=>{
+    document.getElementById("armario-"+franja).innerHTML="";
+    document.getElementById("cuadro-"+franja).innerHTML= franja==="logo" ? "<p>Logo</p>" : "";
+    estados[franja]={escala:1,angulo:0};
+    localStorage.removeItem("armario-"+franja);
+  };
+
+  seccion.append(cuadro,botones,armario,btnVaciar);
+  document.getElementById("contenedor-franjas").appendChild(seccion);
+
+  // cargar im�genes previas desde localStorage
+  cargarDeLocal(franja);
+}
+
+// ----- Funciones de imagen -----
+function mostrarEnCuadro(franja,src){
+  const cuadro=document.getElementById("cuadro-"+franja);
+  cuadro.innerHTML='<img src="'+src+'">';
+  if(!estados[franja]) estados[franja]={escala:1,angulo:0};
+  const img=cuadro.querySelector("img");
+  img.onwheel=e=>{
+    e.preventDefault();
+    e.deltaY<0?estados[franja].escala*=1.1:estados[franja].escala/=1.1;
+    aplicarTransform(franja);
+  };
+  aplicarTransform(franja);
+}
+
+function rotar(franja,grados){
+  if(!estados[franja]) estados[franja]={escala:1,angulo:0};
+  estados[franja].angulo+=grados;
+  aplicarTransform(franja);
+}
+
+function aplicarTransform(franja){
+  const img=document.querySelector("#cuadro-"+franja+" img");
+  if(img) img.style.transform="scale("+estados[franja].escala+") rotate("+estados[franja].angulo+"deg)";
+}
+
+// ----- Inicializar -----
+franjas.forEach(f=>crearFranja(f));
+</script>
+</body>
+</html>
+
+
+? Mejoras respecto a la versi�n anterior:
+
+Ahora cada vez que a�ades im�genes, se guardan en localStorage.
+
+Cuando recargas la p�gina, el armario vuelve a llenarse autom�ticamente.
+
+Al vaciar, tambi�n limpia el localStorage.
+
+Sigue funcionando rotar y zoom en cada cuadro.
+
+�Quieres que adem�s le agregue una opci�n para exportar/importar tu armario (guardar todo en un archivo JSON y luego volver a cargarlo)? As� podr�as pasar tu armario de un navegador a otro
