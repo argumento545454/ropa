@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Armario desde Drive</title>
+<title>Armario 1 img desde nube 27</title>
 <style>
   #armario {
     display: flex;
@@ -11,66 +11,47 @@
     margin-top: 20px;
   }
   img {
-    width: 200px;
     border: 2px solid #333;
     border-radius: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
-  button {
+  a {
+    text-decoration: none;
     background-color: #4CAF50;
     color: white;
-    border: none;
     padding: 6px 12px;
     border-radius: 5px;
-    cursor: pointer;
     margin-bottom: 20px;
   }
-  button:hover {
+  a:hover {
     background-color: #45a049;
   }
 </style>
 </head>
 <body>
 
-<h1 style="text-align:center;">Armario Virtual</h1>
+<h1 style="text-align:center;">Armario 1 img desde nube 27</h1>
 <div id="armario"></div>
 
 <script>
-  const prendas = [
-    {
-      nombre: 's18',
-      viewURL: 'https://drive.google.com/uc?export=view&id=1zBYXmt8mh-miuLp5jFov5rXXD0Od-_Wr',
-      downloadURL: 'https://drive.google.com/uc?export=download&id=1zBYXmt8mh-miuLp5jFov5rXXD0Od-_Wr'
-    }
-    // puedes agregar más imágenes aquí
-  ];
-
-  const armario = document.getElementById('armario');
-
-  prendas.forEach(prenda => {
-    const div = document.createElement('div');
-
-    // Imagen que se muestra
-    const img = document.createElement('img');
-    img.src = prenda.viewURL;
-    img.alt = prenda.nombre;
-    div.appendChild(img);
-
-    // Botón de descarga
-    const btn = document.createElement('button');
-    btn.textContent = 'Descargar ' + prenda.nombre;
-    btn.addEventListener('click', () => {
-      const a = document.createElement('a');
-      a.href = prenda.downloadURL;
-      a.download = prenda.nombre + '.jpg';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    });
-    div.appendChild(btn);
-
-    armario.appendChild(div);
-  });
+  // URL de visualizaci�n de la imagen en Google Drive
+  let imgURL = 'https://drive.google.com/uc?export=view&id=1zBYXmt8mh-miuLp5jFov5rXXD0Od-_Wr';
+  
+  // URL de descarga directa de la imagen
+  let downloadURL = 'https://drive.google.com/uc?export=download&id=1zBYXmt8mh-miuLp5jFov5rXXD0Od-_Wr';
+  
+  // Crear elemento de imagen
+  let img = document.createElement('img');
+  img.src = imgURL;
+  img.width = 200; // tama�o inicial
+  document.querySelector('#armario').appendChild(img);
+  
+  // Crear bot�n de descarga
+  let btn = document.createElement('a');
+  btn.href = downloadURL;
+  btn.download = 's18.jpg'; // nombre del archivo al descargar
+  btn.textContent = 'Descargar s18';
+  document.querySelector('#armario').appendChild(btn);
 </script>
 
 </body>
