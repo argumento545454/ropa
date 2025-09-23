@@ -2,54 +2,92 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title> index Ropa Virtual 18</title>
+<title>Ropa Virtual 18 Usuarios</title>
 <style>
-  body { font-family: Arial; text-align: center; padding: 50px; background: #f0f0f0; }
-  h1 { color: #333; }
-  input { padding: 10px; margin: 5px; width: 200px; }
-  button { padding: 10px 20px; margin: 10px; cursor: pointer; }
-  .message { color: red; font-weight: bold; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f4f8;
+    text-align: center;
+    padding: 50px;
+  }
+  h1, h2, h3 { color: #333; }
+  .form-container {
+    background: #fff;
+    padding: 25px;
+    margin: 20px auto;
+    border-radius: 12px;
+    max-width: 350px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  button {
+    padding: 10px 25px;
+    margin: 10px 5px;
+    border: none;
+    border-radius: 6px;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover { background: #0056b3; }
+  .message { margin: 10px 0; font-weight: bold; }
+  .message.error { color: red; }
+  .message.success { color: green; }
 </style>
 </head>
 <body>
 
-<h1>Bienvenido Ropa Virtual 18</h1>
+<h1>Bienvenido a Ropa Virtual 18</h1>
 
-<h2>Ingreso de Usuarios</h2>
-<input type="text" id="username" placeholder="Usuario"><br>
-<input type="password" id="password" placeholder="Clave"><br>
-<button onclick="login()">Ingresar</button>
+<div class="form-container" id="login-container">
+  <h2>Ingreso de Usuarios</h2>
+  <input type="text" id="username" placeholder="Usuario"><br>
+  <input type="password" id="password" placeholder="Clave"><br>
+  <button onClick="login()">Ingresar</button>
+  <button onClick="demo()">Demo</button>
+  <p id="message" class="message"></p>
 
-<button onclick="login()">Demo</button>
-<p id="message" class="message"></p>
+  <hr style="margin:30px 0;">
+  <p>Para registrarse por WhatsApp: 
+    <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a>
+  </p>
+</div>
 
 <script>
-  // Array de usuarios válidos
   const usuarios = [
-    {user: "jorge", pass: "1234"},
-    {user: "maria", pass: "abcd"},
-    {user: "pepe", pass: "pass123"}
+    { u: "jorge", p: "1234" },
+    { u: "maria", p: "abcd" },
+    { u: "pepe", p: "pass123" }
   ];
 
   function login() {
-    const u = document.getElementById("username").value.trim();
-    const p = document.getElementById("password").value.trim();
-    const msg = document.getElementById("message");
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const message = document.getElementById("message");
 
-    const encontrado = usuarios.find(obj => obj.user === u && obj.pass === p);
+    const user = usuarios.find(u => u.u === username && u.p === password);
 
-    if(encontrado){
-      // Redirigir a la nueva página
-      window.location.href = "probador_22_gen_con_memo_github.html"; 
+    if (user) {
+      window.location.href = "probador_22_gen_con_memo_github.html";
     } else {
-      msg.textContent = "Usuario o clave incorrecta ❌";
+      message.textContent = "Usuario o clave incorrecta ❌";
+      message.className = "message error";
     }
+  }
+
+  function demo() {
+    window.location.href = "probador_22_gen_con_memo_github.html";
   }
 </script>
 
 </body>
 </html>
-
-
-
-
