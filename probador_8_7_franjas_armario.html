@@ -1,0 +1,248 @@
+reenvia todo el HTML completo corregido, compañero
+ChatGPT dijo:
+
+¡Listo, compañero! ?? Aquí tienes el HTML completo corregido:
+
+La primera columna (cuadro) queda inmovilizada en PC y móviles.
+
+Armario muestra siempre 2 filas.
+
+Scroll vertical a la derecha.
+
+Botón “Vaciar Armario” a la derecha del armario.
+
+Imágenes grandes, con zoom, rotación y drag & drop.
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probador 8.6 franjas armario - 2 filas visibles y sticky</title>
+<style>
+  body { font-family: Arial; text-align: center; padding: 20px; margin:0; }
+  #armarioApp { max-width: 1400px; margin: auto; }
+
+  .armario-seccion {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+    position: relative; /* importante para sticky */
+  }
+
+  /* CUADRO FIJO (sticky) */
+  .cuadro { 
+    width: 200px; 
+    height: 200px; 
+    border: 2px solid #333; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    background: #f5f5f5; 
+    overflow: hidden; 
+    flex-shrink: 0;
+    position: sticky; 
+    left: 0; 
+    top: 0;          /* asegura que se quede pegado al top */
+    z-index: 100;    /* evita que imágenes lo cubran */
+  }
+  .cuadro img { max-width: 100%; max-height: 100%; transition: transform 0.3s; transform-origin: center center; cursor: pointer; }
+
+  /* CONTENEDOR ARMARIO + BOTÓN */
+  .armario-contenedor { 
+    display: flex; 
+    align-items: flex-start; 
+    gap: 10px; 
+    flex: 1;
+  }
+
+  /* WRAPPER CON SCROLL VERTICAL */
+  .armario-wrapper {
+    max-height: calc(2 * 120px + 12px); /* 2 filas visibles + gap */
+    overflow-y: auto; 
+    flex: 1;
+  }
+
+  .armario {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 120px); /* ancho de cada imagen */
+    grid-auto-rows: 120px;                           /* altura de cada fila */
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    min-width: 1000px;      /* ancho total del armario */
+  }
+
+  .armario img { 
+    width: 120px; 
+    height: 120px; 
+    object-fit: cover; 
+    cursor: grab; 
+    border: 2px solid transparent; 
+    transition: transform .2s, border .2s; 
+  }
+  .armario img:hover { transform: scale(1.6); border: 2px solid #333; }
+
+  button { padding: 8px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #333; background: #f0f0f0; transition: background .2s; margin:2px; }
+  button:hover { background: #ddd; }
+  input[type="file"] { display: none; }
+</style>
+</head>
+<body>
+
+<div id="armarioApp">
+  <h1>Probador 8.6 franjas armario - 2 filas visibles y sticky</h1>
+</div>
+
+<script>
+(function(){
+  const franjas = ["sombrero","logo","blusa","pantalon","zapatos"];
+  const app = document.getElementById("armarioApp");
+  let estados = {}; 
+
+  franjas.forEach(f=>{
+    const seccion = document.createElement("div");
+    seccion.className="armario-seccion";
+
+    // CUADRO
+    const cuadro = document.createElement("div");
+    cuadro.className="cuadro";
+    cuadro.id="cuadro-"+f;
+    if(f==="logo") cuadro.innerHTML="<p>Logo</p>";
+
+    // BOTONES DE SELECCIÓN
+    const botones = document.createElement("div");
+    const input = document.createElement("input");
+    input.type="file"; input.multiple=true; input.id="file-"+f;
+    input.addEventListener("change", e=>subirImagenes(f,e.target.files));
+
+    const btnSel = document.createElement("button");
+    btnSel.textContent="Select";
+    btnSel.onclick=()=>input.click();
+
+    botones.append(input, btnSel);
+
+    // ARMARIO + BOTÓN VACIAR
+    const armarioCont = document.createElement("div");
+    armarioCont.className="armario-contenedor";
+
+    const armarioWrapper = document.createElement("div");
+    armarioWrapper.className="armario-wrapper";
+
+    const armario = document.createElement("div");
+    armario.className="armario"; armario.id="armario-"+f;
+
+    armarioWrapper.appendChild(armario);
+
+    const btnVaciar = document.createElement("button");
+    btnVaciar.textContent="Vaciar Armario";
+    btnVaciar.onclick=()=>vaciarArmario(f);
+
+    armarioCont.append(armarioWrapper, btnVaciar);
+
+    seccion.append(cuadro, botones, armarioCont);
+    app.appendChild(seccion);
+
+    cargarArmario(f);
+  });
+
+  function subirImagenes(franja,files){
+    [...files].forEach(file=>{
+      const reader = new FileReader();
+      reader.onload = e=>{
+        guardarImagen(franja,e.target.result);
+        agregarAlArmario(franja,e.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function guardarImagen(franja,src){
+    let data = JSON.parse(localStorage.getItem("armario_"+franja) || "[]");
+    data.push(src);
+    localStorage.setItem("armario_"+franja,JSON.stringify(data));
+  }
+
+  function cargarArmario(franja){
+    let data = JSON.parse(localStorage.getItem("armario_"+franja) || "[]");
+    data.forEach(src=>agregarAlArmario(franja,src));
+  }
+
+  function agregarAlArmario(franja,src){
+    const armario = document.getElementById("armario-"+franja);
+    const img = document.createElement("img");
+    img.src = src;
+    img.draggable = true;
+
+    img.addEventListener("dragstart", e=>{
+      e.dataTransfer.setData("text/plain", src);
+      e.dataTransfer.effectAllowed = "move";
+    });
+
+    img.onclick = ()=>mostrarEnCuadro(franja,src);
+    img.onmouseover = ()=>mostrarEnCuadro(franja,src);
+
+    armario.appendChild(img);
+  }
+
+  franjas.forEach(f=>{
+    const armario = document.getElementById("armario-"+f);
+    armario.addEventListener("dragover", e=>e.preventDefault());
+    armario.addEventListener("drop", e=>{
+      e.preventDefault();
+      const srcMovida = e.dataTransfer.getData("text/plain");
+      if(!srcMovida) return;
+
+      let data = JSON.parse(localStorage.getItem("armario_"+f) || "[]");
+      const fromIndex = data.indexOf(srcMovida);
+
+      let children = Array.from(armario.children);
+      let targetImg = e.target.closest("img");
+      let toIndex = children.indexOf(targetImg);
+      if(toIndex === -1) toIndex = data.length-1;
+
+      if(fromIndex > -1){
+        data.splice(fromIndex,1);
+        data.splice(toIndex,0,srcMovida);
+        localStorage.setItem("armario_"+f, JSON.stringify(data));
+
+        armario.innerHTML="";
+        data.forEach(s=>agregarAlArmario(f,s));
+      }
+    });
+  });
+
+  function mostrarEnCuadro(franja,src){
+    const cuadro = document.getElementById("cuadro-"+franja);
+    cuadro.innerHTML = '<img src="'+src+'">';
+    if(!estados[franja]) estados[franja]={escala:1,angulo:0};
+
+    const img = cuadro.querySelector("img");
+    img.onwheel = e=>{
+      e.preventDefault();
+      e.deltaY<0 ? estados[franja].angulo-=15 : estados[franja].angulo+=15;
+      aplicarTransform(franja);
+    };
+    img.onmouseleave = ()=>{
+      img.style.transform = `scale(1) rotate(${estados[franja].angulo}deg)`;
+      estados[franja].escala=1;
+    };
+  }
+
+  function aplicarTransform(franja){
+    const img = document.querySelector("#cuadro-"+franja+" img");
+    if(img) img.style.transform = `scale(2.2) rotate(${estados[franja].angulo}deg)`;
+  }
+
+  function vaciarArmario(franja){
+    document.getElementById("armario-"+franja).innerHTML="";
+    document.getElementById("cuadro-"+franja).innerHTML=(franja==="logo"?"<p>Logo</p>":"");
+    localStorage.removeItem("armario_"+franja);
+    estados[franja]={escala:1,angulo:0};
+  }
+
+})();
+</script>
+</body>
+</html>
