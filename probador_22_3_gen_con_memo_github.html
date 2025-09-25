@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probador 22_3 - 5 Franjas </title>
+<style>
+  body { font-family: Arial; text-align: center; padding: 20px; margin:0; }
+  #armarioApp { max-width: 1400px; margin: auto; }
+
+  .armario-seccion {
+    display: grid;
+    grid-template-columns: 220px auto 1fr auto; /* cuadro fijo | botón select | armario scroll | botón vaciar */
+    gap: 10px;
+    margin-bottom: 40px;
+    align-items: start;
+  }
+
+  /* CUADRO FIJO */
+  .cuadro { 
+    width: 200px; 
+    height: 200px; 
+    border: 2px solid #333; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    background: #f5f5f5; 
+    overflow: hidden; 
+  }
+  .cuadro img { max-width: 100%; max-height: 100%; transition: transform 0.3s; transform-origin: center center; cursor: pointer; }
+
+  /* ARMARIO CON SCROLL HORIZONTAL */
+  .armario-wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    margin-top: 5px;
+  }
+
+  .armario {
+    display: inline-flex; /* fila horizontal */
+    gap: 5px;
+  }
+
+  .armario img { 
+    width: 120px; 
+    height: 120px; 
+    object-fit: cover; 
+    cursor: grab; 
+    border: 2px solid transparent; 
+    transition: transform .2s, border .2s; 
+  }
+  .armario img:hover { transform: scale(1.6); border: 2px solid #333; }
+
+  button { padding: 8px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #333; background: #f0f0f0; transition: background .2s; margin:2px; }
+  button:hover { background: #ddd; }
+  input[type="file"] { display: none; }
+</style>
+</head>
+<body>
+
+<div id="armarioApp">
+  Probador 22_3 - 5 Franjas
+</div>
+
+<script>
+(function(){
+  const franjas = ["sombrero","logo","blusa","pantalon","zapatos"];
+  const app = document.getElementById("armarioApp");
+  let estados = {}; 
+
+  franjas.forEach(f=>{
+    const seccion = document.createElement("div");
+    seccion.className="armario-seccion";
+
+    // CUADRO
+    const cuadro = document.createElement("div");
+    cuadro.className="cuadro";
+    cuadro.id="cuadro-"+f;
+    if(f==="logo") cuadro.innerHTML="<p>Logo</p>";
+
+    // BOTÓN SELECT
+    const contSelect = document.createElement("div");
+    const input = document.createElement("input");
+    input.type="file"; input.multiple=true; input.id="file-"+f;
+    input.addEventListener("change", e=>subirImagenes(f,e.target.files));
+    const btnSel = document.createElement("button");
+    btnSel.textContent="Select";
+    btnSel.onclick=()=>input.click();
+    contSelect.append(input, btnSel);
+
+    // ARMARIO HORIZONTAL
+    const armarioWrapper = document.createElement("div");
+    armarioWrapper.className="armario-wrapper";
+    const armario = document.createElement("div");
+    armario.className="armario"; armario.id="armario-"+f;
+    armarioWrapper.appendChild(armario);
+
+    // BOTÓN VACIAR
+    const contVaciar = document.createElement("div");
+    const btnVaciar = document.createElement("button");
+    btnVaciar.textContent="Vaciar Armario";
+    btnVaciar.onclick=()=>vaciarArmario(f);
+    contVaciar.appendChild(btnVaciar);
+
+    // ARMADO DE SECCIÓN
+    seccion.append(cuadro, contSelect, armarioWrapper, contVaciar);
+    app.appendChild(seccion);
+
+    cargarArmario(f);
+  });
+
+  function subirImagenes(franja,files){
+    [...files].forEach(file=>{
+      const reader = new FileReader();
+      reader.onload = e=>{
+        guardarImagen(franja,e.target.result);
+        agregarAlArmario(franja,e.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function guardarImagen(franja,src){
+    let data = JSON.parse(localStorage.getItem("armario_"+franja) || "[]");
+    data.push(src);
+    localStorage.setItem("armario_"+franja,JSON.stringify(data));
+  }
+
+  function cargarArmario(franja){
+    let data = JSON.parse(localStorage.getItem("armario_"+franja) || "[]");
+    data.forEach(src=>agregarAlArmario(franja,src));
+  }
+
+  function agregarAlArmario(franja,src){
+    const armario = document.getElementById("armario-"+franja);
+    const img = document.createElement("img");
+    img.src = src;
+    img.draggable = true;
+
+    img.addEventListener("dragstart", e=>{
+      e.dataTransfer.setData("text/plain", src);
+      e.dataTransfer.effectAllowed = "move";
+    });
+
+    img.onclick = ()=>mostrarEnCuadro(franja,src);
+    img.onmouseover = ()=>mostrarEnCuadro(franja,src);
+
+    armario.appendChild(img);
+  }
+
+  franjas.forEach(f=>{
+    const armario = document.getElementById("armario-"+f);
+    armario.addEventListener("dragover", e=>e.preventDefault());
+    armario.addEventListener("drop", e=>{
+      e.preventDefault();
+      const srcMovida = e.dataTransfer.getData("text/plain");
+      if(!srcMovida) return;
+
+      let data = JSON.parse(localStorage.getItem("armario_"+f) || "[]");
+      const fromIndex = data.indexOf(srcMovida);
+
+      let children = Array.from(armario.children);
+      let targetImg = e.target.closest("img");
+      let toIndex = children.indexOf(targetImg);
+      if(toIndex === -1) toIndex = data.length-1;
+
+      if(fromIndex > -1){
+        data.splice(fromIndex,1);
+        data.splice(toIndex,0,srcMovida);
+        localStorage.setItem("armario_"+f, JSON.stringify(data));
+
+        armario.innerHTML="";
+        data.forEach(s=>agregarAlArmario(f,s));
+      }
+    });
+  });
+
+  function mostrarEnCuadro(franja,src){
+    const cuadro = document.getElementById("cuadro-"+franja);
+    cuadro.innerHTML = '<img src="'+src+'">';
+    if(!estados[franja]) estados[franja]={escala:1,angulo:0};
+
+    const img = cuadro.querySelector("img");
+    aplicarTransform(franja);
+
+    // Rotación con rueda del mouse
+    img.onwheel = e=>{
+      e.preventDefault();
+      e.deltaY<0 ? estados[franja].angulo-=15 : estados[franja].angulo+=15;
+      aplicarTransform(franja);
+    };
+
+    // Rotación táctil para móviles
+    let startX = null;
+    img.ontouchstart = e=>{ startX = e.touches[0].clientX; };
+    img.ontouchmove = e=>{
+      if(startX===null) return;
+      const dx = e.touches[0].clientX - startX;
+      estados[franja].angulo += dx*0.5;
+      aplicarTransform(franja);
+      startX = e.touches[0].clientX;
+    };
+    img.ontouchend = e=>{ startX=null; };
+
+    img.onmouseleave = ()=>{
+      img.style.transform = `scale(1) rotate(${estados[franja].angulo}deg)`;
+      estados[franja].escala=1;
+    };
+  }
+
+  function aplicarTransform(franja){
+    const img = document.querySelector("#cuadro-"+franja+" img");
+    if(img) img.style.transform = `scale(2.2) rotate(${estados[franja].angulo}deg)`;
+  }
+
+  function vaciarArmario(franja){
+    document.getElementById("armario-"+franja).innerHTML="";
+    document.getElementById("cuadro-"+franja).innerHTML=(franja==="logo"?"<p>Logo</p>":"");
+    localStorage.removeItem("armario_"+franja);
+    estados[franja]={escala:1,angulo:0};
+  }
+
+})();
+</script>
+</body>
+</html>
