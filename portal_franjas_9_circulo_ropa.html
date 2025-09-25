@@ -2,139 +2,197 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>C�rculo 10 de Ropa Animado con Cambio de Imagen Principal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probador 5 Franjas Adaptado</title>
 <style>
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: #f0f4f8;
-    font-family: Arial, sans-serif;
+  body { font-family: Arial; text-align: center; padding: 20px; margin:0; }
+  #armarioApp { max-width: 1400px; margin: auto; }
+
+  .armario-seccion {
+    display: grid;
+    grid-template-columns: 220px auto 1fr auto; /* cuadro fijo | botón select | armario scroll | botón vaciar */
+    gap: 10px;
+    margin-bottom: 40px;
+    align-items: start;
   }
 
-  #subirImagen {
-    margin-bottom: 20px;
+  /* CUADRO FIJO */
+  .cuadro { 
+    width: 200px; 
+    height: 200px; 
+    border: 2px solid #333; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    background: #f5f5f5; 
+    overflow: hidden; 
+  }
+  .cuadro img { max-width: 100%; max-height: 100%; transition: transform 0.3s; transform-origin: center center; cursor: pointer; }
+
+  /* ARMARIO CON SCROLL HORIZONTAL */
+  .armario-wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    min-width: 100%;
   }
 
-  .circle-container {
-    position: relative;
-    width: 1000px;
-    height: 1000px;
-    border-radius: 50%;
+  .armario {
+    display: flex;       /* fila horizontal */
+    flex-wrap: nowrap;   /* asegurar una sola fila */
+    gap: 5px;
   }
 
-  .circle-container img {
-    position: absolute;
-    width: 380px;
-    height: 380px;
-    border-radius: 10px;
-    object-fit: cover;
-    transition: transform 0.3s, z-index 0.3s;
+  .armario img { 
+    width: 120px; 
+    height: 120px; 
+    object-fit: cover; 
+    cursor: grab; 
+    border: 2px solid transparent; 
+    transition: transform .2s, border .2s; 
   }
+  .armario img:hover { transform: scale(1.6); border: 2px solid #333; }
 
-  .circle-container img:hover {
-    transform: scale(1.3);
-    z-index: 20;
-  }
+  button { padding: 8px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #333; background: #f0f0f0; transition: background .2s; margin:2px; }
+  button:hover { background: #ddd; }
+  input[type="file"] { display: none; }
 </style>
 </head>
 <body>
 
-<h2>Sube tus prendas al c�rculo 10</h2>
-<input type="file" id="subirImagen" multiple accept="image/*">
-<div class="circle-container" id="circle"></div>
+<h1>Probador 5 Franjas</h1>
+<div id="armarioApp"></div>
 
 <script>
-  const input = document.getElementById('subirImagen');
-  const container = document.getElementById('circle');
-  const images = [];
-  let rotation = 0;
-  let speed = 0.01;
-  let isPaused = false;
-  let lastCycle = 0; 
+(function(){
+  const franjas = ["sombrero","logo","blusa","pantalon","zapatos"];
+  const app = document.getElementById("armarioApp");
+  let estados = {}; 
 
-  // --- FUNCIONES ---
-  function organizarCirculo() {
-    const total = images.length;
-    const radius = 150;
-    images.forEach((img, i) => {
-      const angle = (i / total) * 2 * Math.PI + rotation;
-      const x = radius * Math.cos(angle) + container.offsetWidth / 2 - img.offsetWidth / 2;
-      const y = radius * Math.sin(angle) + container.offsetHeight / 2 - img.offsetHeight / 2;
-      img.style.left = `${x}px`;
-      img.style.top = `${y}px`;
+  // Crear secciones
+  franjas.forEach(f=>{
+    const seccion = document.createElement("div");
+    seccion.className="armario-seccion";
 
-      const normalizedAngle = (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-      img.style.zIndex = Math.floor(Math.cos(normalizedAngle) * 10) + 10;
+    // CUADRO
+    const cuadro = document.createElement("div");
+    cuadro.className="cuadro";
+    cuadro.id="cuadro-"+f;
+    if(f==="logo") cuadro.innerHTML="<p>Logo</p>";
+
+    // BOTÓN SELECT
+    const contSelect = document.createElement("div");
+    const input = document.createElement("input");
+    input.type="file"; input.multiple=true; input.id="file-"+f;
+    input.addEventListener("change", e=>subirImagenes(f,e.target.files));
+    const btnSel = document.createElement("button");
+    btnSel.textContent="Select";
+    btnSel.onclick=()=>input.click();
+    contSelect.append(input, btnSel);
+
+    // ARMARIO HORIZONTAL
+    const armarioWrapper = document.createElement("div");
+    armarioWrapper.className="armario-wrapper";
+    const armario = document.createElement("div");
+    armario.className="armario"; armario.id="armario-"+f;
+    armarioWrapper.appendChild(armario);
+
+    // BOTÓN VACIAR
+    const contVaciar = document.createElement("div");
+    const btnVaciar = document.createElement("button");
+    btnVaciar.textContent="Vaciar Armario";
+    btnVaciar.onclick=()=>vaciarArmario(f);
+    contVaciar.appendChild(btnVaciar);
+
+    // ARMADO DE SECCIÓN
+    seccion.append(cuadro, contSelect, armarioWrapper, contVaciar);
+    app.appendChild(seccion);
+
+    cargarArmario(f);
+  });
+
+  function subirImagenes(franja,files){
+    [...files].forEach(file=>{
+      const reader = new FileReader();
+      reader.onload = e=>{
+        guardarImagen(franja,e.target.result);
+        agregarAlArmario(franja,e.target.result);
+      };
+      reader.readAsDataURL(file);
     });
   }
 
-  function agregarImagen(src) {
-    const img = document.createElement('img');
+  function guardarImagen(franja,src){
+    let data = JSON.parse(localStorage.getItem("armario_"+franja) || "[]");
+    data.push(src);
+    localStorage.setItem("armario_"+franja,JSON.stringify(data));
+  }
+
+  function cargarArmario(franja){
+    let data = JSON.parse(localStorage.getItem("armario_"+franja) || "[]");
+    data.forEach(src=>agregarAlArmario(franja,src));
+  }
+
+  function agregarAlArmario(franja,src){
+    const armario = document.getElementById("armario-"+franja);
+    const img = document.createElement("img");
     img.src = src;
+    img.draggable = true;
 
-    img.addEventListener('mouseenter', () => isPaused = true);
-    img.addEventListener('mouseleave', () => isPaused = false);
+    img.onclick = ()=>mostrarEnCuadro(franja,src);
+    img.onmouseover = ()=>mostrarEnCuadro(franja,src);
 
-    container.appendChild(img);
-    images.push(img);
-    organizarCirculo();
+    armario.appendChild(img);
   }
 
-  // --- GUARDAR EN LOCALSTORAGE ---
-  function guardarEnLocalStorage() {
-    const data = images.map(img => img.src);
-    localStorage.setItem("carruselImgs", JSON.stringify(data));
+  function mostrarEnCuadro(franja,src){
+    const cuadro = document.getElementById("cuadro-"+franja);
+    cuadro.innerHTML = '<img src="'+src+'">';
+    if(!estados[franja]) estados[franja]={escala:1,angulo:0};
+
+    const img = cuadro.querySelector("img");
+    aplicarTransform(franja);
+
+    // Rotación con rueda del mouse
+    img.onwheel = e=>{
+      e.preventDefault();
+      e.deltaY<0 ? estados[franja].angulo-=15 : estados[franja].angulo+=15;
+      aplicarTransform(franja);
+    };
+
+    // Rotación táctil para móviles
+    let startX = null;
+    img.ontouchstart = e=>{ startX = e.touches[0].clientX; };
+    img.ontouchmove = e=>{
+      if(startX===null) return;
+      const dx = e.touches[0].clientX - startX;
+      estados[franja].angulo += dx*0.5;
+      aplicarTransform(franja);
+      startX = e.touches[0].clientX;
+    };
+    img.ontouchend = e=>{ startX=null; };
+
+    img.onmouseleave = ()=>{
+      img.style.transform = `scale(1) rotate(${estados[franja].angulo}deg)`;
+      estados[franja].escala=1;
+    };
   }
 
-  // --- CARGAR DESDE LOCALSTORAGE ---
-  window.addEventListener("load", () => {
-    const data = localStorage.getItem("carruselImgs");
-    if (data) {
-      const lista = JSON.parse(data);
-      lista.forEach(src => agregarImagen(src));
-    }
-  });
-
-  // --- SUBIR IM�GENES ---
-  input.addEventListener('change', (e) => {
-    const files = e.target.files;
-    for (let file of files) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        agregarImagen(reader.result);
-        guardarEnLocalStorage();
-      }
-      reader.readAsDataURL(file);
-    }
-  });
-
-  // --- CONTROL CON RUEDA DEL MOUSE ---
-  container.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    speed += e.deltaY * -0.0005;
-  });
-
-  // --- ANIMACI�N ---
-  function animar() {
-    if (!isPaused) {
-      rotation += speed;
-      const cycles = Math.floor(rotation / (2 * Math.PI));
-      if (cycles > lastCycle) {
-        lastCycle = cycles;
-        if (images.length > 1) {
-          const first = images.shift();
-          images.push(first);
-        }
-      }
-    }
-    organizarCirculo();
-    requestAnimationFrame(animar);
+  function aplicarTransform(franja){
+    const img = document.querySelector("#cuadro-"+franja+" img");
+    if(img) img.style.transform = `scale(2.2) rotate(${estados[franja].angulo}deg)`;
   }
-  animar();
+
+  function vaciarArmario(franja){
+    document.getElementById("armario-"+franja).innerHTML="";
+    document.getElementById("cuadro-"+franja).innerHTML=(franja==="logo"?"<p>Logo</p>":"");
+    localStorage.removeItem("armario_"+franja);
+    estados[franja]={escala:1,angulo:0};
+  }
+
+})();
 </script>
-
 </body>
 </html>
