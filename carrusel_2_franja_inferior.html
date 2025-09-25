@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Carrusel 2 con Franja Inferior </title>
+<title>Carrusel 2 Franja Inferior </title>
 <style>
   body {
     display: flex;
@@ -80,7 +80,12 @@
     border-radius: 4px;
   }
 
-  .franja img {
+  .thumb-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .thumb-container img {
     width: 100px;
     height: 100px;
     object-fit: cover;
@@ -90,12 +95,32 @@
     transition: transform 0.2s;
   }
 
-  .franja img:hover {
+  .thumb-container img:hover {
     transform: scale(1.1);
     border: 2px solid #333;
   }
 
-  /* input file oculto */
+  .btnEliminar {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(220,50,50,0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+    padding: 0;
+  }
+
+  .btnEliminar:hover {
+    background: red;
+  }
+
   #inputFiles {
     display: none;
   }
@@ -103,16 +128,12 @@
 </head>
 <body>
 
-<h2>Carrusel 2 </h2>
+<h2>Carrusel 2</h2>
 
-<!-- Botón Select -->
 <button id="btnSelect">Select</button>
 <input type="file" id="inputFiles" multiple accept="image/*">
-
-<!-- Botón Vaciar -->
 <button id="btnVaciar">Vaciar Carrusel</button>
 
-<!-- Carrusel y franja -->
 <div class="circle-container" id="circle"></div>
 <div class="franja" id="franja"></div>
 
@@ -129,7 +150,6 @@
   let isPaused = false;
   let lastCycle = 0;
 
-  // Abrir selector al hacer clic en Select
   btnSelect.addEventListener('click', () => inputFiles.click());
 
   function organizarCirculo() {
@@ -147,6 +167,7 @@
   }
 
   function agregarImagen(src) {
+    // Carrusel
     const img = document.createElement('img');
     img.src = src;
     img.loading = "lazy";
@@ -157,7 +178,10 @@
     images.push(img);
     organizarCirculo();
 
-    // Miniatura en franja
+    // Franja con botón eliminar
+    const thumbContainer = document.createElement('div');
+    thumbContainer.className = 'thumb-container';
+
     const thumb = document.createElement('img');
     thumb.src = src;
     thumb.loading = "lazy";
@@ -168,7 +192,24 @@
         organizarCirculo();
       }
     });
-    franja.appendChild(thumb);
+
+    const btnEliminar = document.createElement('button');
+    btnEliminar.className = 'btnEliminar';
+    btnEliminar.textContent = '×';
+    btnEliminar.onclick = (e) => {
+      e.stopPropagation();
+      const idx = images.findIndex(i => i.src === src);
+      if (idx >= 0) {
+        const imgToRemove = images.splice(idx, 1)[0];
+        container.removeChild(imgToRemove);
+      }
+      franja.removeChild(thumbContainer);
+      guardarEnLocalStorage();
+    };
+
+    thumbContainer.appendChild(thumb);
+    thumbContainer.appendChild(btnEliminar);
+    franja.appendChild(thumbContainer);
   }
 
   function guardarEnLocalStorage() {
@@ -224,7 +265,6 @@
     requestAnimationFrame(animar);
   }
   animar();
-
   window.addEventListener("load", cargarDesdeLocalStorage);
 </script>
 
