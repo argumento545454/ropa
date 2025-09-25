@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Carrusel 1 con Franja Inferior</title>
+<title>Carrusel 2 con Franja Inferior</title>
 <style>
   body {
     display: flex;
@@ -80,7 +80,7 @@
 </head>
 <body>
 
-<h2>Carrusel 1 franja inferior</h2>
+<h2>Carrusel 2 </h2>
 <input type="file" id="subirImagen" multiple accept="image/*">
 <div class="circle-container" id="circle"></div>
 
@@ -114,7 +114,7 @@
   }
 
   function agregarImagen(src) {
-    // Imagen en círculo
+    // Imagen en cÃ­rculo
     const img = document.createElement('img');
     img.src = src;
     img.loading = "lazy"; // ? carga diferida
@@ -155,7 +155,7 @@
     }
   });
 
-  // --- SUBIR IMÁGENES ---
+  // --- SUBIR IMÃGENES ---
   input.addEventListener('change', (e) => {
     const files = e.target.files;
     for (let file of files) {
@@ -174,7 +174,7 @@
     speed += e.deltaY * -0.0005;
   });
 
-  // --- ANIMACIÓN ---
+  // --- ANIMACIÃ“N ---
   function animar() {
     if (!isPaused) {
       rotation += speed;
@@ -194,4 +194,5 @@
 </script>
 
 </body>
+
 </html>
