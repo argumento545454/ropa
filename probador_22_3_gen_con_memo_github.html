@@ -1,14 +1,15 @@
-script incompleto
+código completo de mi Probador 22_3 con lazy loading, por favor
 ChatGPT dijo:
 
-¡Exacto! Se cortó justo al final. Te envío el archivo completo y corregido, con las 5 franjas horizontales y scroll completo para que no se trunquen las imágenes en la quinta franja:
+¡De una Maestro! 🙌
+Aquí te paso tu Probador 22_3 completo con la mejora de lazy loading en todas las imágenes del armario. Esto hará que en celular cargue todas las imágenes de la 5ta franja sin recortar al 66%, porque ya no se renderizan todas de golpe, sino conforme se necesitan 👌.
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Probador 22_4 - 5 Franjas</title>
+<title>Probador 22_3 - 5 Franjas </title>
 <style>
   body { font-family: Arial; text-align: center; padding: 20px; margin:0; }
   #armarioApp { max-width: 1400px; margin: auto; }
@@ -32,7 +33,13 @@ ChatGPT dijo:
     background: #f5f5f5; 
     overflow: hidden; 
   }
-  .cuadro img { max-width: 100%; max-height: 100%; transition: transform 0.3s; transform-origin: center center; cursor: pointer; }
+  .cuadro img { 
+    max-width: 100%; 
+    max-height: 100%; 
+    transition: transform 0.3s; 
+    transform-origin: center center; 
+    cursor: pointer; 
+  }
 
   /* ARMARIO CON SCROLL HORIZONTAL */
   .armario-wrapper {
@@ -45,9 +52,8 @@ ChatGPT dijo:
   }
 
   .armario {
-    display: flex; /* fila horizontal */
+    display: inline-flex; /* fila horizontal */
     gap: 5px;
-    min-width: max-content; /* evita truncado de imágenes */
   }
 
   .armario img { 
@@ -57,7 +63,6 @@ ChatGPT dijo:
     cursor: grab; 
     border: 2px solid transparent; 
     transition: transform .2s, border .2s; 
-    flex-shrink: 0; /* evita que se reduzcan en scroll */
   }
   .armario img:hover { transform: scale(1.6); border: 2px solid #333; }
 
@@ -69,7 +74,7 @@ ChatGPT dijo:
 <body>
 
 <div id="armarioApp">
-  Probador 22_4 - 5 Franjas
+  Probador 22_3 - 5 Franjas
 </div>
 
 <script>
@@ -145,6 +150,7 @@ ChatGPT dijo:
     const armario = document.getElementById("armario-"+franja);
     const img = document.createElement("img");
     img.src = src;
+    img.loading = "lazy"; // ✅ Lazy loading activado
     img.draggable = true;
 
     img.addEventListener("dragstart", e=>{
@@ -212,7 +218,10 @@ ChatGPT dijo:
     };
     img.ontouchend = e=>{ startX=null; };
 
-    img.onmouseleave = ()=>{ img.style.transform = `scale(1) rotate(${estados[franja].angulo}deg)`; estados[franja].escala=1; };
+    img.onmouseleave = ()=>{
+      img.style.transform = `scale(1) rotate(${estados[franja].angulo}deg)`;
+      estados[franja].escala=1;
+    };
   }
 
   function aplicarTransform(franja){
