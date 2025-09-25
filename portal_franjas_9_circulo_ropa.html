@@ -38,6 +38,12 @@
     transform: scale(1.3);
     z-index: 20;
   }
+
+  #estado {
+    margin-top: 20px;
+    font-weight: bold;
+    color: #333;
+  }
 </style>
 </head>
 <body>
@@ -45,10 +51,12 @@
 <h2>Sube tus prendas al círculo 9</h2>
 <input type="file" id="subirImagen" multiple accept="image/*">
 <div class="circle-container" id="circle"></div>
+<p id="estado">🎤 Diga "para" o "sigue" para controlar el carrusel</p>
 
 <script>
   const input = document.getElementById('subirImagen');
   const container = document.getElementById('circle');
+  const estado = document.getElementById('estado');
   const images = [];
   let rotation = 0;
   let speed = 0.01;
@@ -121,6 +129,46 @@
   }
 
   animar();
+
+  // --------------------------
+  // CONTROL POR VOZ (MICRÓFONO)
+  // --------------------------
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (window.SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = "es-ES";
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      const texto = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+      console.log("🎤 Detectado:", texto);
+
+      if (texto.includes("para")) {
+        isPaused = true;
+        estado.textContent = "⏸️ Carrusel detenido por voz";
+      }
+      if (texto.includes("sigue") || texto.includes("continúa")) {
+        isPaused = false;
+        estado.textContent = "▶️ Carrusel en movimiento por voz";
+      }
+    };
+
+    recognition.onerror = (e) => {
+      console.log("Error de reconocimiento:", e.error);
+      estado.textContent = "⚠️ Error de micrófono: " + e.error;
+    };
+
+    recognition.onend = () => {
+      recognition.start(); // Reinicia automáticamente si se detiene
+    };
+
+    recognition.start();
+    estado.textContent = "🎤 Micrófono activo: diga 'para' o 'sigue'";
+  } else {
+    estado.textContent = "⚠️ Tu navegador no soporta reconocimiento de voz";
+  }
 </script>
 
 </body>
