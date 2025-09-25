@@ -10,7 +10,7 @@
 
   .armario-seccion {
     display: grid;
-    grid-template-columns: 220px auto 1fr auto; /* cuadro fijo | bot髇 select | armario scroll | bot髇 vaciar */
+    grid-template-columns: 220px auto 1fr auto; /* cuadro fijo | bot贸n select | armario scroll | bot贸n vaciar */
     gap: 10px;
     margin-bottom: 40px;
     align-items: start;
@@ -41,12 +41,11 @@
     grid-auto-rows: 120px;
     gap: 1px;
     max-height: 180px; /* altura para 2 filas + gaps */    
-	padding: 12px;
+    padding: 12px;
     border: 1px solid #ccc;
     background: #fafafa;
     min-width: 600px;
   }
-
 
   .armario img { 
     width: 180px; 
@@ -85,12 +84,11 @@
     cuadro.id="cuadro-"+f;
     if(f==="logo") cuadro.innerHTML="<p>Logo</p>";
 
-    // BOT覰 SELECT
+    // BOT脫N SELECT
     const contSelect = document.createElement("div");
     const input = document.createElement("input");
     input.type="file"; input.multiple=true; input.id="file-"+f;
     input.addEventListener("change", e=>subirImagenes(f,e.target.files));
-
     const btnSel = document.createElement("button");
     btnSel.textContent="Select";
     btnSel.onclick=()=>input.click();
@@ -99,19 +97,18 @@
     // ARMARIO
     const armarioWrapper = document.createElement("div");
     armarioWrapper.className="armario-wrapper";
-
     const armario = document.createElement("div");
     armario.className="armario"; armario.id="armario-"+f;
     armarioWrapper.appendChild(armario);
 
-    // BOT覰 VACIAR
+    // BOT脫N VACIAR
     const contVaciar = document.createElement("div");
     const btnVaciar = document.createElement("button");
     btnVaciar.textContent="Vaciar Armario";
     btnVaciar.onclick=()=>vaciarArmario(f);
     contVaciar.appendChild(btnVaciar);
 
-    // ARMADO DE SECCI覰
+    // ARMADO DE SECCI脫N
     seccion.append(cuadro, contSelect, armarioWrapper, contVaciar);
     app.appendChild(seccion);
 
@@ -190,11 +187,31 @@
     if(!estados[franja]) estados[franja]={escala:1,angulo:0};
 
     const img = cuadro.querySelector("img");
+    aplicarTransform(franja);
+
+    // Rotaci贸n con rueda del mouse
     img.onwheel = e=>{
       e.preventDefault();
       e.deltaY<0 ? estados[franja].angulo-=15 : estados[franja].angulo+=15;
       aplicarTransform(franja);
     };
+
+    // Rotaci贸n t谩ctil para m贸viles
+    let startX = null;
+    img.ontouchstart = e=>{
+      startX = e.touches[0].clientX;
+    };
+    img.ontouchmove = e=>{
+      if(startX === null) return;
+      const dx = e.touches[0].clientX - startX;
+      estados[franja].angulo += dx * 0.5; // sensibilidad
+      aplicarTransform(franja);
+      startX = e.touches[0].clientX;
+    };
+    img.ontouchend = e=>{
+      startX = null;
+    };
+
     img.onmouseleave = ()=>{
       img.style.transform = `scale(1) rotate(${estados[franja].angulo}deg)`;
       estados[franja].escala=1;
