@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Carrusel con Control por Voz</title>
+<title>C�rculo 10 de Ropa Animado con Cambio de Imagen Principal</title>
 <style>
   body {
     display: flex;
@@ -12,11 +12,10 @@
     height: 100vh;
     background: #f0f4f8;
     font-family: Arial, sans-serif;
-    margin: 0;
   }
 
   #subirImagen {
-    margin: 10px;
+    margin-bottom: 20px;
   }
 
   .circle-container {
@@ -24,7 +23,6 @@
     width: 1000px;
     height: 1000px;
     border-radius: 50%;
-    overflow: hidden;
   }
 
   .circle-container img {
@@ -40,30 +38,13 @@
     transform: scale(1.3);
     z-index: 20;
   }
-
-  #vozBtn {
-    margin-top: 15px;
-    padding: 10px 20px;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    background: #0077ff;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  #vozBtn:hover {
-    background: #005dcc;
-  }
 </style>
 </head>
 <body>
 
-<h2>Sube tus prendas al carrusel</h2>
+<h2>Sube tus prendas al c�rculo 10</h2>
 <input type="file" id="subirImagen" multiple accept="image/*">
 <div class="circle-container" id="circle"></div>
-<!--<button id="vozBtn">🎤 Activar voz</button>-->
 
 <script>
   const input = document.getElementById('subirImagen');
@@ -72,8 +53,9 @@
   let rotation = 0;
   let speed = 0.01;
   let isPaused = false;
-  let lastCycle = 0;
+  let lastCycle = 0; 
 
+  // --- FUNCIONES ---
   function organizarCirculo() {
     const total = images.length;
     const radius = 150;
@@ -89,33 +71,53 @@
     });
   }
 
-  // Subir imágenes
+  function agregarImagen(src) {
+    const img = document.createElement('img');
+    img.src = src;
+
+    img.addEventListener('mouseenter', () => isPaused = true);
+    img.addEventListener('mouseleave', () => isPaused = false);
+
+    container.appendChild(img);
+    images.push(img);
+    organizarCirculo();
+  }
+
+  // --- GUARDAR EN LOCALSTORAGE ---
+  function guardarEnLocalStorage() {
+    const data = images.map(img => img.src);
+    localStorage.setItem("carruselImgs", JSON.stringify(data));
+  }
+
+  // --- CARGAR DESDE LOCALSTORAGE ---
+  window.addEventListener("load", () => {
+    const data = localStorage.getItem("carruselImgs");
+    if (data) {
+      const lista = JSON.parse(data);
+      lista.forEach(src => agregarImagen(src));
+    }
+  });
+
+  // --- SUBIR IM�GENES ---
   input.addEventListener('change', (e) => {
     const files = e.target.files;
     for (let file of files) {
       const reader = new FileReader();
       reader.onload = () => {
-        const img = document.createElement('img');
-        img.src = reader.result;
-
-        img.addEventListener('mouseenter', () => isPaused = true);
-        img.addEventListener('mouseleave', () => isPaused = false);
-
-        container.appendChild(img);
-        images.push(img);
-        organizarCirculo();
+        agregarImagen(reader.result);
+        guardarEnLocalStorage();
       }
       reader.readAsDataURL(file);
     }
   });
 
-  // Control con rueda del mouse
+  // --- CONTROL CON RUEDA DEL MOUSE ---
   container.addEventListener('wheel', (e) => {
     e.preventDefault();
     speed += e.deltaY * -0.0005;
   });
 
-  // Animación
+  // --- ANIMACI�N ---
   function animar() {
     if (!isPaused) {
       rotation += speed;
@@ -132,43 +134,7 @@
     requestAnimationFrame(animar);
   }
   animar();
-
-  // --- CONTROL POR VOZ ---
-  let recognition;
-  const vozBtn = document.getElementById("vozBtn");
-
-  if ("webkitSpeechRecognition" in window) {
-    recognition = new webkitSpeechRecognition();
-    recognition.lang = "es-ES";
-    recognition.continuous = true;
-    recognition.interimResults = false;
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-      console.log("Dijiste:", transcript);
-
-      if (transcript.includes("para")) {
-        isPaused = true;
-      }
-      if (transcript.includes("sigue") || transcript.includes("inicia")) {
-        isPaused = false;
-      }
-    };
-
-    recognition.onerror = (e) => console.error("Error voz:", e);
-  }
-
-  vozBtn.addEventListener("click", () => {
-    if (recognition) {
-      recognition.start();
-      alert("Micrófono activado 🎤. Di 'pare' o 'siga'");
-    } else {
-      alert("Tu navegador no soporta reconocimiento de voz.");
-    }
-  });
 </script>
 
 </body>
 </html>
-
-
