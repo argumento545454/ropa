@@ -1,16 +1,21 @@
+script incompleto
+ChatGPT dijo:
+
+隆Exacto! Se cort贸 justo al final. Te env铆o el archivo completo y corregido, con las 5 franjas horizontales y scroll completo para que no se trunquen las im谩genes en la quinta franja:
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Probador 22_3 - 5 Franjas </title>
+<title>Probador 22_4 - 5 Franjas</title>
 <style>
   body { font-family: Arial; text-align: center; padding: 20px; margin:0; }
   #armarioApp { max-width: 1400px; margin: auto; }
 
   .armario-seccion {
     display: grid;
-    grid-template-columns: 220px auto 1fr auto; /* cuadro fijo | bot髇 select | armario scroll | bot髇 vaciar */
+    grid-template-columns: 220px auto 1fr auto; /* cuadro fijo | bot贸n select | armario scroll | bot贸n vaciar */
     gap: 10px;
     margin-bottom: 40px;
     align-items: start;
@@ -40,8 +45,9 @@
   }
 
   .armario {
-    display: inline-flex; /* fila horizontal */
+    display: flex; /* fila horizontal */
     gap: 5px;
+    min-width: max-content; /* evita truncado de im谩genes */
   }
 
   .armario img { 
@@ -51,6 +57,7 @@
     cursor: grab; 
     border: 2px solid transparent; 
     transition: transform .2s, border .2s; 
+    flex-shrink: 0; /* evita que se reduzcan en scroll */
   }
   .armario img:hover { transform: scale(1.6); border: 2px solid #333; }
 
@@ -62,7 +69,7 @@
 <body>
 
 <div id="armarioApp">
-  Probador 22_3 - 5 Franjas
+  Probador 22_4 - 5 Franjas
 </div>
 
 <script>
@@ -81,7 +88,7 @@
     cuadro.id="cuadro-"+f;
     if(f==="logo") cuadro.innerHTML="<p>Logo</p>";
 
-    // BOT覰 SELECT
+    // BOT脫N SELECT
     const contSelect = document.createElement("div");
     const input = document.createElement("input");
     input.type="file"; input.multiple=true; input.id="file-"+f;
@@ -98,14 +105,14 @@
     armario.className="armario"; armario.id="armario-"+f;
     armarioWrapper.appendChild(armario);
 
-    // BOT覰 VACIAR
+    // BOT脫N VACIAR
     const contVaciar = document.createElement("div");
     const btnVaciar = document.createElement("button");
     btnVaciar.textContent="Vaciar Armario";
     btnVaciar.onclick=()=>vaciarArmario(f);
     contVaciar.appendChild(btnVaciar);
 
-    // ARMADO DE SECCI覰
+    // ARMADO DE SECCI脫N
     seccion.append(cuadro, contSelect, armarioWrapper, contVaciar);
     app.appendChild(seccion);
 
@@ -186,14 +193,14 @@
     const img = cuadro.querySelector("img");
     aplicarTransform(franja);
 
-    // Rotaci髇 con rueda del mouse
+    // Rotaci贸n con rueda del mouse
     img.onwheel = e=>{
       e.preventDefault();
       e.deltaY<0 ? estados[franja].angulo-=15 : estados[franja].angulo+=15;
       aplicarTransform(franja);
     };
 
-    // Rotaci髇 t醕til para m髒iles
+    // Rotaci贸n t谩ctil para m贸viles
     let startX = null;
     img.ontouchstart = e=>{ startX = e.touches[0].clientX; };
     img.ontouchmove = e=>{
@@ -205,10 +212,7 @@
     };
     img.ontouchend = e=>{ startX=null; };
 
-    img.onmouseleave = ()=>{
-      img.style.transform = `scale(1) rotate(${estados[franja].angulo}deg)`;
-      estados[franja].escala=1;
-    };
+    img.onmouseleave = ()=>{ img.style.transform = `scale(1) rotate(${estados[franja].angulo}deg)`; estados[franja].escala=1; };
   }
 
   function aplicarTransform(franja){
