@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Carrusel 2 con Franja Inferior</title>
+<title>Carrusel 2 con Franja Inferior </title>
 <style>
   body {
     display: flex;
@@ -14,10 +14,29 @@
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
+    position: relative;
   }
 
-  #subirImagen {
+  #btnSelect {
+    padding: 8px 15px;
     margin-bottom: 20px;
+    border: none;
+    border-radius: 6px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+
+  #btnVaciar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 8px 15px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
   }
 
   .circle-container {
@@ -42,7 +61,6 @@
     z-index: 20;
   }
 
-  /* --- FRANJA INFERIOR --- */
   .franja {
     display: flex;
     overflow-x: auto;
@@ -76,28 +94,44 @@
     transform: scale(1.1);
     border: 2px solid #333;
   }
+
+  /* input file oculto */
+  #inputFiles {
+    display: none;
+  }
 </style>
 </head>
 <body>
 
 <h2>Carrusel 2 </h2>
-<input type="file" id="subirImagen" multiple accept="image/*">
-<div class="circle-container" id="circle"></div>
 
-<!-- Franja inferior -->
+<!-- Botón Select -->
+<button id="btnSelect">Select</button>
+<input type="file" id="inputFiles" multiple accept="image/*">
+
+<!-- Botón Vaciar -->
+<button id="btnVaciar">Vaciar Carrusel</button>
+
+<!-- Carrusel y franja -->
+<div class="circle-container" id="circle"></div>
 <div class="franja" id="franja"></div>
 
 <script>
-  const input = document.getElementById('subirImagen');
+  const btnSelect = document.getElementById('btnSelect');
+  const inputFiles = document.getElementById('inputFiles');
+  const btnVaciar = document.getElementById('btnVaciar');
   const container = document.getElementById('circle');
   const franja = document.getElementById('franja');
+
   const images = [];
   let rotation = 0;
   let speed = 0.01;
   let isPaused = false;
-  let lastCycle = 0; 
+  let lastCycle = 0;
 
-  // --- FUNCIONES ---
+  // Abrir selector al hacer clic en Select
+  btnSelect.addEventListener('click', () => inputFiles.click());
+
   function organizarCirculo() {
     const total = images.length;
     const radius = 200;
@@ -107,18 +141,15 @@
       const y = radius * Math.sin(angle) + container.offsetHeight / 2 - img.offsetHeight / 2;
       img.style.left = `${x}px`;
       img.style.top = `${y}px`;
-
       const normalizedAngle = (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
       img.style.zIndex = Math.floor(Math.cos(normalizedAngle) * 10) + 10;
     });
   }
 
   function agregarImagen(src) {
-    // Imagen en círculo
     const img = document.createElement('img');
     img.src = src;
-    img.loading = "lazy"; // ? carga diferida
-
+    img.loading = "lazy";
     img.addEventListener('mouseenter', () => isPaused = true);
     img.addEventListener('mouseleave', () => isPaused = false);
 
@@ -131,34 +162,36 @@
     thumb.src = src;
     thumb.loading = "lazy";
     thumb.addEventListener("click", () => {
-      // Enfocar imagen clickeada al frente del carrusel
       const idx = images.findIndex(i => i.src === src);
       if (idx >= 0) {
         rotation = -(idx / images.length) * 2 * Math.PI;
+        organizarCirculo();
       }
     });
     franja.appendChild(thumb);
   }
 
-  // --- GUARDAR EN LOCALSTORAGE ---
   function guardarEnLocalStorage() {
     const data = images.map(img => img.src);
     localStorage.setItem("carruselImgs", JSON.stringify(data));
   }
 
-  // --- CARGAR DESDE LOCALSTORAGE ---
-  window.addEventListener("load", () => {
+  function cargarDesdeLocalStorage() {
     const data = localStorage.getItem("carruselImgs");
-    if (data) {
-      const lista = JSON.parse(data);
-      lista.forEach(src => agregarImagen(src));
-    }
-  });
+    if (data) JSON.parse(data).forEach(src => agregarImagen(src));
+  }
 
-  // --- SUBIR IMÁGENES ---
-  input.addEventListener('change', (e) => {
-    const files = e.target.files;
-    for (let file of files) {
+  function vaciarCarrusel() {
+    container.innerHTML = "";
+    franja.innerHTML = "";
+    images.length = 0;
+    localStorage.removeItem("carruselImgs");
+    rotation = 0;
+    speed = 0.01;
+  }
+
+  inputFiles.addEventListener('change', (e) => {
+    for (let file of e.target.files) {
       const reader = new FileReader();
       reader.onload = () => {
         agregarImagen(reader.result);
@@ -168,13 +201,13 @@
     }
   });
 
-  // --- CONTROL CON RUEDA DEL MOUSE ---
+  btnVaciar.addEventListener("click", vaciarCarrusel);
+
   container.addEventListener('wheel', (e) => {
     e.preventDefault();
     speed += e.deltaY * -0.0005;
   });
 
-  // --- ANIMACIÓN ---
   function animar() {
     if (!isPaused) {
       rotation += speed;
@@ -191,8 +224,9 @@
     requestAnimationFrame(animar);
   }
   animar();
+
+  window.addEventListener("load", cargarDesdeLocalStorage);
 </script>
 
 </body>
-
 </html>
