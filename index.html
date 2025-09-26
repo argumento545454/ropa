@@ -27,32 +27,33 @@ button:hover{background:#0056b3}
 <p>Para registrarse por WhatsApp: <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a></p>
 </div>
 <script>
-(function(){
-  // Usuarios codificados en Base64
-  var c=["cm9wYQ==:MTIzNA==","bWFyaWE=:YWJjZA==","cGVwZQ==:cGFzczEyMw=="];
-  function d(s){return atob(s)}
+document.addEventListener("DOMContentLoaded", function(){
+  (function(){
+    var c=["cm9wYQ==:MTIzNA==","bWFyaWE=:YWJjZA==","cGVwZQ==:cGFzczEyMw=="];
+    function d(s){return atob(s)}
 
-  function loginFunc(){
-    var u=document.getElementById("username").value.trim(),
-        p=document.getElementById("password").value.trim(),
-        m=document.getElementById("message"),
-        f=c.find(function(x){var y=x.split(":");return d(y[0])===u&&d(y[1])===p});
-    if(f){
-      window.location.href="probador_22_3_gen_con_memo_github.html";
-    } else {
-      m.textContent="Usuario o clave incorrecta ❌";
-      m.className="message error";
+    function loginFunc(){
+      var u=document.getElementById("username").value.trim(),
+          p=document.getElementById("password").value.trim(),
+          m=document.getElementById("message"),
+          f=c.find(function(x){var y=x.split(":");return d(y[0])===u&&d(y[1])===p});
+      if(f){
+        window.location.href="probador_22_3_gen_con_memo_github.html";
+      } else {
+        m.textContent="Usuario o clave incorrecta ❌";
+        m.className="message error";
+      }
     }
-  }
 
-  function carruselFunc(){
-    window.location.href="carrusel_2_franja_inferior.html";
-  }
+    function carruselFunc(){
+      window.location.href="carrusel_2_franja_inferior.html";
+    }
 
-  // Asignar eventos a los botones por ID
-  document.getElementById("btnProbador").addEventListener("click", loginFunc);
-  document.getElementById("btnCarrusel").addEventListener("click", carruselFunc);
-})();
+    // Asignar eventos después de que el DOM esté cargado
+    document.getElementById("btnProbador").addEventListener("click", loginFunc);
+    document.getElementById("btnCarrusel").addEventListener("click", carruselFunc);
+  })();
+});
 </script>
 </body>
 </html>
