@@ -1,3 +1,5 @@
+Aquí tienes la versión ofuscada:
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -30,13 +32,15 @@ button:hover{background:#0056b3}
 (function(){
 var c=["cm9wYQ==:MTIzNA==","bWFyaWE=:YWJjZA==","cGVwZQ==:cGFzczEyMw=="];
 function d(s){return atob(s)}
-function a1(){var u=document.getElementById("username").value.trim(),
-p=document.getElementById("password").value.trim(),
-m=document.getElementById("message"),
-f=c.find(function(x){var y=x.split(":");return d(y[0])===u&&d(y[1])===p});
-f?window.location.href=d("cHJvYmFkb3JfMjJfM19nZW5fY29uX21lbW9fZ2l0aHViLmhtbA=="):(
-m.textContent="Usuario o clave incorrecta ❌",m.className="message error")}
-function b2(){window.location.href=d("Y2FycnVzZWxfMl9mcmFuamFfaW5mZXJpb3IuaHRtbA==")}
+function a1(){
+  var u=document.getElementById("username").value.trim(),
+      p=document.getElementById("password").value.trim(),
+      m=document.getElementById("message"),
+      f=c.find(function(x){var y=x.split(":");return d(y[0])===u&&d(y[1])===p});
+  if(f){window.location.href="probador_22_3_gen_con_memo_github.html";}
+  else{m.textContent="Usuario o clave incorrecta ❌";m.className="message error";}
+}
+function b2(){window.location.href="carrusel_2_franja_inferior.html"}
 })();
 </script>
 </body>
