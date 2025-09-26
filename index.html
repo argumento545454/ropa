@@ -1,5 +1,3 @@
-Aquí tienes la versión ofuscada:
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,25 +20,39 @@ button:hover{background:#0056b3}
 <div class="form-container" id="login-container">
 <input type="text" id="username" placeholder="Usuario"><br>
 <input type="password" id="password" placeholder="Clave"><br>
-<button onclick="a1()">Probador</button>
-<button onclick="b2()">Carrusel</button>
+<button>Probador</button>
+<button>Carrusel</button>
 <p id="message" class="message"></p>
 <hr style="margin:30px 0;">
 <p>Para registrarse por WhatsApp: <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a></p>
 </div>
 <script>
 (function(){
-var c=["cm9wYQ==:MTIzNA==","bWFyaWE=:YWJjZA==","cGVwZQ==:cGFzczEyMw=="];
-function d(s){return atob(s)}
-function a1(){
-  var u=document.getElementById("username").value.trim(),
-      p=document.getElementById("password").value.trim(),
-      m=document.getElementById("message"),
-      f=c.find(function(x){var y=x.split(":");return d(y[0])===u&&d(y[1])===p});
-  if(f){window.location.href="probador_22_3_gen_con_memo_github.html";}
-  else{m.textContent="Usuario o clave incorrecta ❌";m.className="message error";}
-}
-function b2(){window.location.href="carrusel_2_franja_inferior.html"}
+  // Usuarios codificados en Base64
+  var c=["cm9wYQ==:MTIzNA==","bWFyaWE=:YWJjZA==","cGVwZQ==:cGFzczEyMw=="];
+  function d(s){return atob(s)}
+
+  function loginFunc(){
+    var u=document.getElementById("username").value.trim(),
+        p=document.getElementById("password").value.trim(),
+        m=document.getElementById("message"),
+        f=c.find(function(x){var y=x.split(":");return d(y[0])===u&&d(y[1])===p});
+    if(f){
+      window.location.href="probador_22_3_gen_con_memo_github.html";
+    } else {
+      m.textContent="Usuario o clave incorrecta ❌";
+      m.className="message error";
+    }
+  }
+
+  function carruselFunc(){
+    window.location.href="carrusel_2_franja_inferior.html";
+  }
+
+  // Asignar eventos a los botones
+  var botones=document.querySelectorAll(".form-container button");
+  botones[0].addEventListener("click", loginFunc);
+  botones[1].addEventListener("click", carruselFunc);
 })();
 </script>
 </body>
