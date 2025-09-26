@@ -57,7 +57,7 @@ var pass=document.getElementById(_D[1]).value.trim();
 var msg=document.getElementById(_D[2]);
 var found=false;
 for(var i=0;i<_users.length;i++){if(_users[i].u===name&&_users[i].p===pass){found=true;break;}}
-if(found){_go('mi_proyecto/probador_22_3_gen_con_memo_github.html');return}
+if(found){_go('probador_22_3_gen_con_memo_github.html');return}
 msg.textContent='Usuario o clave incorrecta ❌';msg.className='message error';
 }
 
@@ -74,3 +74,4 @@ document.getElementById('password').addEventListener('keyup',function(e){if(e.ke
 
 </body>
 </html>
+
