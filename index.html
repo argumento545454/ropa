@@ -20,8 +20,8 @@ button:hover{background:#0056b3}
 <div class="form-container" id="login-container">
 <input type="text" id="username" placeholder="Usuario"><br>
 <input type="password" id="password" placeholder="Clave"><br>
-<button>Probador</button>
-<button>Carrusel</button>
+<button id="btnProbador">Probador</button>
+<button id="btnCarrusel">Carrusel</button>
 <p id="message" class="message"></p>
 <hr style="margin:30px 0;">
 <p>Para registrarse por WhatsApp: <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a></p>
@@ -49,10 +49,9 @@ button:hover{background:#0056b3}
     window.location.href="carrusel_2_franja_inferior.html";
   }
 
-  // Asignar eventos a los botones
-  var botones=document.querySelectorAll(".form-container button");
-  botones[0].addEventListener("click", loginFunc);
-  botones[1].addEventListener("click", carruselFunc);
+  // Asignar eventos a los botones por ID
+  document.getElementById("btnProbador").addEventListener("click", loginFunc);
+  document.getElementById("btnCarrusel").addEventListener("click", carruselFunc);
 })();
 </script>
 </body>
