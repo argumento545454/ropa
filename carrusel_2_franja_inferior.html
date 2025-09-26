@@ -2,271 +2,103 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Carrusel 2 Franja Inferior </title>
+<title>Carrusel 2 Franja Inferior</title>
 <style>
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100vh;
-    background: #f0f4f8;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    position: relative;
-  }
-
-  #btnSelect {
-    padding: 8px 15px;
-    margin-bottom: 20px;
-    border: none;
-    border-radius: 6px;
-    background: #007bff;
-    color: white;
-    cursor: pointer;
-  }
-
-  #btnVaciar {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 8px 15px;
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .circle-container {
-    position: relative;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    margin-bottom: 30px;
-  }
-
-  .circle-container img {
-    position: absolute;
-    width: 180px;
-    height: 180px;
-    border-radius: 10px;
-    object-fit: cover;
-    transition: transform 0.3s, z-index 0.3s;
-  }
-
-  .circle-container img:hover {
-    transform: scale(1.3);
-    z-index: 20;
-  }
-
-  .franja {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding: 10px;
-    width: 90%;
-    border-top: 2px solid #ccc;
-    scrollbar-width: thin;
-    scrollbar-color: #888 #f0f4f8;
-  }
-
-  .franja::-webkit-scrollbar {
-    height: 8px;
-  }
-  .franja::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-  }
-
-  .thumb-container {
-    position: relative;
-    display: inline-block;
-  }
-
-  .thumb-container img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: transform 0.2s;
-  }
-
-  .thumb-container img:hover {
-    transform: scale(1.1);
-    border: 2px solid #333;
-  }
-
-  .btnEliminar {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background: rgba(220,50,50,0.9);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 18px;
-    text-align: center;
-    padding: 0;
-  }
-
-  .btnEliminar:hover {
-    background: red;
-  }
-
-  #inputFiles {
-    display: none;
-  }
+body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:100vh;background:#f0f4f8;font-family:Arial,sans-serif;margin:0;padding:20px;position:relative}
+#btnSelect,#btnVaciar{padding:8px 15px;border:none;border-radius:6px;color:#fff;cursor:pointer}
+#btnSelect{margin-bottom:20px;background:#007bff}
+#btnVaciar{position:absolute;top:20px;right:20px;background:#dc3545}
+.circle-container{position:relative;width:600px;height:600px;border-radius:50%;margin-bottom:30px}
+.circle-container img{position:absolute;width:180px;height:180px;border-radius:10px;object-fit:cover;transition:transform .3s,z-index .3s}
+.circle-container img:hover{transform:scale(1.3);z-index:20}
+.franja{display:flex;overflow-x:auto;gap:10px;padding:10px;width:90%;border-top:2px solid #ccc;scrollbar-width:thin;scrollbar-color:#888 #f0f4f8}
+.franja::-webkit-scrollbar{height:8px}
+.franja::-webkit-scrollbar-thumb{background:#888;border-radius:4px}
+.thumb-container{position:relative;display:inline-block}
+.thumb-container img{width:100px;height:100px;object-fit:cover;border-radius:8px;cursor:pointer;flex-shrink:0;transition:transform .2s}
+.thumb-container img:hover{transform:scale(1.1);border:2px solid #333}
+.btnEliminar{position:absolute;top:2px;right:2px;background:rgba(220,50,50,.9);color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:14px;line-height:18px;text-align:center;padding:0}
+.btnEliminar:hover{background:red}
+#inputFiles{display:none}
 </style>
 </head>
 <body>
-
 <h2>Carrusel 2</h2>
-
 <button id="btnSelect">Select</button>
 <input type="file" id="inputFiles" multiple accept="image/*">
 <button id="btnVaciar">Vaciar Carrusel</button>
-
 <div class="circle-container" id="circle"></div>
 <div class="franja" id="franja"></div>
 
 <script>
-  const btnSelect = document.getElementById('btnSelect');
-  const inputFiles = document.getElementById('inputFiles');
-  const btnVaciar = document.getElementById('btnVaciar');
-  const container = document.getElementById('circle');
-  const franja = document.getElementById('franja');
+document.addEventListener("DOMContentLoaded",function(){(function(){
+  var a=[],r=0,s=.01,p=!1,l=0;
+  var btnS=document.getElementById("btnSelect"),btnV=document.getElementById("btnVaciar"),c=document.getElementById("circle"),f=document.getElementById("franja"),input=document.getElementById("inputFiles");
 
-  const images = [];
-  let rotation = 0;
-  let speed = 0.01;
-  let isPaused = false;
-  let lastCycle = 0;
-
-  btnSelect.addEventListener('click', () => inputFiles.click());
-
-  function organizarCirculo() {
-    const total = images.length;
-    const radius = 200;
-    images.forEach((img, i) => {
-      const angle = (i / total) * 2 * Math.PI + rotation;
-      const x = radius * Math.cos(angle) + container.offsetWidth / 2 - img.offsetWidth / 2;
-      const y = radius * Math.sin(angle) + container.offsetHeight / 2 - img.offsetHeight / 2;
-      img.style.left = `${x}px`;
-      img.style.top = `${y}px`;
-      const normalizedAngle = (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-      img.style.zIndex = Math.floor(Math.cos(normalizedAngle) * 10) + 10;
+  function o(img){ // organizar círculo
+    var t=a.length,u=200;
+    a.forEach(function(e,i){
+      var g=(i/t)*2*Math.PI+r,x=u*Math.cos(g)+c.offsetWidth/2-e.offsetWidth/2,y=u*Math.sin(g)+c.offsetHeight/2-e.offsetHeight/2;
+      e.style.left=x+"px";e.style.top=y+"px";
+      var n=(g%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
+      e.style.zIndex=Math.floor(Math.cos(n)*10)+10;
     });
   }
 
-  function agregarImagen(src) {
-    // Carrusel
-    const img = document.createElement('img');
-    img.src = src;
-    img.loading = "lazy";
-    img.addEventListener('mouseenter', () => isPaused = true);
-    img.addEventListener('mouseleave', () => isPaused = false);
+  function ag(src){ // agregar imagen
+    var i=document.createElement("img");
+    i.src=src;i.loading="lazy";
+    i.addEventListener("mouseenter",()=>p=!0);
+    i.addEventListener("mouseleave",()=>p=!1);
+    c.appendChild(i);a.push(i);o(i);
 
-    container.appendChild(img);
-    images.push(img);
-    organizarCirculo();
-
-    // Franja con botón eliminar
-    const thumbContainer = document.createElement('div');
-    thumbContainer.className = 'thumb-container';
-
-    const thumb = document.createElement('img');
-    thumb.src = src;
-    thumb.loading = "lazy";
-    thumb.addEventListener("click", () => {
-      const idx = images.findIndex(i => i.src === src);
-      if (idx >= 0) {
-        rotation = -(idx / images.length) * 2 * Math.PI;
-        organizarCirculo();
-      }
+    var tc=document.createElement("div");tc.className="thumb-container";
+    var t=document.createElement("img");t.src=src;t.loading="lazy";
+    t.addEventListener("click",()=>{
+      var idx=a.findIndex(x=>x.src===src);
+      if(idx>=0){r=-(idx/a.length)*2*Math.PI;o();}
     });
-
-    const btnEliminar = document.createElement('button');
-    btnEliminar.className = 'btnEliminar';
-    btnEliminar.textContent = '×';
-    btnEliminar.onclick = (e) => {
+    var be=document.createElement("button");be.className="btnEliminar";be.textContent="×";
+    be.onclick=function(e){
       e.stopPropagation();
-      const idx = images.findIndex(i => i.src === src);
-      if (idx >= 0) {
-        const imgToRemove = images.splice(idx, 1)[0];
-        container.removeChild(imgToRemove);
-      }
-      franja.removeChild(thumbContainer);
-      guardarEnLocalStorage();
+      var idx=a.findIndex(x=>x.src===src);
+      if(idx>=0){var rem=a.splice(idx,1)[0];c.removeChild(rem);}
+      f.removeChild(tc);
+      gu();
     };
-
-    thumbContainer.appendChild(thumb);
-    thumbContainer.appendChild(btnEliminar);
-    franja.appendChild(thumbContainer);
+    tc.appendChild(t);tc.appendChild(be);f.appendChild(tc);
   }
 
-  function guardarEnLocalStorage() {
-    const data = images.map(img => img.src);
-    localStorage.setItem("carruselImgs", JSON.stringify(data));
+  function gu(){ // guardar en local
+    localStorage.setItem("carruselImgs",JSON.stringify(a.map(e=>e.src)));
   }
 
-  function cargarDesdeLocalStorage() {
-    const data = localStorage.getItem("carruselImgs");
-    if (data) JSON.parse(data).forEach(src => agregarImagen(src));
+  function cd(){ // cargar desde local
+    var d=localStorage.getItem("carruselImgs");
+    if(d)JSON.parse(d).forEach(e=>ag(e));
   }
 
-  function vaciarCarrusel() {
-    container.innerHTML = "";
-    franja.innerHTML = "";
-    images.length = 0;
-    localStorage.removeItem("carruselImgs");
-    rotation = 0;
-    speed = 0.01;
+  function vc(){ // vaciar carrusel
+    c.innerHTML="";f.innerHTML="";a.length=0;localStorage.removeItem("carruselImgs");r=0;s=.01;
   }
 
-  inputFiles.addEventListener('change', (e) => {
-    for (let file of e.target.files) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        agregarImagen(reader.result);
-        guardarEnLocalStorage();
-      }
-      reader.readAsDataURL(file);
+  btnS.addEventListener("click",()=>input.click());
+  input.addEventListener("change",e=>{
+    for(let file of e.target.files){
+      let fr=new FileReader();
+      fr.onload=()=>{ag(fr.result);gu();};
+      fr.readAsDataURL(file);
     }
   });
+  btnV.addEventListener("click",vc);
 
-  btnVaciar.addEventListener("click", vaciarCarrusel);
+  c.addEventListener("wheel",e=>{e.preventDefault();s+=e.deltaY*-5e-4});
 
-  container.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    speed += e.deltaY * -0.0005;
-  });
-
-  function animar() {
-    if (!isPaused) {
-      rotation += speed;
-      const cycles = Math.floor(rotation / (2 * Math.PI));
-      if (cycles > lastCycle) {
-        lastCycle = cycles;
-        if (images.length > 1) {
-          const first = images.shift();
-          images.push(first);
-        }
-      }
-    }
-    organizarCirculo();
-    requestAnimationFrame(animar);
-  }
-  animar();
-  window.addEventListener("load", cargarDesdeLocalStorage);
+  function anim(){if(!p){r+=s;var cycles=Math.floor(r/(2*Math.PI));if(cycles>l){l=cycles;if(a.length>1){var f1=a.shift();a.push(f1);}}}o();requestAnimationFrame(anim);}
+  anim();
+  window.addEventListener("load",cd);
+})();
+});
 </script>
-
 </body>
 </html>
