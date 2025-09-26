@@ -1,18 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Ropa Virtual 18 Usuarios</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>index Ropa Virtual)</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f0f4f8;text-align:center;padding:50px}
-h1,h2,h3{color:#333}
-.form-container{background:#fff;padding:25px;margin:20px auto;border-radius:12px;max-width:350px;box-shadow:0 5px 15px rgba(0,0,0,.2)}
+body{font-family:Arial,Helvetica,sans-serif;background:#f0f4f8;text-align:center;padding:50px}
+h1{color:#333}
+.form-container{background:#fff;padding:25px;margin:20px auto;border-radius:12px;max-width:350px;box-shadow:0 5px 15px rgba(0,0,0,0.2)}
 input{width:90%;padding:10px;margin:10px 0;border-radius:6px;border:1px solid #ccc;font-size:16px}
-button{padding:10px 25px;margin:10px 5px;border:none;border-radius:6px;background:#007bff;color:#fff;font-size:16px;cursor:pointer;transition:.3s}
-button:hover{background:#0056b3}
-.message{margin:10px 0;font-weight:bold}
-.message.error{color:red}
-.message.success{color:green}
+button{padding:10px 25px;margin:10px 5px;border:none;border-radius:6px;background:#007bff;color:#fff;font-size:16px;cursor:pointer}
+.message{margin:10px 0;font-weight:700}
+.message.error{color:#c62828}
+.message.success{color:#2e7d32}
 </style>
 </head>
 <body>
@@ -20,19 +20,56 @@ button:hover{background:#0056b3}
 <div class="form-container" id="login-container">
 <input type="text" id="username" placeholder="Usuario"><br>
 <input type="password" id="password" placeholder="Clave"><br>
-<button onclick="a1()">Probador</button>
-<button onclick="b2()">Carrusel</button>
+<button id="btnProbador">Probador</button>
+<button id="btnCarrusel">Carrusel</button>
 <p id="message" class="message"></p>
 <hr style="margin:30px 0;">
 <p>Para registrarse por WhatsApp: <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a></p>
 </div>
+
+
 <script>
 (function(){
-var c=["cm9wYQ==:MTIzNA==","bWFyaWE=:YWJjZA==","cGVwZQ==:cGFzczEyMw=="];
-function d(s){return atob(s)}
-function a1(){var u=document.getElementById("username").value.trim(),p=document.getElementById("password").value.trim(),m=document.getElementById("message");var f=c.find(function(x){var y=x.split(":");return d(y[0])===u&&d(y[1])===p});if(f){window.location.href="probador_22_3_gen_con_memo_github.html"}else{m.textContent="Usuario o clave incorrecta ❌";m.className="message error"}} 
-function b2(){window.location.href="carrusel_2_franja_inferior.html"}
+var _U=[
+{u:'kpshf',p:'2345'},
+{u:'nbsjb',p:'bcde'},
+{u:'qfqf',p:'qbtt234'}
+];
+var _D=['username','password','message'];
+function _d(s){
+var r='';
+for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);r+=String.fromCharCode(c-1);}return r;
+}
+function _load(){
+var out=[];
+for(var i=0;i<_U.length;i++){out.push({u:_d(_U[i].u),p:_d(_U[i].p)});}return out;
+}
+var _users=_load();
+
+
+function _go(url){location.href=url}
+
+
+function _login(){
+var name=document.getElementById(_D[0]).value.trim();
+var pass=document.getElementById(_D[1]).value.trim();
+var msg=document.getElementById(_D[2]);
+var found=false;
+for(var i=0;i<_users.length;i++){if(_users[i].u===name&&_users[i].p===pass){found=true;break;}}
+if(found){_go('mi_proyecto/probador_22_3_gen_con_memo_github.html');return}
+msg.textContent='Usuario o clave incorrecta ❌';msg.className='message error';
+}
+
+
+function _carr(){_go('mi_proyecto/carrusel_2_franja_inferior.html')}
+
+
+document.getElementById('btnProbador').addEventListener('click',_login);
+document.getElementById('btnCarrusel').addEventListener('click',_carr);
+document.getElementById('password').addEventListener('keyup',function(e){if(e.key==='Enter')_login();});
 })();
 </script>
+
+
 </body>
 </html>
