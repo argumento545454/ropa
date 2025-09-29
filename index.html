@@ -2,60 +2,110 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Ropa Virtual 18 Usuarios</title>
+<title>index Ropa Virtual 18 Usuarios</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f0f4f8;text-align:center;padding:50px}
-h1,h2,h3{color:#333}
-.form-container{background:#fff;padding:25px;margin:20px auto;border-radius:12px;max-width:350px;box-shadow:0 5px 15px rgba(0,0,0,.2)}
-input{width:90%;padding:10px;margin:10px 0;border-radius:6px;border:1px solid #ccc;font-size:16px}
-button{padding:10px 25px;margin:10px 5px;border:none;border-radius:6px;background:#007bff;color:#fff;font-size:16px;cursor:pointer;transition:.3s}
-button:hover{background:#0056b3}
-.message{margin:10px 0;font-weight:bold}
-.message.error{color:red}
-.message.success{color:green}
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f4f8;
+    text-align: center;
+    padding: 50px;
+  }
+  h1, h2, h3 { color: #333; }
+  .form-container {
+    background: #fff;
+    padding: 25px;
+    margin: 20px auto;
+    border-radius: 12px;
+    max-width: 350px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  button {
+    padding: 10px 25px;
+    margin: 10px 5px;
+    border: none;
+    border-radius: 6px;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover { background: #0056b3; }
+  .message { margin: 10px 0; font-weight: bold; }
+  .message.error { color: red; }
+  .message.success { color: green; }
 </style>
 </head>
 <body>
+
 <h1>Bienvenido a Ropa Virtual</h1>
+
 <div class="form-container" id="login-container">
-<input type="text" id="username" placeholder="Usuario"><br>
-<input type="password" id="password" placeholder="Clave"><br>
-<button id="btnProbador">Probador</button>
-<button id="btnCarrusel">Carrusel</button>
-<p id="message" class="message"></p>
-<hr style="margin:30px 0;">
-<p>Para registrarse por WhatsApp: <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a></p>
+  <!--<h2>Ingreso de Usuarios</h2>-->
+  <input type="text" id="username" placeholder="Usuario"><br>
+  <input type="password" id="password" placeholder="Clave"><br>
+  <button onClick="login()">Probador</button>
+  <!--<button onClick="demo1()">Demo</button>-->
+  <button onClick="carrusel()">Carrusel</button>
+  <p id="message" class="message"></p>
+
+  <hr style="margin:30px 0;">
+  <p>Para registrarse por WhatsApp: 
+    <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a>
+  </p>
 </div>
+
 <script>
-document.addEventListener("DOMContentLoaded", function(){
-  (function(){
-    var c=["cm9wYQ==:MTIzNA==","bWFyaWE=:YWJjZA==","cGVwZQ==:cGFzczEyMw=="];
-    function d(s){return atob(s)}
+  const usuarios = [
+    { u: "ropa", p: "1234" },
+    { u: "maria", p: "abcd" },
+    { u: "pepe", p: "pass123" }
+  ];
 
-    function loginFunc(){
-      var u=document.getElementById("username").value.trim(),
-          p=document.getElementById("password").value.trim(),
-          m=document.getElementById("message"),
-          f=c.find(function(x){var y=x.split(":");return d(y[0])===u&&d(y[1])===p});
-      if(f){
-        window.location.href="probador_22_3_gen_con_memo_github.html";
-      } else {
-        m.textContent="Usuario o clave incorrecta ❌";
-        m.className="message error";
-      }
+  function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const message = document.getElementById("message");
+
+    const user = usuarios.find(u => u.u === username && u.p === password);
+
+    if (user) {
+      window.location.href = "mi_proyecto/probador_22_3_gen_con_memo_github.html";
+    } else {
+      message.textContent = "Usuario o clave incorrecta ❌";
+      message.className = "message error";
     }
+  }
 
-    function carruselFunc(){
-      /* window.location.href="carrusel_2_franja_inferior.html"; */
-      window.location.href="carrusel_7_rueda_franja_ver_ocultar.html";
-    }
+  function demo1() {
+    window.location.href = "probador_22_gen_con_memo_github.html";
+  }
 
-    // Asignar eventos después de que el DOM esté cargado
-    document.getElementById("btnProbador").addEventListener("click", loginFunc);
-    document.getElementById("btnCarrusel").addEventListener("click", carruselFunc);
-  })();
-});
+  function carrusel() {
+    window.location.href = "mi_proyecto/carrusel_2_rueda_franja_input.html";
+  }
+/*
+  function carrusel() {
+    window.location.href = "mi_proyecto/carrusel_7_rueda_franja_URLs.html";
+  }
+*/
+
 </script>
+
 </body>
 </html>
+
+
+
+
+
+
 
