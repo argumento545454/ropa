@@ -29,7 +29,7 @@
 
   #btnDemo { background: #28a745; }
   #btnSelect { background: #007bff; }
-  #btnVaciar { background: #dc3545; position: absolute; top: 20px; right: 20px; }
+/*  #btnVaciar { background: #dc3545; position: absolute; top: 20px; right: 20px; } */
 
   .circle-container {
     position: relative;
@@ -85,8 +85,8 @@
 <h2>Carrusel 8</h2>
 
 <div id="menuInicial">
-  <button id="btnDemo">DEMO</button>
   <button id="btnSelect">SELECT</button>
+  <button id="btnDemo">DEMO</button>
 </div>
 
 <input type="file" id="inputFiles" multiple accept="image/*">
@@ -160,7 +160,7 @@ function agregarImagen(src, id=null) {
   });
   const btnEliminar = document.createElement('button');
   btnEliminar.className='btnEliminar';
-  btnEliminar.textContent='×';
+  btnEliminar.textContent='ï¿½';
   btnEliminar.onclick=(e)=>{
     e.stopPropagation();
     const idx = images.findIndex(i=>i.dataset.id==id);
@@ -188,7 +188,7 @@ function eliminarImagenDB(id) {
   transaction.objectStore("imagenes").delete(id);
 }
 
-// --- Animación ---
+// --- Animaciï¿½n ---
 container.addEventListener('wheel', e=>{ e.preventDefault(); speed += e.deltaY*-0.0005; });
 function animar() {
   if(!isPaused){
@@ -237,7 +237,7 @@ btnVaciar.addEventListener('click', ()=>{
 // --- Cargar URLs externas ---
 function cargarURLs() {
   const urls = [
-    {titulo:"5 electrodomésticos",src:"https://www.kissu.com.ec/imagenes//subcategorias/1659549117.jpg"},
+    {titulo:"5 electrodomï¿½sticos",src:"https://www.kissu.com.ec/imagenes//subcategorias/1659549117.jpg"},
     {titulo:"6 cocina",src:"https://www.kissu.com.ec/imagenes//productos/sm/17081008480.jpg"},
     {titulo:"7 tanque",src:"https://www.kissu.com.ec/imagenes//productos/sm/16789070110.jpg"},
     {titulo:"8 valvula gas",src:"https://www.kissu.com.ec/imagenes//productos/sm/17477744290.jpg"}
