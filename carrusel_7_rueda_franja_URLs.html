@@ -2,111 +2,214 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>index Ropa Virtual 18 Usuarios</title>
+<title>carrusel_7_rueda_franja_URLs</title>
 <style>
   body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    background: #f0f4f8;
     font-family: Arial, sans-serif;
-    background: khaki;
-    text-align: center;
-    padding: 50px;
+    margin: 0;
+    padding: 20px;
   }
-  h1, h2, h3 { color: #333; }
-  .form-container {
-    background: #fff;
-    padding: 25px;
-    margin: 20px auto;
-    border-radius: 12px;
-    max-width: 350px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+  .circle-container {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    margin-bottom: 20px;
   }
-  input {
+
+  .circle-container img {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 10px;
+    object-fit: cover;
+    transition: transform 0.3s, z-index 0.3s;
+  }
+
+  .circle-container img:hover {
+    transform: scale(1.3);
+    z-index: 20;
+  }
+
+  .franja-container {
+    position: relative;
     width: 90%;
+    max-width: 1950px;
+    margin-bottom: 20px;
+  }
+
+  .franja {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
     padding: 10px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 16px;
+    border-top: 2px solid #ccc;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f0f4f8;
+    transition: max-height 0.3s, opacity 0.3s;
   }
-  button {
-    padding: 10px 25px;
-    margin: 10px 5px;
-    border: none;
-    border-radius: 6px;
-    background: #007bff;
-    color: white;
-    font-size: 16px;
+
+  .franja.hidden {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .franja::-webkit-scrollbar {
+    height: 8px;
+  }
+  .franja::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  .thumb-container {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .thumb-container img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s;
+    flex-shrink: 0;
+    transition: transform 0.2s;
   }
-  button:hover { background: #0056b3; }
-  .message { margin: 10px 0; font-weight: bold; }
-  .message.error { color: red; }
-  .message.success { color: green; }
+
+  .thumb-container img:hover {
+    transform: scale(1.1);
+    border: 2px solid #333;
+  }
+
+  #toggleFranja {
+    position: absolute;
+    left: 10px;
+    top: -40px;
+    padding: 6px 14px;
+    border: none;
+    background: white;
+    color: black;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 6px;
+    z-index: 100;
+  }
+
+  #toggleFranja:hover {
+    background: #005fa3;
+  }
 </style>
 </head>
 <body>
 
-<h1>Bienvenido a Vitrina Virtual</h1>
+<h2>Almac&eacuten "Carrusel_7"</h2>
+<div class="circle-container" id="circle"></div>
 
-<div class="form-container" id="login-container">
-
-  <!--<h2>Ingreso de Usuarios</h2>-->
-  <input type="text" id="username" placeholder="Usuario"><br>
-  <input type="password" id="password" placeholder="Clave"><br>
-  <button onClick="login()">Probador</button>
-
-  <!--<button onClick="demo1()">Demo</button>-->
-  <button onClick="carrusel()">Carrusel</button>
-  <p id="message" class="message"></p>
-
-  <hr style="margin:30px 0;">
-  <p>Register por WhatsApp: 
-    <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a>
-  </p>
+<div class="franja-container">
+  <button id="toggleFranja">Ocultar franja</button>
+  <div class="franja" id="franja"></div>
 </div>
 
 <script>
-  const usuarios = [
-    { u: "ropa", p: "1234" },
-    { u: "maria", p: "abcd" },
-    { u: "pepe", p: "pass123" }
-  ];
+  const container = document.getElementById('circle');
+  const franja = document.getElementById('franja');
+  const toggleButton = document.getElementById('toggleFranja');
 
-  function login() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const message = document.getElementById("message");
+  const images = [];
+  let rotation = 0;
+  let speed = 0.01;
+  let isPaused = false;
 
-    const user = usuarios.find(u => u.u === username && u.p === password);
-
-    if (user) {
-      window.location.href = "mi_proyecto/probador_22_3_gen_con_memo_github.html";
-    } else {
-      message.textContent = "Usuario o clave incorrecta ❌";
-      message.className = "message error";
-    }
+  function organizarCirculo() {
+    const total = images.length;
+    const radius = 200;
+    images.forEach((img, i) => {
+      const angle = (i / total) * 2 * Math.PI + rotation;
+      const x = radius * Math.cos(angle) + container.offsetWidth / 2 - img.offsetWidth / 2;
+      const y = radius * Math.sin(angle) + container.offsetHeight / 2 - img.offsetHeight / 2;
+      img.style.left = `${x}px`;
+      img.style.top = `${y}px`;
+      const normalizedAngle = (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      img.style.zIndex = Math.floor(Math.cos(normalizedAngle) * 10) + 10;
+    });
   }
 
-  function demo1() {
-    window.location.href = "probador_22_gen_con_memo_github.html";
-  }
-/*
-  function carrusel() {
-    window.location.href = "mi_proyecto/carrusel_2_rueda_franja_input.html";
-  }
-*/
-  function carrusel() {
-    window.location.href = "mi_proyecto/carrusel_7_rueda_franja_URLs.html";
+  function agregarImagen(src, titulo) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.loading = "lazy";
+    img.addEventListener('mouseenter', () => isPaused = true);
+    img.addEventListener('mouseleave', () => isPaused = false);
+
+    container.appendChild(img);
+    images.push(img);
+    organizarCirculo();
+
+    const thumbContainer = document.createElement('div');
+    thumbContainer.className = 'thumb-container';
+
+    const thumb = document.createElement('img');
+    thumb.src = src;
+    thumb.loading = "lazy";
+    thumb.addEventListener("click", () => {
+      const idx = images.findIndex(i => i.src === src);
+      if (idx >= 0) {
+        rotation = -(idx / images.length) * 2 * Math.PI;
+        organizarCirculo();
+      }
+    });
+
+    const label = document.createElement('div');
+    label.textContent = titulo;
+
+    thumbContainer.appendChild(thumb);
+    thumbContainer.appendChild(label);
+    franja.appendChild(thumbContainer);
   }
 
-/*
-  function carrusel() {
-    window.location.href = "mi_proyecto/carrusel_8_rueda_input_URLs.html";
+  function cargarURLs() {
+    const urls = [
+      {titulo: "5 electrodom�sticos", src: "https://www.kissu.com.ec/imagenes//subcategorias/1659549117.jpg"},
+      {titulo: "6 cocina", src: "https://www.kissu.com.ec/imagenes//productos/sm/17081008480.jpg"},
+      {titulo: "7 tanque", src: "https://www.kissu.com.ec/imagenes//productos/sm/16789070110.jpg"},
+      {titulo: "8 valvula gas", src: "https://www.kissu.com.ec/imagenes//productos/sm/17477744290.jpg"}
+    ];
+    urls.forEach(item => agregarImagen(item.src, item.titulo));
   }
-*/
 
+
+
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    speed += e.deltaY * -0.0005;
+  });
+
+  toggleButton.addEventListener('click', () => {
+    franja.classList.toggle('hidden');
+    toggleButton.textContent = franja.classList.contains('hidden') ? "Mostrar franja inferior" : "Ocultar franja inferior";
+  });
+
+  function animar() {
+    if (!isPaused) rotation += speed;
+    organizarCirculo();
+    requestAnimationFrame(animar);
+  }
+
+  animar();
+  window.addEventListener("load", cargarURLs);
 </script>
 
 </body>
 </html>
-
