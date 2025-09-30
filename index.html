@@ -6,7 +6,7 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    background: #f0f4f8;
+    background: khaki;
     text-align: center;
     padding: 50px;
   }
@@ -46,19 +46,21 @@
 </head>
 <body>
 
-<h1>Bienvenido a Ropa Virtual</h1>
+<h1>Bienvenido a Vitrina Virtual</h1>
 
 <div class="form-container" id="login-container">
+
   <!--<h2>Ingreso de Usuarios</h2>-->
   <input type="text" id="username" placeholder="Usuario"><br>
   <input type="password" id="password" placeholder="Clave"><br>
   <button onClick="login()">Probador</button>
+
   <!--<button onClick="demo1()">Demo</button>-->
   <button onClick="carrusel()">Carrusel</button>
   <p id="message" class="message"></p>
 
   <hr style="margin:30px 0;">
-  <p>Para registrarse por WhatsApp: 
+  <p>Register por WhatsApp: 
     <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a>
   </p>
 </div>
@@ -78,7 +80,7 @@
     const user = usuarios.find(u => u.u === username && u.p === password);
 
     if (user) {
-      window.location.href = "probador_22_3_gen_con_memo_github.html";
+      window.location.href = "mi_proyecto/probador_22_3_gen_con_memo_github.html";
     } else {
       message.textContent = "Usuario o clave incorrecta ❌";
       message.className = "message error";
@@ -90,24 +92,23 @@
   }
 /*
   function carrusel() {
-    window.location.href = "carrusel_2_rueda_franja_input.html";
+    window.location.href = "mi_proyecto/carrusel_2_rueda_franja_input.html";
   }
 
   function carrusel() {
-    window.location.href = "carrusel_7_rueda_franja_URLs.html";
+    window.location.href = "mi_proyecto/carrusel_7_rueda_franja_URLs.html";
   }
 */
- function carrusel() {
-    window.location.href = "carrusel_8_rueda_input_URLs.html";
+
+  function carrusel() {
+    window.location.href = "mi_proyecto/carrusel_8_rueda_input_URLs.html";
   }
-  
+
+
 </script>
 
 </body>
 </html>
-
-
-
 
 
 
