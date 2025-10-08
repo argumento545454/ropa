@@ -2,115 +2,112 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>index Ropa Virtual 18 Usuarios</title>
+<title>index Logo VV Vitrinas Virtuales</title>
+
+<!-- ir a otra page luego de 3 segundos -->
+<meta http-equiv="refresh" content="3;URL='mi_proyecto/bienvenido_ropa.html'">
+
 <style>
+/*logo CSS */
   body {
-    font-family: Arial, sans-serif;
-    background: khaki;
-    text-align: center;
-    padding: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    background: khaki;  /*fondo de la page*/
+    font-family: 'Arial Black', sans-serif;
   }
-  h1, h2, h3 { color: #333; }
-  .form-container {
-    background: #fff;
-    padding: 25px;
-    margin: 20px auto;
-    border-radius: 12px;
-    max-width: 350px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  }
-  input {
-    width: 90%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
-  button {
-    padding: 10px 25px;
-    margin: 10px 5px;
-    border: none;
-    border-radius: 6px;
-    background: #007bff;
-    color: white;
-    font-size: 16px;
+
+  .logo {
+    position: relative;
+    font-size: 120px;
+    color: blue;  /*letras logo en page */
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.3s ease, color 0.3s ease;
   }
-  button:hover { background: #0056b3; }
-  .message { margin: 10px 0; font-weight: bold; }
-  .message.error { color: red; }
-  .message.success { color: green; }
+
+  .logo:hover {
+    transform: rotate(-5deg) scale(1.1);
+    color: #0078ff;
+  }
+
+  .subtitulo {
+    position: absolute;
+    bottom: -50px;
+    width: 100%;
+    text-align: center;
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    color: blue;  /*subtitulo letrs*/
+    letter-spacing: 2px;
+  }
+
+  /* Opcional: efecto de brillo animado */
+  .logo::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(120deg, khaki, rgba(255,255,255,0)); /*cuadro dentro de body*/
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+
+  .logo:hover::after {
+    transform: translateX(100%);
+  }
 </style>
-</head>
-<body>
-
-<h1>Bienvenido a Vitrina Virtual</h1>
-
-<div class="form-container" id="login-container">
-
-  <!--<h2>Ingreso de Usuarios</h2>-->
-  <input type="text" id="username" placeholder="Usuario"><br>
-  <input type="password" id="password" placeholder="Clave"><br>
-  <button onClick="login()">Probador</button>
-
-  <!--<button onClick="demo1()">Demo</button>-->
-  <button onClick="carrusel()">Carrusel</button>
-  <p id="message" class="message"></p>
-
-  <hr style="margin:30px 0;">
-  <p>Register por WhatsApp: 
-    <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a>
-  </p>
-</div>
 
 <script>
-  const usuarios = [
-    { u: "ropa", p: "1234" },
-    { u: "maria", p: "abcd" },
-    { u: "pepe", p: "pass123" }
-  ];
+//logo crear JS
+function crearFavicon() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
 
-  function login() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const message = document.getElementById("message");
+  // Fondo color pesta�a
+  ctx.fillStyle = 'khaki'; /*pesta�a fondo color  */
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const user = usuarios.find(u => u.u === username && u.p === password);
+  // Texto VV
+  ctx.fillStyle = 'blue';  /*pesta�a letras color  */
+  ctx.font = 'bold 40px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('VV', canvas.width/2, canvas.height/2);
 
-    if (user) {
-      window.location.href = "probador_22_3_gen_con_memo_github.html";
-    } else {
-      message.textContent = "Usuario o clave incorrecta ❌";
-      message.className = "message error";
-    }
-  }
+  // Crear favicon
+  const link = document.createElement('link');
+  link.rel = 'icon';
+  link.href = canvas.toDataURL('image/png');
+  document.head.appendChild(link);
+}
 
+// Ejecutar
+crearFavicon();
+</script>
+
+</head>
+
+
+<body>
+<div class="logo">
+  VV
+  <div class="subtitulo">Vitrinas Virtuales</div>
+</div>
+<!--
+<div class="form-container" id="login-container">
+  <button onClick="carrusel()">Bienvenido</button>
+  <p id="message" class="message"></p>
+</div>
+-->
+
+<script>
   function carrusel() {
-    window.location.href = "carrusel_7_rueda_franja_URLs.html";
+    window.location.href = "mi_proyecto/bienvenido_ropa.html";
   }
-
-/*
-  function carrusel() {
-    window.location.href = "carrusel_8_rueda_input_URLs.html";
-  }
-*/
-
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
