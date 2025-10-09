@@ -784,15 +784,18 @@ inputFotoCelular.addEventListener("change", (e) => {
 
 
 <!--fotoCliente a localStorage--> 
+<script>
 window.addEventListener("load", () => {
   const fotoGuardada = localStorage.getItem("fotoCliente");
   if (fotoGuardada) {
     document.getElementById("fotoCliente").src = fotoGuardada;
   }
-});  
+});
+</script> 
 </body>
 
 </html>
+
 
 
 
