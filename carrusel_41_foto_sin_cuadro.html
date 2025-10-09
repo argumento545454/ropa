@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>carrusel_41_foto_sin_cuadro</title>
+<style>
+main { position: relative; flex:1; display:flex; flex-direction:column; align-items:center; padding:20px; }
+#franja { display:flex; overflow-x:auto; gap:10px; padding:90px; width:90%; border-top:2px solid #ccc; display:none; }
+#btnToggleFranja { position:absolute; bottom:50px; left:100px; padding:10px 20px; background:khaki; color:black; border:none; border-radius:6px; font-size:16px; cursor:pointer; z-index:3000; box-shadow:0 2px 6px rgba(0,0,0,0.3);}
+body { display:flex; min-height:100vh; background:khaki; font-family:Arial,sans-serif; margin:0; padding:0; }
+#menuInicial { display:flex; flex-direction:column; gap:10px; padding:20px; width:240px; background:#fff; border-right:2px solid #ccc; height:100vh; box-sizing:border-box; overflow-y:auto; }
+#menuInicial button { padding:10px 15px; border:none; border-radius:6px; background:white; font-size:20px; cursor:pointer; text-align:left; transition:0.2s; }
+#menuInicial button:hover { background:lightblue; }
+#menuInicial button.activo { background:lightblue; font-weight:bold; }
+h2 { margin-bottom:20px; }
+.circle-container { position:relative; width:600px; height:600px; border-radius:50%; margin-bottom:30px; display:block; }
+.circle-container img { position:absolute; width:180px; height:180px; border-radius:10px; object-fit:cover; transition: transform 0.3s, z-index 0.3s; cursor:pointer; }
+.circle-container img:hover { transform:scale(3.3); z-index:2000; }
+.thumb-container { position:relative; display:inline-block; }
+.thumb-container img { width:100px; height:100px; object-fit:cover; border-radius:8px; transition: transform 0.2s; cursor:pointer;}
+.thumb-container img:hover { transform:scale(1.1); border:2px solid #333; }
+.btnEliminar { position:absolute; top:80px; right:2px; background:gray; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:14px; line-height:18px; text-align:center; padding:0; }
+.btnEliminar:hover { background:red; }
+</style>
+
+
+<style>
+/* FOTO cliente Contenedor para la foto y botón */
+#fotoClienteContainer {
+  display: flex;
+  flex-direction: column; /* Apilar verticalmente */
+  align-items: center;    /* Centrar horizontalmente */
+  margin-top: 20px;
+  margin-bottom: 20px;
+  perspective: 800px; /* agrega perspectiva para rotación 3D */
+}
+
+
+/* Foto cliente en círculo y rotacion infinita */
+#fotoCliente {
+  width: 160px;
+  height: 180px;
+  border-radius: 0%;     /* <-- Esto hace el círculo */
+  object-fit: cover;
+  border: 0px solid #555;
+  transition: transform 0.2s ease; /* suaviza la rotación */
+  margin-bottom: 10px;  /* <-- margen de top */
+  /*cursor: pointer; */
+  /*animation: rotarFoto 5s linear infinite;*/ /* rotación continua */
+}
+
+/*foto cliente rotacion infinita */
+@keyframes rotarFoto {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/*foto cliente se agranda*/
+#fotoCliente:hover { transform:scale(2.3); z-index:2000; }  
+
+/* foto cliente Botón subir foto */
+#btnSubirfoto {
+  position: absolute;   /* se posiciona relativo al contenedor */
+  bottom: 1200px;         /* 10px desde la parte inferior de la foto */
+  left: 80%;            /* centrado horizontal */
+  transform: translateX(-50%); /* ajustar centro exacto */
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  background: khaki;
+  border: 1px solid #555;
+  border-radius: 6px;
+}
+
+
+/* Botón subir foto */
+/*
+#btnSubirfoto {
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+*/
+
+</style>
+
+<script>
+//logo crear JS
+function crearFavicon() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+
+  // Fondo color pesta�a
+  ctx.fillStyle = 'khaki'; /*pesta�a fondo color  */
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Texto VV
+  ctx.fillStyle = 'blue';  /*pesta�a letras color  */
+  ctx.font = 'bold 40px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('VV', canvas.width/2, canvas.height/2);
+
+  // Crear favicon
+  const link = document.createElement('link');
+  link.rel = 'icon';
+  link.href = canvas.toDataURL('image/png');
+  document.head.appendChild(link);
+}
+
+// Ejecutar
+crearFavicon();
+</script>
+
+
+</head>
+<body>
+
+<div id="menuInicial">   <!--columna izquierda -->
+Categorias
+  <button id="btnSombreros">Sombreros Mujer</button>
+  <button id="btnBlusas">Blusas</button>
+  <button id="btnPantaMujer">Pantalones Mujer</button>
+  <button id="btnZapatos">Zapatos</button>
+  <button id="btnVestidos">Vestidos</button>
+  <button id="btnFaldas">Faldas</button>
+  <button id="btnChompas">Chompas</button>
+  <button id="btnCamisas">Camisas</button>
+  <button id="btnRopa">Ropa</button>
+  <button id="btnElectro">Electrodom&eacute;sticos</button>
+  <button id="btnCarros">Carros</button>
+  <button id="btnMotos">Motos</button>
+  <button id="btnBicicletas">Bicicletas</button>
+  <button id="btnCelulares">Celulares</button>
+  <!--<button id="btnFerreteria">Ferreter&iacute;as</button> -->
+  <!--<button id="btnRepuestos">Repuestos</button> -->
+
+Voz/Clic Comandos 
+  <button id="btnToggleFranjaMenu">Franja (Ocultar/Mostrar) </button>  
+  <button id=""> 0/1 Col. izq. (Ocultar/Mostrar) </button>
+  <button id="">F11 Pantalla </button>
+
+input img 
+<button id="btnSubirImagen">Subir img</button>  <!--Sube Imagenes en orden deseado -->
+<!--button tapa boton "elegir archivos" de input y en su lugar aparece "Subir img" -->
+<input type="file" id="inputImagenes" accept="image/*" multiple style="display:none">
+
+  <button id="btnCarruselToggle">Carrusel Vaciar/Recuperar</button>
+  <button id="btnFranjaToggle">Franja Vaciar/Recuperar</button>
+</div>
+
+
+
+<main>
+  <h2>Centro Comercial 41 "Vitrinas Virtuales"</h2>
+
+<!-- Contenedor título y foto 
+<center>-->
+  <!-- Foto del cliente -->
+  <img id="fotoCliente" src="imagenes/cliente_default.jpg" alt="Foto .... cliente .." width="200" height="200">
+
+  <!-- Botón para subir foto -->
+  <!--button tapa boton "elegir archivos" de input y en su lugar aparece "Subir foto" -->
+  <button id="btnSubirfoto">Subir foto</button>
+  <input type="file" id="inputFoto" accept="image/*" style="display:none">
+<!--</center> -->
+
+  <div class="circle-container" id="circle"></div>
+  <div class="franja" id="franja"></div>
+</main>
+
+
+<script>
+foto cliente rotar
+</script>
+
+
+<script>
+//foto cliente
+  const btnSubirfoto = document.getElementById("btnSubirfoto");
+  const inputFoto = document.getElementById("inputFoto");
+  const fotoCliente = document.getElementById("fotoCliente");
+
+  // Abrir selector de archivos
+  btnSubirfoto.addEventListener("click", () => inputFoto.click());
+
+  // Actualizar imagen al seleccionar archivo
+  inputFoto.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = (evt) => fotoCliente.src = evt.target.result;
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+
+
+
+
+<script>
+// === Variables Globales ===
+const container = document.getElementById('circle');
+const franja = document.getElementById('franja');
+const menuInicial = document.getElementById('menuInicial');
+
+let images = [], rotation = 0, speed = 0.01, isPaused = false, nextId = 1;
+
+
+// variable para imágenes locales de Categorias: Blusas - Electro - Zapatos - Carros
+let imagenesLocalesBlusas = [];
+let imagenesLocalesElectro = [];
+let imagenesLocalesCarros = [];
+
+
+// --- carrusel - franja - Variables para guardar Backup por categoría ---
+let backupCarrusel = [];
+let backupFranja = [];
+
+
+// --- carrusel y franja - Funciones auxiliares para generar  ---
+function generarCarrusel(urls) {
+  container.innerHTML = '';
+  images = [];
+  urls.forEach(src => agregarImagenCarrusel(src)); // función que agrega solo al carrusel
+}
+
+function generarFranja(urls) {
+  franja.innerHTML = '';
+  urls.forEach(src => {
+    const thumbContainer = document.createElement('div');
+    thumbContainer.className = 'thumb-container';
+
+    const thumb = document.createElement('img');
+    thumb.src = src;
+
+    const btnEliminar = document.createElement('button');
+    btnEliminar.className = 'btnEliminar';
+    btnEliminar.textContent = '×';
+    btnEliminar.onclick = e => { 
+      e.stopPropagation(); 
+      franja.removeChild(thumbContainer); 
+    };
+
+    thumbContainer.appendChild(thumb);
+    thumbContainer.appendChild(btnEliminar);
+    franja.appendChild(thumbContainer);
+
+    // Clic en miniatura actualiza la imagen del carrusel correspondiente
+    thumb.onclick = () => {
+      const imgEnCarrusel = images.find(i => i.src === src);
+      if (imgEnCarrusel) imgEnCarrusel.src = src;
+    };
+  });
+}
+
+
+
+// --- Función que agrega imagen solo al carrusel, sin tocar la franja ---
+function agregarImagenCarrusel(src){
+  const img = document.createElement('img');
+  img.src = src;
+  img.dataset.id = nextId++;
+  img.loading = "lazy";
+  img.addEventListener('mouseenter', ()=>isPaused=true);
+  img.addEventListener('mouseleave', ()=>isPaused=false);
+  container.appendChild(img);
+  images.push(img);
+  organizarCirculo();
+}
+
+
+
+// --- Botón Vaciar/Recuperar Carrusel ---
+document.getElementById('btnCarruselToggle').addEventListener('click', () => {
+  if (images.length > 0) {
+    // Guardar backup solo si aún no existe
+    if (backupCarrusel.length === 0) backupCarrusel = images.map(img => img.src);
+    container.innerHTML = '';
+    images = [];
+  } else if (backupCarrusel.length > 0) {
+    generarCarrusel(backupCarrusel);
+  }
+});
+
+
+
+// --- Botón Vaciar/Recuperar Franja ---
+document.getElementById('btnFranjaToggle').addEventListener('click', () => {
+  if (franja.children.length > 0) {
+    // Guardar backup solo si aún no existe
+    if (backupFranja.length === 0) backupFranja = Array.from(franja.children).map(div => div.querySelector('img').src);
+    franja.innerHTML = '';
+  } else if (backupFranja.length > 0) {
+    generarFranja(backupFranja);
+  }
+});
+
+
+
+// --- Al cargar categoría por primera vez ---
+function cargarCategoria(urls){
+  vaciarCarrusel(); // limpia carrusel y franja
+  backupCarrusel = urls.slice();
+  backupFranja = urls.slice();
+  generarCarrusel(urls);
+  generarFranja(urls);
+}
+
+
+
+
+// === Subida imágenes desde input (Blusas y Electrodomésticos) ===
+const btnSubir = document.getElementById("btnSubirImagen");
+const inputImagenes = document.getElementById("inputImagenes");
+
+// Al hacer clic en el botón, dispara el input oculto
+btnSubir.addEventListener("click", () => {
+  inputImagenes.click();
+});
+
+// Al seleccionar archivos en el input
+inputImagenes.addEventListener("change", function(event) {
+  const files = event.target.files;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      const src = e.target.result;
+
+      // --- Blusas ---
+      if(document.getElementById('btnBlusas').classList.contains('activo')) {
+        agregarImagen(src); // agrega al carrusel y franja
+        imagenesLocalesBlusas.push(src); 
+        localStorage.setItem("blusasLocales", JSON.stringify(imagenesLocalesBlusas));
+
+      // --- Electrodomésticos ---
+      } else if(document.getElementById('btnElectro').classList.contains('activo')) {
+        agregarImagen(src);
+        imagenesLocalesElectro.push(src);
+        localStorage.setItem("electroLocales", JSON.stringify(imagenesLocalesElectro));
+
+      // --- Otras categorías: solo agregar al carrusel ---
+      } else {
+        agregarImagen(src);
+      }
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  // Limpia el input para permitir subir las mismas imágenes de nuevo
+  this.value = "";
+});
+
+
+
+
+// === Funciones de carrusel ===
+function agregarImagen(src){
+  const img = document.createElement('img'); 
+  img.src = src; 
+  img.dataset.id = nextId++;
+  img.loading = "lazy"; 
+  img.addEventListener('mouseenter', () => isPaused = true); 
+  img.addEventListener('mouseleave', () => isPaused = false);
+
+  container.appendChild(img); 
+  images.push(img); 
+  organizarCirculo();
+
+  const thumbContainer = document.createElement('div'); 
+  thumbContainer.className = 'thumb-container';
+  const thumb = document.createElement('img'); 
+  thumb.src = src;
+
+  const btnEliminar = document.createElement('button'); 
+  btnEliminar.className = 'btnEliminar'; 
+  btnEliminar.textContent = '×';
+
+  btnEliminar.onclick = (e) => { 
+    e.stopPropagation(); 
+
+    // --- Quitar del carrusel ---
+    const idx = images.findIndex(i => i.dataset.id == img.dataset.id); 
+    if(idx >= 0){ 
+      const imgToRemove = images.splice(idx,1)[0]; 
+      container.removeChild(imgToRemove);
+    } 
+
+    // --- Quitar de la franja ---
+    franja.removeChild(thumbContainer);
+
+    // --- Quitar del LocalStorage (solo si estoy en BLUSAS) ---
+    if(document.getElementById('btnBlusas')?.classList.contains('activo')){
+      let blusasGuardadas = JSON.parse(localStorage.getItem("blusasLocales") || "[]");
+      blusasGuardadas = blusasGuardadas.filter(item => item !== img.src);
+      localStorage.setItem("blusasLocales", JSON.stringify(blusasGuardadas));
+      imagenesLocalesBlusas = blusasGuardadas; // sincroniza con tu array
+    }
+
+    // --- Quitar del LocalStorage (solo si estoy en Electro  electro) ---
+    if(document.getElementById('btnElectro')?.classList.contains('activo')){
+      let electroGuardadas = JSON.parse(localStorage.getItem("electroLocales") || "[]");
+      electroGuardadas = electroGuardadas.filter(item => item !== img.src);
+      localStorage.setItem("electroLocales", JSON.stringify(electroGuardadas));
+      imagenesLocalesElectro = electroGuardadas; // sincroniza con tu array
+    }
+  };
+
+
+
+  thumbContainer.appendChild(thumb); 
+  thumbContainer.appendChild(btnEliminar); 
+  franja.appendChild(thumbContainer);
+
+  thumb.onclick = () => { img.src = thumb.src; };
+}
+
+
+
+
+function organizarCirculo(){
+  const total = images.length; if(total===0) return;
+  const radiusX = 400 + total*10; const radiusY = 120 + total*5;
+  images.forEach((img,i)=>{
+    const angle=(i/total)*2*Math.PI + rotation;
+    const x=radiusX*Math.cos(angle)+container.offsetWidth/2-img.offsetWidth/2;
+    const y=radiusY*Math.sin(angle)+container.offsetHeight/2-img.offsetHeight/2;
+    img.style.left=`${x}px`; img.style.top=`${y}px`; img.style.zIndex=2000-i;
+  });
+}
+
+function animar(){ if(!isPaused){ rotation+=speed; } organizarCirculo(); requestAnimationFrame(animar);}
+animar();
+
+function vaciarCarrusel(){ container.innerHTML=''; franja.innerHTML=''; images=[]; rotation=0; speed=0.01; }
+
+function mostrarMensajeVacio(){ vaciarCarrusel(); const mensaje=document.createElement('div'); mensaje.textContent="No images disponibles"; mensaje.style.fontSize="18px"; mensaje.style.color="#555"; mensaje.style.textAlign="center"; mensaje.style.marginTop="250px"; container.appendChild(mensaje); }
+
+// === URLs por categor�a ===
+const urlsSombreros = [
+"https://www.koaj.co/104386-large_default/sombrero.jpg","https://www.koaj.co/104372-large_default/sombrero.jpg","https://www.koaj.co/80357-large_default/sombrero.jpg","https://www.koaj.co/50310-large_default/sombrero.jpg","https://www.koaj.co/103516-large_default/sombrero.jpg"
+];
+
+const urlsBlusas = [
+/*
+"https://icon2.cleanpng.com/ci2/kyi/yld/abf0atjcr.webp",  //mujer tejiendo
+"https://koaj.ec/284138-thickbox_default/blusa-camisera-oversize-manga-larga.jpg",   //blusa mujer 2
+"https://studiofpa.vtexassets.com/arquivos/ids/343385-2000-NaN?v=638929460513270000&width=2000&height=NaN&aspect=true",    //blusa mujer 3
+"https://studiofpa.vtexassets.com/arquivos/ids/343492-2000-NaN?v=638929461407230000&width=2000&height=NaN&aspect=true",    //blusa mujer 4
+"https://studiofpa.vtexassets.com/arquivos/ids/342366-2000-NaN?v=638923322215230000&width=2000&height=NaN&aspect=true",    //blusa mujer 5
+"https://studiofpa.vtexassets.com/arquivos/ids/317680-2000-NaN?v=638748081191300000&width=2000&height=NaN&aspect=true",    //blusa mujer 6
+"https://leonisa.ec/cdn/shop/files/F7028_001_1200X1500_1_380x.jpg?v=1754061341",   //blusa mujer 7
+"https://studiofpa.vtexassets.com/arquivos/ids/342969-2000-NaN?v=638923590454830000&width=2000&height=NaN&aspect=true"     //blusa mujer 99
+*/
+];
+
+const urlsPantaMujer = [
+"https://leonisa.ec/cdn/shop/files/J2870_700_1200X1500_1_380x.jpg?v=1756758286",   //pantalon mujer 1
+"https://leonisa.ec/cdn/shop/files/F7442_145_1200X1500_1_380x.jpg?v=1757361822",   //pantalon mujer 2
+"https://leonisa.ec/cdn/shop/files/DN3_022_1200X1500_1_380x.jpg?v=1752587285",     //pantalon mujer 3
+"https://leonisa.ec/cdn/shop/files/DN4_018_1200X1500_1_380x.jpg?v=1752587320",     //pantalon mujer 4
+"https://leonisa.ec/cdn/shop/files/F6499S_060_1200X1500_1_380x.jpg?v=1735220932",  //pantalon mujer 5
+"https://leonisa.ec/cdn/shop/files/F7350_146_1200X1500_1_380x.jpg?v=1750453975"    //pantalon mujer 6
+];
+
+const urlsZapatos = ["https://paylessec.vtexassets.com/arquivos/ids/313859-450-450?v=637780423610070000&width=450&height=450&aspect=true",   //Zapm 1
+
+"https://ivannyboutique.com/40592-large_default/zapato-de-taco-irina-rojo-vino.jpg",   //Zapm 2 
+ "https://www.tricot.cl/dw/image/v2/BGHZ_PRD/on/demandware.static/-/Sites-master-catalog-tricot/default/dw84d47f8e/images/large/PD273869.jpg?sw=400&sh=400&sm=fit&q=80&strip=false",   //Zapm 3  
+
+"https://ivannyboutique.com/38750-large_default/zapato-de-taco-manuela.jpg",    //Zapm 4
+  
+"https://paylessec.vtexassets.com/arquivos/ids/338127-450-450?v=637886720489230000&width=450&height=450&aspect=true", //Zapm 5
+  "https://www.tricot.cl/dw/image/v2/BGHZ_PRD/on/demandware.static/-/Sites-master-catalog-tricot/default/dw42d28597/images/large/PD412148.jpg?sw=400&sh=400&sm=fit&q=80&strip=false",   //Zapm 6
+  "https://www.tricot.cl/dw/image/v2/BGHZ_PRD/on/demandware.static/-/Sites-master-catalog-tricot/default/dwd3763e6e/images/large/PD412154.jpg?sw=400&sh=400&sm=fit&q=80&strip=false",  //Zapm 7
+  "https://www.tricot.cl/dw/image/v2/BGHZ_PRD/on/demandware.static/-/Sites-master-catalog-tricot/default/dwe2f6f663/images/large/PD412200.jpg?sw=400&sh=400&sm=fit&q=80&strip=false",  //Zapm 8
+  "https://www.tricot.cl/dw/image/v2/BGHZ_PRD/on/demandware.static/-/Sites-master-catalog-tricot/default/dw3177e76c/images/large/PD412147.jpg?sw=400&sh=400&sm=fit&q=80&strip=false"  //Zapm 9
+];
+
+
+const urlsVestidos = [
+"https://i.pinimg.com/236x/9c/74/62/9c7462abacefdacb1175177cbca8c92c.jpg",  //vestido 1
+"https://taty.com.ec/wp-content/uploads/2025/09/taty_vestido_co3903_2-540x690.jpg", //vestido 2
+"https://taty.com.ec/wp-content/uploads/2025/09/taty_vestido_d805641_2-540x690.jpg", //vestido 3
+"https://taty.com.ec/wp-content/uploads/2025/09/taty_vestido_cd4110b_2-540x690.jpg", //vestido 4
+"https://taty.com.ec/wp-content/uploads/2025/09/taty_vestido_LD11625_2-540x690.jpg" //vestido 5
+];
+
+const urlsFaldas = [
+"https://taty.com.ec/wp-content/uploads/2025/07/taty_falda_scu720_2-540x690.jpg",  //falda 1
+"https://taty.com.ec/wp-content/uploads/2025/03/taty_vestido_10270_2.jpg",  //falda 2
+"https://taty.com.ec/wp-content/uploads/2024/12/taty_falda_6948pn_1-540x690.jpg",  //falda 3
+"https://taty.com.ec/wp-content/uploads/2025/02/taty_blusa_mt4709_1-540x690.jpg",  //falda 4
+"https://cdn.shopify.com/s/files/1/0274/1066/1461/files/092528334414-2_grande.jpg?v=1759360122",   //falda 5
+"https://taty.com.ec/wp-content/uploads/2024/11/taty_falda_ch9365_1-1-540x690.jpg"  //falda 6
+];
+
+const urlsChompas = ["https://nafnafec.vtexassets.com/arquivos/ids/297046-500-auto?v=638930473271470000&width=500&height=auto&aspect=true",  //chompa 1
+"https://nafnafec.vtexassets.com/arquivos/ids/298923-500-auto?v=638931281128800000&width=500&height=auto&aspect=true",  //chompa 2
+"https://nafnafec.vtexassets.com/arquivos/ids/294430-500-auto?v=638930439864300000&width=500&height=auto&aspect=true",  //chompa 3
+"https://tennisecuador.vtexassets.com/arquivos/ids/959099-500-auto?v=638509828234400000&width=500&height=auto&aspect=true"  //chompa 6
+];
+
+
+const urlsCamisas = [  "https://pical.com.ec/pub/media/catalog/product/cache/e8e56bfb7b317cf25975f69c538ca145/c/i/ci15.01468-4a-155_1.jpg", //camisas 1
+  "https://pical.com.ec/pub/media/catalog/product/cache/e8e56bfb7b317cf25975f69c538ca145/c/i/ci15.01467-3e-155_1.jpg", //camisas 2
+  "https://pical.com.ec/pub/media/catalog/product/cache/e8e56bfb7b317cf25975f69c538ca145/c/i/ci15.01335-7a-155_1.jpg", //camisas 3
+  "https://tennisecuador.vtexassets.com/arquivos/ids/959099-500-auto?v=638509828234400000&width=500&height=auto&aspect=true",//camisas 4
+       "https://hmecuador.vtexassets.com/unsafe/412x0/center/middle/https%3A%2F%2Fhmecuador.vtexassets.com%2Farquivos%2Fids%2F3635703-560-auto%2FCamisa-de-franela-Loose-Fit---Azul-Cuadros---H-M-EC.jpg%3Fv%3D638948782407500000"  //camisas 5
+
+];   
+
+
+const urlsRopa = [
+  "https://www.bigallihats.com/cdn/shop/files/Marina-Bigalli_c438bdaa-bca4-4f0b-8205-64bddaf5c586.jpg",
+  "https://tennisecuador.vtexassets.com/arquivos/ids/961762-500-auto?v=638520180994100000&width=500&height=auto&aspect=true",
+  "https://tennisecuador.vtexassets.com/arquivos/ids/971372-500-auto?v=638545919157330000&width=500&height=auto&aspect=true",
+  "https://tennisecuador.vtexassets.com/arquivos/ids/959485-500-auto?v=638514754774970000&width=500&height=auto&aspect=true",
+  "https://tennisecuador.vtexassets.com/arquivos/ids/959099-500-auto?v=638509828234400000&width=500&height=auto&aspect=true",
+  "https://tennisecuador.vtexassets.com/arquivos/ids/1113002-500-auto?v=638854417521630000&width=500&height=auto&aspect=true"
+];
+
+
+const urlsElectro = [
+  "https://www.kissu.com.ec/imagenes//subcategorias/1659549117.jpg",  //electro 1
+  "https://www.kissu.com.ec/imagenes//productos/sm/17081008480.jpg",  //electro 2
+  "https://www.kissu.com.ec/imagenes//productos/sm/16789070110.jpg",  //electro 3
+  "https://www.kissu.com.ec/imagenes//productos/sm/17477744290.jpg"   //electro 4
+]; 
+
+
+const urlsCarros = ["https://d1i6h2eptoatah.cloudfront.net/pages/benefit_section_buy_image.webp"]; //carros 1
+
+
+
+// === Funci�n auxiliar random ===
+function randomItem(array){ return array[Math.floor(Math.random()*array.length)]; }
+
+function agregarImagenRandom(urlsCategoria){ if(urlsCategoria.length>0) agregarImagen(randomItem(urlsCategoria)); }
+
+// === Resaltar bot�n activo ===
+function resaltarBoton(idBoton){ const botones = menuInicial.querySelectorAll('button'); botones.forEach(btn=>btn.classList.remove('activo')); document.getElementById(idBoton).classList.add('activo'); }
+
+// === Funciones de carga de categor�a con primera imagen random ===
+//function cargarSombreros(){ vaciarCarrusel(); agregarImagenRandom(urlsSombreros); }   //saca solo una image
+
+function cargarSombreros(){ 
+  vaciarCarrusel(); 
+  urlsSombreros.forEach(src => agregarImagen(src));   //saca sacar varias images
+}
+
+
+function cargarBlusas(){ 
+  vaciarCarrusel(); 
+  // Primero las imágenes predeterminadas
+  urlsBlusas.forEach(src => agregarImagen(src));
+  // Luego agregar las imágenes locales subidas desde PC
+  imagenesLocalesBlusas.forEach(src => agregarImagen(src));
+}
+
+/*
+function cargarBlusas(){ 
+  vaciarCarrusel(); 
+  urlsBlusas.forEach(src => agregarImagen(src));
+}
+*/
+
+function cargarPantaMujer(){ 
+  vaciarCarrusel(); 
+  urlsPantaMujer.forEach(src => agregarImagen(src));
+}
+
+
+function cargarZapatos(){ 
+  vaciarCarrusel(); 
+  urlsZapatos.forEach(src => agregarImagen(src));
+}
+
+function cargarVestidos(){ 
+  vaciarCarrusel(); 
+  urlsVestidos.forEach(src => agregarImagen(src));
+}
+
+function cargarFaldas(){ 
+  vaciarCarrusel(); 
+  urlsFaldas.forEach(src => agregarImagen(src));
+}
+
+function cargarChompas(){ 
+  vaciarCarrusel(); 
+  urlsChompas.forEach(src => agregarImagen(src));
+}
+
+function cargarCamisas(){ 
+  vaciarCarrusel(); 
+  urlsCamisas.forEach(src => agregarImagen(src));
+}
+
+function cargarRopa(){ 
+  vaciarCarrusel(); 
+  urlsRopa.forEach(src => agregarImagen(src));
+}
+
+// === Electro - LOCALSTORAGE Funciones para cargar   ===
+function cargarElectro(){ 
+  vaciarCarrusel(); 
+
+  // Primero las imágenes predeterminadas
+  urlsElectro.forEach(src => agregarImagen(src));
+
+  // Luego agregar las imágenes locales guardadas en LocalStorage
+  const electroGuardadas = localStorage.getItem("electroLocales");
+  if(electroGuardadas){
+    imagenesLocalesElectro = JSON.parse(electroGuardadas);
+    imagenesLocalesElectro.forEach(src => agregarImagen(src));
+  }
+}
+
+
+
+function cargarCarros(){ vaciarCarrusel(); agregarImagenRandom(urlsCarros); }
+function cargarFerreteria(){ mostrarMensajeVacio(); }
+function cargarMotos(){ mostrarMensajeVacio(); }
+function cargarBicicletas(){ mostrarMensajeVacio(); }
+function cargarRepuestos(){ mostrarMensajeVacio(); }
+function cargarCelulares(){ mostrarMensajeVacio(); }
+
+//Mostrar/Ocultar franja
+function toggleFranja() {
+  franja.style.display = (franja.style.display === 'flex') ? 'none' : 'flex';
+}
+// Evento de clic
+document.getElementById('btnToggleFranjaMenu').addEventListener('click', toggleFranja);
+
+
+
+// === Eventos de botones ===
+const botonesCategorias = {
+  'btnSombreros': cargarSombreros,
+  'btnBlusas': cargarBlusas,
+  'btnPantaMujer': cargarPantaMujer,
+  'btnZapatos': cargarZapatos,
+  'btnVestidos': cargarVestidos,
+  'btnFaldas': cargarFaldas,
+  'btnChompas': cargarChompas,
+  'btnCamisas': cargarCamisas,
+  'btnRopa': cargarRopa,
+  'btnElectro': cargarElectro,
+  'btnCarros': cargarCarros
+};
+
+for(const id in botonesCategorias){
+  document.getElementById(id).addEventListener('click', ()=>{
+    container.style.display='block'; franja.style.display='flex';
+    botonesCategorias[id](); resaltarBoton(id);
+  });
+}
+
+// === Boton Mostrar/Ocultar franja dentro del body===
+/*
+document.getElementById('btnToggleFranja').addEventListener('click', ()=>{
+  franja.style.display = (franja.style.display==='flex') ? 'none':'flex';
+});
+*/
+
+
+
+// === Control por voz usando Web Speech API ===
+if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'es-ES';
+  recognition.continuous = true;
+  recognition.interimResults = false;
+
+recognition.onresult = function(event){
+  const last = event.results.length -1;
+  const text = event.results[last][0].transcript.toLowerCase().trim();
+  console.log("Comando voz:", text);
+
+// carrusel voz - usa carrusel para vaciar o recuperar
+if(text.includes("carrusel")){
+  document.getElementById('btnCarruselToggle').click(); // alterna vaciar/recuperar
+}
+
+// franja voz - usa franja para vaciar o recuperar
+if(text.includes("franja")){
+  toggleFranja();
+}
+
+// cero / uno - mostrar / ocultar col izq - menú categorías 
+  if(text.includes("uno")){
+  document.getElementById("menuInicial").style.display = "flex"; // mostrar columna
+  abrirPantallaCompleta(); // entrar a fullscreen real
+}
+  if(text.includes("cero") || text.includes("f11")){
+  document.getElementById("menuInicial").style.display = "none"; // ocultar columna
+  cerrarPantallaCompleta(); // salir de fullscreen
+}
+
+  // --- Controlar selección de categorías ---
+  for(const id in botonesCategorias){
+    const nombreBoton = document.getElementById(id).textContent.toLowerCase();
+    if(text.includes(nombreBoton)){
+      document.getElementById(id).click();
+      break;
+    }
+  }
+}
+
+  recognition.onend = ()=>recognition.start();
+  recognition.start();
+}
+
+
+
+//DOM - LOCALSTORAGE
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  // --- Recuperar imágenes locales de Blusas desde LocalStorage ---
+  const blusasGuardadas = localStorage.getItem("blusasLocales");
+  if(blusasGuardadas){
+    imagenesLocalesBlusas = JSON.parse(blusasGuardadas);
+  }
+
+  // --- Recuperar imágenes locales de Electro desde LocalStorage ---
+  const electroGuardadas = localStorage.getItem("electroLocales");
+  if(electroGuardadas){
+    imagenesLocalesElectro = JSON.parse(electroGuardadas);
+  }
+
+  // --- Selección aleatoria de categoría ---
+  const categorias = Object.keys(botonesCategorias); // todas las categorías disponibles
+  const categoriaRandom = categorias[Math.floor(Math.random() * categorias.length)]; // selecciona una al azar
+  document.getElementById(categoriaRandom).click(); // simula clic en esa categoría
+});
+
+
+
+// === Pantalla de entrada aleatoria ===
+/*
+window.addEventListener('DOMContentLoaded', ()=>{
+  const categorias = Object.keys(botonesCategorias); // todas las categor�as disponibles
+  const categoriaRandom = categorias[Math.floor(Math.random() * categorias.length)]; // selecciona una al azar
+  document.getElementById(categoriaRandom).click(); // simula clic en esa categor�a
+});
+*/
+</script>
+
+
+
+</body>
+</html>
