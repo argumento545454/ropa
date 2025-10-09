@@ -2,76 +2,133 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title> Bienvenido ropa </title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bienvenido Ropa</title>
+
+
 <style>
+  /* ==== ESTILO GENERAL ==== */
   body {
     font-family: Arial, sans-serif;
     background: khaki;
     text-align: center;
     padding: 50px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
   }
-  h1, h2, h3 { color: #333; }
+
+  h1 {
+    color: #333;
+    font-size: clamp(20px, 6vw, 36px);
+    margin-bottom: 20px;
+  }
+
+  /* ==== FORMULARIO ==== */
   .form-container {
     background: #fff;
     padding: 25px;
     margin: 20px auto;
     border-radius: 12px;
-    max-width: 350px;
+    width: 90%;
+
+    max-width: 380px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   }
+
   input {
-    width: 90%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 6px;
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 16px;
+    box-sizing: border-box;
   }
+
   button {
-    padding: 10px 25px;
-    margin: 10px 5px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     background: #007bff;
     color: white;
     font-size: 16px;
     cursor: pointer;
     transition: 0.3s;
   }
-  button:hover { background: #0056b3; }
-  .message { margin: 10px 0; font-weight: bold; }
+
+  button:hover { background: #0056b3;  }
+  .message {
+    margin: 12px 0;
+    font-weight: bold;
+  }
   .message.error { color: red; }
   .message.success { color: green; }
+
+  hr {margin: 25px 0; }
+
+  p {font-size: clamp(14px, 4vw, 16px);  }
+
+  a {color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  a:hover {text-decoration: underline;  }
+
+  /* ==== RESPONSIVE ==== */
+  @media (max-width: 480px) {
+    body {
+      padding: 20px;
+      background: #fff8dc; /* tono suave para móvil */
+    }
+
+    .form-container {
+      padding: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+
+    button {
+      font-size: 15px;
+      padding: 10px;
+    }
+  }
 </style>
 
 
+
 <script>
-//logo crear JS
+// === CREAR FAVICON DINÁMICO ===
 function crearFavicon() {
   const canvas = document.createElement('canvas');
   canvas.width = 64;
   canvas.height = 64;
   const ctx = canvas.getContext('2d');
 
-  // Fondo color pestaña
-  ctx.fillStyle = 'yellow'; /*pestaña fondo color  */
+
+  ctx.fillStyle = 'yellow'; // fondo pestaña
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Texto VV
-  ctx.fillStyle = 'blue';  /*pestaña letras color  */
+
+  ctx.fillStyle = 'blue';  // letras VV
   ctx.font = 'bold 40px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('VV', canvas.width/2, canvas.height/2);
+  ctx.fillText('VV', canvas.width / 2, canvas.height / 2);
 
-  // Crear favicon
+
   const link = document.createElement('link');
   link.rel = 'icon';
   link.href = canvas.toDataURL('image/png');
   document.head.appendChild(link);
 }
 
-// Ejecutar
+
 crearFavicon();
 </script>
 </head>
@@ -83,16 +140,17 @@ crearFavicon();
 
 <div class="form-container" id="login-container">
 
-  <!--<h2>Ingreso de Usuarios</h2>-->
-  <input type="text" id="username" placeholder="Usuario"><br>
-  <input type="password" id="password" placeholder="Clave"><br>
-  <button onClick="login()">Probador</button>
 
+  <input type="text" id="username" placeholder="Usuario">
+  <input type="password" id="password" placeholder="Clave">
+
+  <button onClick="login()">Probador</button>
   <button onClick="carrusel()">Carrusel</button>
   <p id="message" class="message"></p>
 
-  <hr style="margin:30px 0;">
-  <p>Register por WhatsApp: 
+
+  <hr>
+  <p>Registrar por WhatsApp: 
     <a href="https://wa.me/593985019054" target="_blank">Enviar mensaje</a>
   </p>
 </div>
@@ -127,10 +185,4 @@ crearFavicon();
 
 </body>
 </html>
-
-
-
-
-
-
 
