@@ -781,8 +781,18 @@ inputFotoCelular.addEventListener("change", (e) => {
   }
 });
 </script>
+
+
+<!--fotoCliente a localStorage--> 
+window.addEventListener("load", () => {
+  const fotoGuardada = localStorage.getItem("fotoCliente");
+  if (fotoGuardada) {
+    document.getElementById("fotoCliente").src = fotoGuardada;
+  }
+});  
 </body>
 
 </html>
+
 
 
