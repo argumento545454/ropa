@@ -75,22 +75,20 @@ h2 { margin-bottom:20px; }
 
 /* foto celular Botón */
 #btnFotoCelular {
-  position: absolute;   /* se posiciona relativo al contenedor */
-  bottom: 1000px;         /* 1200px desde la parte inferior de la foto */
-  left: 20%;            /* centrado horizontal */
-  transform: translateX(-50%); /* ajustar centro exacto */
-  padding: 8px 16px;
-  font-size: 56px;
-  cursor: pointer;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
   background: khaki;
   border: 1px solid #555;
   border-radius: 6px;
+  cursor: pointer;
+  z-index: 9999;
 }
-
-
-
 </style>
 
+  
 <script>
 //logo crear JS
 function crearFavicon() {
@@ -822,6 +820,7 @@ window.addEventListener("load", () => {
 </body>
 
 </html>
+
 
 
 
