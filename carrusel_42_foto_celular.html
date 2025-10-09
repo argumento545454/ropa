@@ -817,20 +817,20 @@ const fotoCliente = document.getElementById("fotoCliente");
 
 inputFotoCelular.addEventListener("change", (e) => {
   const file = e.target.files[0];
-  if(file){
+  if (file) {
     const reader = new FileReader();
     reader.onload = (evt) => {
       fotoCliente.src = evt.target.result;
-      localStorage.setItem("fotoCliente", evt.target.result); // guardar
+      localStorage.setItem("fotoCliente", evt.target.result);
     };
     reader.readAsDataURL(file);
   }
 });
-</script>
+</script> 
   
 </body>
-
 </html>
+
 
 
 
