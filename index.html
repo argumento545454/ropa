@@ -2,89 +2,128 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>index Logo VV Vitrinas Virtuales</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>index Logo VV Vitrinas Virtuales RESPONSIVE</title>
 
 <!-- ir a otra page luego de 3 segundos -->
 <meta http-equiv="refresh" content="3;URL='bienvenido_ropa.html'">
 
 <style>
-/*logo CSS */
+
+/* ==== ESTILO GENERAL ==== */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: khaki;
+  font-family: 'Arial Black', sans-serif;
+  margin: 0;
+}
+
+
+/* ==== LOGO ==== */
+.logo {
+  position: relative;
+  font-size: clamp(48px, 18vw, 120px); 
+/* adaptable a pantalla */
+  color: blue;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
+  text-align: center;
+  line-height: 1;
+}
+
+.logo:hover {
+  transform: rotate(-5deg) scale(1.1);
+  color: #0078ff;
+}
+
+/* ==== SUBTÍTULO ==== */
+.subtitulo {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  
+font-size: clamp(16px, 4vw, 28px);
+  font-family: Arial, sans-serif;
+  color: blue;
+  letter-spacing: 2px;
+}
+
+
+/* ==== EFECTO BRILLO ==== */
+.logo::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(120deg, khaki, rgba(255,255,255,0));
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+
+.logo:hover::after {
+  transform: translateX(100%);
+}
+
+/* ==== MEDIA QUERIES ==== */
+
+/* Pantallas pequeñas (celulares) */
+@media (max-width: 600px) {
   body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;
-    background: khaki;  /*fondo de la page*/
-    font-family: 'Arial Black', sans-serif;
+    background: #fff8dc; /* tono más claro para móviles */
   }
-
   .logo {
-    position: relative;
-    font-size: 120px;
-    color: blue;  /*letras logo en page */
-    cursor: pointer;
-    transition: transform 0.3s ease, color 0.3s ease;
+    font-size: 18vw;
   }
-
-  .logo:hover {
-    transform: rotate(-5deg) scale(1.1);
-    color: #0078ff;
-  }
-
   .subtitulo {
-    position: absolute;
-    bottom: -50px;
-    width: 100%;
-    text-align: center;
-    font-size: 28px;
-    font-family: Arial, sans-serif;
-    color: blue;  /*subtitulo letrs*/
-    letter-spacing: 2px;
+    font-size: 5vw;
   }
+}
 
-  /* Opcional: efecto de brillo animado */
-  .logo::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(120deg, khaki, rgba(255,255,255,0)); /*cuadro dentro de body*/
-    transform: translateX(-100%);
-    transition: transform 0.5s;
+/* Pantallas medianas (tablets) */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .logo {
+    font-size: 12vw;
   }
-
-  .logo:hover::after {
-    transform: translateX(100%);
+  .subtitulo {
+    font-size: 3.5vw;
   }
+}
 </style>
 
+
+
 <script>
-//logo crear JS
+// === CREAR FAVICON DINÁMICO ===
+
 function crearFavicon() {
   const canvas = document.createElement('canvas');
   canvas.width = 64;
   canvas.height = 64;
   const ctx = canvas.getContext('2d');
 
-  // Fondo color pesta�a
-  ctx.fillStyle = 'khaki'; /*pesta�a fondo color  */
+
+
+  ctx.fillStyle = 'khaki';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Texto VV
-  ctx.fillStyle = 'blue';  /*pesta�a letras color  */
+
+  ctx.fillStyle = 'blue';
   ctx.font = 'bold 40px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('VV', canvas.width/2, canvas.height/2);
+  ctx.fillText('VV', canvas.width / 2, canvas.height / 2);
 
-  // Crear favicon
+
   const link = document.createElement('link');
   link.rel = 'icon';
   link.href = canvas.toDataURL('image/png');
   document.head.appendChild(link);
 }
 
-// Ejecutar
+
 crearFavicon();
 </script>
 
@@ -92,25 +131,24 @@ crearFavicon();
 
 
 <body>
-<div class="logo">
-  VV
-  <div class="subtitulo">Vitrinas Virtuales</div>
-</div>
-<!--
-<div class="form-container" id="login-container">
-  <button onClick="carrusel()">Bienvenido</button>
-  <p id="message" class="message"></p>
-</div>
--->
+  <div class="logo">
+    VV
+    <div class="subtitulo">Vitrinas Virtuales</div>
+  </div>
+
+  
+
+
+
+
+
 
 <script>
-  function carrusel() {
-    window.location.href = "bienvenido_ropa.html";
-  }
-</script>
+    function carrusel() {
+      window.location.href = "bienvenido_ropa.html";
+    }
+  </script>
 
 </body>
 </html>
-
-
 
