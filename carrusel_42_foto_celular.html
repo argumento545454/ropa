@@ -198,6 +198,7 @@ foto cliente rotar
   btnSubirfoto.addEventListener("click", () => inputFoto.click());
 
   // Actualizar imagen al seleccionar archivo
+  /*
   inputFoto.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if(file){
@@ -206,9 +207,34 @@ foto cliente rotar
       reader.readAsDataURL(file);
     }
   });
+*/  
+  
+// Subida desde PC
+inputFoto.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      fotoCliente.src = evt.target.result;
+      localStorage.setItem("fotoCliente", evt.target.result); // <--- Guardar en LocalStorage
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Subida desde celular
+inputFotoCelular.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      fotoCliente.src = evt.target.result;
+      localStorage.setItem("fotoCliente", evt.target.result); // <--- Guardar en LocalStorage
+    };
+    reader.readAsDataURL(file);
+  }
+});
 </script>
-
-
 
 
 <script>
@@ -795,6 +821,7 @@ window.addEventListener("load", () => {
 </body>
 
 </html>
+
 
 
 
