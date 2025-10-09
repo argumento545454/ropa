@@ -173,17 +173,14 @@ Voz/Clic Comandos
 <!--</center> -->
 
 <!-- Botón foto celular -->
-<button id="btnFotoCelular">Foto celular</button>
- <!-- Input oculto --> 
+<!-- Input oculto + botón visible (etiqueta label actúa como botón) -->
 <input type="file" id="inputFotoCelular" accept="image/*" capture="environment" style="display:none">
-<!-- Botón visible que lo activa -->
-<label for="inputFotoCelular" id="btnFotoCelular" style="
+<label for="inputFotoCelular" style="
   position:fixed;bottom:20px;right:20px;
   background:khaki;padding:10px 20px;border:1px solid #555;
   border-radius:6px;font-size:16px;cursor:pointer;z-index:9999;">
   📷 Foto Celular
 </label>
-
   
   
   <div class="circle-container" id="circle"></div>
@@ -830,6 +827,7 @@ inputFotoCelular.addEventListener("change", (e) => {
   
 </body>
 </html>
+
 
 
 
