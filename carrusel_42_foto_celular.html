@@ -163,9 +163,74 @@ Voz/Clic Comandos
 
 <!-- Contenedor título y foto -->
   <!-- foto cliente -->
-<input type="file" id="inputFotoCelular" accept="image/*" capture="environment" style="display:none">
-<label for="inputFotoCelular" id="btnFotoCelular">📷 Foto Celular</label>
-  
+
+  <!-- FOTO CLIENTE -->
+<div style="text-align:center; margin-top:20px;">
+  <img id="fotoCliente" alt="Foto del cliente"
+       style="max-width:200px; border-radius:10px; display:none;">
+</div>
+
+<!-- BOTONES -->
+<div style="text-align:center; margin-top:15px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+  <button id="btnFotoPC" style="
+    background:#007bff; color:white; border:none;
+    padding:10px 20px; border-radius:8px; cursor:pointer;
+    font-size:16px;">📁 Subir desde PC</button>
+
+  <input type="file" id="inputFotoCelular" accept="image/*" capture="environment"
+    style="background:#ffc107; color:black; border:none;
+    padding:10px 20px; border-radius:8px; cursor:pointer;
+    font-size:16px;">
+</div>
+
+<script>
+  const fotoCliente = document.getElementById("fotoCliente");
+  const inputFotoCelular = document.getElementById("inputFotoCelular");
+  const btnFotoPC = document.getElementById("btnFotoPC");
+
+  // ==== Subir desde PC ====
+  const inputFotoPC = document.createElement("input");
+  inputFotoPC.type = "file";
+  inputFotoPC.accept = "image/*";
+
+  btnFotoPC.addEventListener("click", () => inputFotoPC.click());
+
+  inputFotoPC.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        fotoCliente.src = evt.target.result;
+        fotoCliente.style.display = "block";
+        localStorage.setItem("fotoCliente", evt.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // ==== Subir desde CELULAR ====
+  inputFotoCelular.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        fotoCliente.src = evt.target.result;
+        fotoCliente.style.display = "block";
+        localStorage.setItem("fotoCliente", evt.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // ==== Cargar guardada ====
+  window.addEventListener("load", () => {
+    const guardada = localStorage.getItem("fotoCliente");
+    if (guardada) {
+      fotoCliente.src = guardada;
+      fotoCliente.style.display = "block";
+    }
+  });
+</script>
   <div class="circle-container" id="circle"></div>
   <div class="franja" id="franja"></div>
 </main>
@@ -810,6 +875,7 @@ inputFotoCelular.addEventListener("change", (e) => {
   
 </body>
 </html>
+
 
 
 
