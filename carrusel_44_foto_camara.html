@@ -219,6 +219,8 @@ foto cliente rotar
   <img id="fotoCamara" alt="Foto Cámara" style="display:none; width:160px; height:120px; border-radius:10px; margin-top:8px;">
 </div>
 
+
+<!-- Cámara: script (deja esto una vez, después de tu HTML; ya usa DOMContentLoaded) -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const video = document.getElementById('videoCamara');
@@ -228,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fotoCamara = document.getElementById('fotoCamara');
   let streamActivo = null;
 
-  // === Encender / Apagar cámara ===
+  // Encender / Apagar cámara
   btnCamara.addEventListener('click', async () => {
     if (!streamActivo) {
       try {
@@ -237,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
         video.style.display = 'block';
         btnTomarFoto.style.display = 'inline-block';
         btnCamara.textContent = 'Apagar Cámara';
-        btnCamara.style.background = '#c62828'; // rojo
+        btnCamara.style.background = '#c62828';
       } catch (err) {
         alert('⚠️ No se pudo acceder a la cámara.\n' + err);
       }
@@ -246,20 +248,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === Tomar foto ===
+  // Tomar foto
   btnTomarFoto.addEventListener('click', () => {
     if (!streamActivo) return;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     fotoCamara.src = canvas.toDataURL('image/png');
     fotoCamara.style.display = 'block';
+    // Apagar cámara después de tomar la foto
     detenerCamaraPC();
   });
 
-  // === Detener cámara ===
+  // Detener cámara
   function detenerCamaraPC() {
     if (streamActivo) {
       streamActivo.getTracks().forEach(track => track.stop());
@@ -269,11 +271,10 @@ document.addEventListener("DOMContentLoaded", () => {
     video.style.display = 'none';
     btnTomarFoto.style.display = 'none';
     btnCamara.textContent = 'Encender Cámara';
-    btnCamara.style.background = '#444'; // gris
+    btnCamara.style.background = '#444';
   }
 });
 </script>
-
 
 
 <script>
@@ -857,6 +858,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
 
 
