@@ -155,18 +155,32 @@ Voz/Clic Comandos
 
 
 <main>
-  <!-- Contenedor título + cámara + foto cliente -->
+  <!-- Contenedor título + cámara + foto cliente (solo UNA vez) -->
   <div style="display:flex; align-items:center; gap:20px; margin-bottom:20px;">
     
-    <!-- Cámara PC -->
+    <!-- Cámara PC (único) -->
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <video id="video" autoplay playsinline style="width:160px; height:120px; border:2px solid #555; border-radius:10px;"></video>
-      <button id="btnTomarFoto" style="margin-top:5px; padding:5px 10px;">Foto c&aacutemara</button>
-      <canvas id="canvas" style="display:none;"></canvas>
-      <img id="fotoCamara" alt="Foto Cámara" style="display:none; width:160px; height:120px; border-radius:10px; margin-top:5px;">
+      <video id="videoCamara" autoplay playsinline
+             style="width:160px; height:120px; border:2px solid #555; border-radius:10px; display:none;"></video>
+
+      <!-- Botón para encender/apagar -->
+      <button id="btnCamara"
+              style="margin-top:8px; padding:6px 12px; background:#444; color:white; border:none; border-radius:8px; cursor:pointer;">
+        Encender Cámara
+      </button>
+
+      <!-- Botón para tomar foto (aparece cuando la cámara esté encendida) -->
+      <button id="btnTomarFoto"
+              style="margin-top:6px; padding:6px 12px; background:#007BFF; color:white; border:none; border-radius:8px; display:none; cursor:pointer;">
+        Tomar Foto
+      </button>
+
+      <canvas id="canvasCamara" style="display:none;"></canvas>
+      <img id="fotoCamara" alt="Foto Cámara"
+           style="display:none; width:160px; height:120px; border-radius:10px; margin-top:8px;">
     </div>
 
-    <!-- Título y foto cliente -->
+    <!-- Título y foto cliente (único) -->
     <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
       <h2>Centro Comercial 44 "Vitrinas Virtuales"</h2>
       <img id="fotoCliente" src="imagenes/cliente_default.jpg" alt="Foto cliente" width="200" height="200">
@@ -180,7 +194,6 @@ Voz/Clic Comandos
   <div class="circle-container" id="circle"></div>
   <div class="franja" id="franja"></div>
 </main>
-
 
 <script>
 foto cliente rotar
@@ -844,5 +857,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
 
