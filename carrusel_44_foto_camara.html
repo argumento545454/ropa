@@ -187,14 +187,13 @@ foto cliente rotar
 </script>
 
 
-<script>
 <!-- === Cámara PC Controlada === -->
-<div style="display:flex; flex-direction:column; align-items:center;">
+<div id="camaraContainer" style="display:flex; flex-direction:column; align-items:center; margin-bottom:20px;">
   <!-- Cuadro donde se muestra lo que capta la cámara -->
-  <video id="video" autoplay playsinline style="width:160px; height:120px; border:2px solid #555; border-radius:10px; display:none;"></video>
+  <video id="videoCamara" autoplay playsinline style="width:160px; height:120px; border:2px solid #555; border-radius:10px; display:none;"></video>
 
   <!-- Botones de control -->
-  <button id="btnCamara" style="margin-top:8px; padding:6px 12px; background:#444; color:white; border:none; border-radius:8px; cursor:pointer; transition:0.3s;">
+  <button id="btnCamara" style="margin-top:8px; padding:6px 12px; background:#444; color:white; border:none; border-radius:8px; cursor:pointer;">
     Encender Cámara
   </button>
 
@@ -202,64 +201,65 @@ foto cliente rotar
     Tomar Foto
   </button>
 
-  <canvas id="canvas" style="display:none;"></canvas>
+  <!-- Canvas invisible y lugar donde se muestra la foto -->
+  <canvas id="canvasCamara" style="display:none;"></canvas>
   <img id="fotoCamara" alt="Foto Cámara" style="display:none; width:160px; height:120px; border-radius:10px; margin-top:8px;">
 </div>
 
 <script>
-// === Control de Cámara PC ===
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const btnCamara = document.getElementById('btnCamara');
-const btnTomarFoto = document.getElementById('btnTomarFoto');
-const fotoCamara = document.getElementById('fotoCamara');
-let streamActivo = null;
+document.addEventListener("DOMContentLoaded", () => {
+  const video = document.getElementById('videoCamara');
+  const canvas = document.getElementById('canvasCamara');
+  const btnCamara = document.getElementById('btnCamara');
+  const btnTomarFoto = document.getElementById('btnTomarFoto');
+  const fotoCamara = document.getElementById('fotoCamara');
+  let streamActivo = null;
 
-// Encender / Apagar cámara
-btnCamara.addEventListener('click', async () => {
-  if (!streamActivo) {
-    try {
-      // Encender cámara
-      streamActivo = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = streamActivo;
-      video.style.display = 'block';
-      btnTomarFoto.style.display = 'inline-block';
-      btnCamara.textContent = 'Apagar Cámara';
-      btnCamara.style.background = '#c62828'; // rojo al encender
-    } catch (err) {
-      alert('No se pudo acceder a la cámara del PC: ' + err);
+  // === Encender / Apagar cámara ===
+  btnCamara.addEventListener('click', async () => {
+    if (!streamActivo) {
+      try {
+        streamActivo = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = streamActivo;
+        video.style.display = 'block';
+        btnTomarFoto.style.display = 'inline-block';
+        btnCamara.textContent = 'Apagar Cámara';
+        btnCamara.style.background = '#c62828'; // rojo
+      } catch (err) {
+        alert('⚠️ No se pudo acceder a la cámara.\n' + err);
+      }
+    } else {
+      detenerCamaraPC();
     }
-  } else {
+  });
+
+  // === Tomar foto ===
+  btnTomarFoto.addEventListener('click', () => {
+    if (!streamActivo) return;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    fotoCamara.src = canvas.toDataURL('image/png');
+    fotoCamara.style.display = 'block';
     detenerCamaraPC();
+  });
+
+  // === Detener cámara ===
+  function detenerCamaraPC() {
+    if (streamActivo) {
+      streamActivo.getTracks().forEach(track => track.stop());
+      streamActivo = null;
+    }
+    video.srcObject = null;
+    video.style.display = 'none';
+    btnTomarFoto.style.display = 'none';
+    btnCamara.textContent = 'Encender Cámara';
+    btnCamara.style.background = '#444'; // gris
   }
 });
-
-// Tomar foto
-btnTomarFoto.addEventListener('click', () => {
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  fotoCamara.src = canvas.toDataURL('image/png');
-  fotoCamara.style.display = 'block';
-  detenerCamaraPC();
-});
-
-// Detener cámara
-function detenerCamaraPC() {
-  if (streamActivo) {
-    streamActivo.getTracks().forEach(track => track.stop());
-    streamActivo = null;
-  }
-  video.srcObject = null;
-  video.style.display = 'none';
-  btnTomarFoto.style.display = 'none';
-  btnCamara.textContent = 'Encender Cámara';
-  btnCamara.style.background = '#444'; // gris al apagar
-}
 </script>
-
-
 
 
 
@@ -844,4 +844,5 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
