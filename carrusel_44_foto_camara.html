@@ -787,7 +787,6 @@ function cargarElectro(){
 }
 
 
-
 function cargarCarros(){ vaciarCarrusel(); agregarImagenRandom(urlsCarros); }
 function cargarFerreteria(){ mostrarMensajeVacio(); }
 function cargarMotos(){ mostrarMensajeVacio(); }
@@ -803,6 +802,31 @@ function toggleFranja() {
 document.getElementById('btnToggleFranjaMenu').addEventListener('click', toggleFranja);
 
 
+
+// Función para esconder foto tomada
+function esconderFoto() {
+  const foto = document.getElementById('fotoCamara');
+  foto.style.display = 'none';
+}
+
+// Función para mostrar foto tomada
+function mostrarFoto() {
+  const foto = document.getElementById('fotoCamara');
+  if(foto.src) foto.style.display = 'block'; // solo si ya hay foto
+}
+
+// Alternar foto (botón o voz)
+function toggleFoto() {
+  const foto = document.getElementById('fotoCamara');
+  if(foto.style.display === 'none') mostrarFoto();
+  else esconderFoto();
+}
+
+
+
+
+
+  
 
 // === Eventos de botones ===
 const botonesCategorias = {
