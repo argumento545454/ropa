@@ -930,46 +930,12 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </script>
 
 
-<script>
-// === foto VOZ MOSTRAR/OCULTAR FOTO CLIENTE ===
-window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-if ('SpeechRecognition' in window) {
-  const reconocimiento = new SpeechRecognition();
-  reconocimiento.lang = 'es-ES';
-  reconocimiento.continuous = true; // escucha sin parar
-  reconocimiento.interimResults = false;
-
-  reconocimiento.onresult = (event) => {
-    const texto = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-    console.log("🎤 Dijo:", texto);
-
-    if (texto.includes("ocultar foto") || texto.includes("esconder foto")) {
-      document.getElementById("fotoCliente").style.display = "none";
-      console.log("🫥 Foto oculta");
-
-    } else if (texto.includes("mostrar foto") || texto.includes("foto visible") || texto.includes("ver foto")) {
-      document.getElementById("fotoCliente").style.display = "block";
-      console.log("📸 Foto mostrada");
-    }
-  };
-
-  reconocimiento.onerror = (event) => console.log("Error voz:", event.error);
-
-  reconocimiento.onend = () => {
-    console.log("🎧 Reiniciando escucha de voz...");
-    reconocimiento.start(); // vuelve a escuchar automáticamente
-  };
-
-  reconocimiento.start(); // Inicia la escucha
-} else {
-  alert("Tu navegador no soporta reconocimiento de voz.");
-}
-</script>
 
 </body>
 
 </html>
+
 
 
 
