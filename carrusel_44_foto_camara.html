@@ -313,17 +313,33 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Tomar foto
-  btnTomarFoto.addEventListener('click', () => {
-    if (!streamActivo) return;
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    fotoCamara.src = canvas.toDataURL('image/png');
-    fotoCamara.style.display = 'block';
-    // Apagar cámara después de tomar la foto
-    detenerCamaraPC();
-  });
+  // Tomar foto, mostrarla y guardar automáticamente
+btnTomarFoto.addEventListener('click', () => {
+  if (!streamActivo) return;
+
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Convertir a data URL
+  const dataURL = canvas.toDataURL('image/png');
+
+  // Mostrar foto en la página
+  fotoCamara.src = dataURL;
+  fotoCamara.style.display = 'block';
+
+  // Forzar descarga automática
+  const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = `foto_${Date.now()}.png`; // nombre único
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // Apagar cámara
+  detenerCamaraPC();
+})
 
   // Detener cámara
   function detenerCamaraPC() {
@@ -959,6 +975,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
 
 
