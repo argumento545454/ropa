@@ -83,8 +83,72 @@ h2 { margin-bottom:20px; }
 }
 */
 
+
+/* Contenedor de la cámara */
+#camaraContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  perspective: 800px; /* si quieres algún efecto 3D */
+}
+
+/* Video donde se ve la cámara */
+#videoCamara {
+  width: 160px;
+  height: 120px;
+  border: 2px solid #555;
+  border-radius: 10px;
+  display: none; /* inicialmente oculto */
+  object-fit: cover;
+  background: #000;
+}
+
+/* Botones de control de la cámara */
+#btnCamara {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+#btnCamara:hover { background: #666; }
+
+/* Botón para tomar foto */
+#btnTomarFoto {
+  margin-top: 6px;
+  padding: 6px 12px;
+  background: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: none; /* aparece solo al encender la cámara */
+  transition: 0.2s;
+}
+#btnTomarFoto:hover { background: #0056b3; }
+
+/* Canvas invisible */
+#canvasCamara {
+  display: none;
+}
+
+/* Imagen donde se muestra la foto tomada */
+#fotoCamara {
+  display: none;
+  width: 160px;
+  height: 120px;
+  border-radius: 10px;
+  margin-top: 8px;
+  object-fit: cover;
+  border: 2px solid #555;
+}
 </style>
 
+  
 <script>
 //logo crear JS
 function crearFavicon() {
@@ -870,6 +934,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
 
 
