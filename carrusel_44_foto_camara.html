@@ -784,6 +784,18 @@ recognition.onresult = function(event){
   const text = event.results[last][0].transcript.toLowerCase().trim();
   console.log("Comando voz:", text);
 
+// === Control cámara ===
+    if(text.includes("encender cámara")) {
+        document.getElementById('btnCamara').click();
+    }
+    if(text.includes("apagar cámara")) {
+        detenerCamaraPC();
+    }
+    if(text.includes("tomar foto")) {
+        document.getElementById('btnTomarFoto').click();
+    }
+
+  
 // carrusel voz - usa carrusel para vaciar o recuperar
 if(text.includes("carrusel")){
   document.getElementById('btnCarruselToggle').click(); // alterna vaciar/recuperar
@@ -858,6 +870,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
 
 
