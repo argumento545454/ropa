@@ -135,6 +135,17 @@ h2 { margin-bottom:20px; }
   object-fit: cover;
   border: 2px solid #555;
 }
+
+
+  /* 🔧 Eliminar botón amarillo que aparece dentro del video */
+video button,
+#videoContainer button:not(#btnCamara),
+#videoCamara + button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 </style>
 
   
@@ -967,6 +978,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
 
 
