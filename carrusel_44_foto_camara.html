@@ -611,16 +611,12 @@ function agregarImagen(src){
 function organizarCirculo(){
   const total = images.length; if(total===0) return;
   const radiusX = 400 + total*10; const radiusY = 120 + total*5;
-  imagenes.forEach((img, i) => { const angle = (i * angleStep + rotation) % 360; const rad = angle * Math.PI / 180; // Posición elíptica const x = radiusX * Math.cos(rad); const y = radiusY * Math.sin(rad); // Escala automática: más grande cuando está abajo const scale = 1 + 0.5 * (1 - (y - (-radiusY)) / (radiusY - (-radiusY))); // Aplicar transformación img.style.transform = translate(${x}px, ${y}px) scale(${scale}); img.style.zIndex = Math.round(1000 - y); // prioridad visual (frente o fondo) });
-                        
-  /*
   images.forEach((img,i)=>{
     const angle=(i/total)*2*Math.PI + rotation;
     const x=radiusX*Math.cos(angle)+container.offsetWidth/2-img.offsetWidth/2;
     const y=radiusY*Math.sin(angle)+container.offsetHeight/2-img.offsetHeight/2;
     img.style.left=`${x}px`; img.style.top=`${y}px`; img.style.zIndex=2000-i;
   });
-  */
 }
 
 function animar(){ if(!isPaused){ rotation+=speed; } organizarCirculo(); requestAnimationFrame(animar);}
@@ -983,6 +979,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
 
 
