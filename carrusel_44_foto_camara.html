@@ -216,7 +216,7 @@ Voz/Clic Comandos
       <video id="videoCamara" autoplay playsinline
              style="width:160px; height:120px; border:2px solid #555; border-radius:10px; display:none;"></video>
 
-      <!-- Botón para encender/apagar -->
+      <!-- Botón encender/apagar camara-->
       <button id="btnCamara"
               style="margin-top: -60px; padding:6px 12px; background:khaki; color:black; border:none; border-radius:8px; cursor:pointer;">
         📷 Encender Cámara   <!--primer boton encender camara-->
@@ -291,10 +291,11 @@ document.addEventListener("DOMContentLoaded", () => {
         video.srcObject = streamActivo;
         video.style.display = 'block';
         btnTomarFoto.style.display = 'inline-block';
-        btnCamara.textContent = 'jorge luis';   //Apagar 123 Cámara
-        btnCamara.style.background = '#c62828';
+        btnCamara.textContent = 'jorge';   //Apagar 123 Cámara
+        //btnCamara.style.background = '#c62828'; 
+        btnCamara.style.background = 'yellow';
       } catch (err) {
-        alert('⚠️ No se pudo acceder a la cámara.\n' + err);
+        alert('⚠️ No se pudo acceder a la cámara.\n' + err);  
       }
     } else {
       detenerCamaraPC();
@@ -964,6 +965,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
 
 
