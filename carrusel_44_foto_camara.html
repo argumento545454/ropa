@@ -222,7 +222,7 @@ Voz/Clic Comandos
         📷 Encender Cámara   <!--primer boton encender camara-->
       </button>
 
-      <!-- Botón para tomar foto (aparece cuando la cámara esté encendida) -->
+      <!-- Botón tomar foto (aparece cuando la cámara esté encendida) -->
       <button id="btnTomarFoto"
               style="margin-top:50px; padding:6px 12px; background:#007BFF; color:white; border:none; border-radius:8px; display:none; cursor:pointer;">
         Tomar Foto
@@ -291,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
         video.srcObject = streamActivo;
         video.style.display = 'block';
         btnTomarFoto.style.display = 'inline-block';
-        btnCamara.textContent = '';   //Apagar 123 Cámara
+        btnCamara.textContent = 'jorge luis';   //Apagar 123 Cámara
         btnCamara.style.background = '#c62828';
       } catch (err) {
         alert('⚠️ No se pudo acceder a la cámara.\n' + err);
@@ -964,6 +964,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </body>
 
 </html>
+
 
 
 
