@@ -1120,38 +1120,92 @@ window.addEventListener('DOMContentLoaded', ()=>{
 */
 </script>
 
+  
 <!!--3.12--> 
+
+  
+<!--3.13 - Cámara y foto movibles -->
 <script>
-  //CAMARA FOTO
+// --- Selección de elementos ---
 const videoCamara = document.getElementById('videoCamara');
 const canvasCamara = document.getElementById('canvasCamara');
 const btnTomarFoto = document.getElementById('btnTomarFoto');
 const fotoCamara = document.getElementById('fotoCamara');
 
+// --- Activar cámara ---
+(async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    videoCamara.srcObject = stream;
+    videoCamara.style.display = 'block';
+    videoCamara.style.position = 'absolute';
+    videoCamara.style.left = '50px';
+    videoCamara.style.top = '80px';
+    videoCamara.style.zIndex = '9999';
+    videoCamara.style.cursor = 'grab';
+  } catch (error) {
+    console.error("Error al acceder a la cámara:", error);
+  }
+})();
+
+// --- Tomar foto ---
 btnTomarFoto.addEventListener('click', () => {
-    // 1️⃣ Capturar foto del video
-    canvasCamara.width = videoCamara.videoWidth;
-    canvasCamara.height = videoCamara.videoHeight;
-    const ctx = canvasCamara.getContext('2d');
-    ctx.drawImage(videoCamara, 0, 0, canvasCamara.width, canvasCamara.height);
+  if (!videoCamara) return;
+  
+  // 1️⃣ Capturar foto del video
+  canvasCamara.width = videoCamara.videoWidth;
+  canvasCamara.height = videoCamara.videoHeight;
+  const ctx = canvasCamara.getContext('2d');
+  ctx.drawImage(videoCamara, 0, 0, canvasCamara.width, canvasCamara.height);
 
-    // 2️⃣ Poner la foto en el <img> original
-    fotoCamara.src = canvasCamara.toDataURL();
-    fotoCamara.style.display = 'block';
+  // 2️⃣ Mostrar la foto tomada
+  fotoCamara.src = canvasCamara.toDataURL();
+  fotoCamara.style.display = 'block';
 
-    // 3️⃣ Preparar estilo para moverla
-    fotoCamara.style.position = 'absolute';
-    fotoCamara.style.left = '850px';   // X deseada
-    fotoCamara.style.top = '80px';     // Y deseada
-    fotoCamara.style.width = '200px';
-    fotoCamara.style.height = '200px';
-    fotoCamara.style.transition = 'all 0.5s ease'; // animación suave
+  // 3️⃣ Preparar posición y tamaño de la foto
+  fotoCamara.style.position = 'absolute';
+  fotoCamara.style.left = '800px';
+  fotoCamara.style.top = '80px';
+  fotoCamara.style.width = '200px';
+  fotoCamara.style.height = '200px';
+  fotoCamara.style.transition = 'all 0.3s ease';
+  fotoCamara.style.cursor = 'grab';
+  fotoCamara.style.zIndex = '9998';
 });
-</script>
 
+// --- Función genérica para hacer movible cualquier elemento ---
+function hacerMovible(elemento) {
+  let moviendo = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  elemento.addEventListener('mousedown', (e) => {
+    moviendo = true;
+    offsetX = e.clientX - elemento.offsetLeft;
+    offsetY = e.clientY - elemento.offsetTop;
+    elemento.style.cursor = 'grabbing';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!moviendo) return;
+    elemento.style.left = `${e.clientX - offsetX}px`;
+    elemento.style.top = `${e.clientY - offsetY}px`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    moviendo = false;
+    elemento.style.cursor = 'grab';
+  });
+}
+
+// --- Hacer movibles ambos cuadros ---
+if (videoCamara) hacerMovible(videoCamara);
+if (fotoCamara) hacerMovible(fotoCamara);
+</script>
 
 </body>
 </html>
+
 
 
 
