@@ -1112,56 +1112,50 @@ window.addEventListener('DOMContentLoaded', ()=>{
 // 3.11.60
 // TV CARRUSEL - MODO SPOT RANDOM (PROPAGANDA AUTOMÁTICA) ===
 
-// Lista de categorías disponibles (ajústalas según tus botones reales)
-const categoriasTV = ["blusas", "faldas", "pantalones", "zapatos", "accesorios", "vestidos"];
+<!-- === Control de Categorías === -->
+<script>
+// ====== Manejo de Categorías ======
+const botonesCategorias = document.querySelectorAll('#menuInicial button[id^="btn"]');
 
-// Variables de control
-let categoriaTVActual = "";
-let intervaloSpot = null;
+// Diccionario de categorías
+const categorias = {
+  btnSombreros: urlsSombreros,
+  btnBlusas: JSON.parse(localStorage.getItem("blusasLocales") || "[]").length > 0
+              ? JSON.parse(localStorage.getItem("blusasLocales"))
+              : urlsBlusas,
+  btnPantaMujer: urlsPantaMujer,
+  btnZapatos: urlsZapatos,
+  btnVestidos: [],
+  btnFaldas: [],
+  btnChompas: [],
+  btnCamisas: [],
+  btnRopa: [],
+  btnElectro: JSON.parse(localStorage.getItem("electroLocales") || "[]").length > 0
+              ? JSON.parse(localStorage.getItem("electroLocales"))
+              : [],
+  btnCarros: []
+};
 
-// Función que elige y muestra una categoría aleatoria
-function spotRandom() {
-  let nueva;
-  do {
-    nueva = categoriasTV[Math.floor(Math.random() * categoriasTV.length)];
-  } while (nueva === categoriaTVActual); // evita repetir la misma seguida
+// Asignar evento a cada botón
+botonesCategorias.forEach(btn => {
+  btn.addEventListener('click', () => {
+    // 1️⃣ Quitar activo a todos
+    botonesCategorias.forEach(b => b.classList.remove('activo'));
+    // 2️⃣ Activar el actual
+    btn.classList.add('activo');
+    // 3️⃣ Detectar categoría y cargar imágenes
+    const urls = categorias[btn.id] || [];
+    if (urls.length > 0) {
+      cargarCategoria(urls);
+    } else {
+      mostrarMensajeVacio();
+    }
+  });
+});
 
-  categoriaTVActual = nueva;
-  console.log("🎬 Spot random mostrando:", nueva);
-
-  // Usa tu función principal para mostrar categoría
-  if (typeof mostrarCategoria === "function") {
-    mostrarCategoria(nueva);
-  }
-
-  // (Opcional) Anuncio por voz
-  const anuncio = new SpeechSynthesisUtterance(`Nueva categoría ${nueva}`);
-  anuncio.lang = "es-ES";
-  speechSynthesis.speak(anuncio);
-}
-
-// Inicia modo automático tipo TV
-function iniciarSpotRandom() {
-  if (!intervaloSpot) {
-    spotRandom(); // primer spot inmediato
-    intervaloSpot = setInterval(spotRandom, 30000); // cambia cada 30 s
-    console.log("📺 Spot random activado");
-  }
-}
-
-// Detiene modo automático
-function detenerSpotRandom() {
-  clearInterval(intervaloSpot);
-  intervaloSpot = null;
-  console.log("⏹️ Spot random detenido");
-}
-
-// Inicia automáticamente al cargar la página
-window.addEventListener("load", () => {
-  iniciarSpotRandom();
-})
-
-
+// Al iniciar: activar "Blusas" por defecto
+document.getElementById("btnBlusas").click();
+</script>
 
   
 //3.11.61
@@ -1205,6 +1199,7 @@ btnTomarFoto.addEventListener('click', () => {
   
 </body>
 </html>
+
 
 
 
