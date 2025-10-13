@@ -1107,25 +1107,62 @@ window.addEventListener('DOMContentLoaded', ()=>{
   const categoriaRandom = categorias[Math.floor(Math.random() * categorias.length)]; // selecciona una al azar
   document.getElementById(categoriaRandom).click(); // simula clic en esa categoría
 });
-
-//3.11.60
-// ====== CAMBIO AUTOMÁTICO DE CATEGORÍA CADA 30s ======
-
+</script>
 
 
   
-//3.11.61
-// === Pantalla de entrada aleatoria ===
-/*
-window.addEventListener('DOMContentLoaded', ()=>{
-  const categorias = Object.keys(botonesCategorias); // todas las categorias disponibles
-  const categoriaRandom = categorias[Math.floor(Math.random() * categorias.length)]; // selecciona una al azar
-  document.getElementById(categoriaRandom).click(); // simula clic en esa categoria
+<!--3.12 - Carrusel spot TV -->
+<script>
+// ====== CAMBIO AUTOMÁTICO DE CATEGORÍA CADA 30s ======  
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Bloque 3.12 cargado correctamente");
+    // -----------------------------
+    // Ejemplo: Ajustar foto dentro del recuadro
+    // -----------------------------
+    const foto = document.getElementById("fotoCliente"); // reemplaza con el id real de tu foto
+    if (foto) {
+        // Permitir arrastrar la foto dentro del recuadro
+        let isDragging = false;
+        let startX, startY;
+
+        foto.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            startX = e.clientX - foto.offsetLeft;
+            startY = e.clientY - foto.offsetTop;
+            foto.style.cursor = "grabbing";
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                foto.style.left = `${e.clientX - startX}px`;
+                foto.style.top = `${e.clientY - startY}px`;
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+            foto.style.cursor = "grab";
+        });
+    }
+
+    // -----------------------------
+    // Ejemplo: botón de prueba
+    // -----------------------------
+    const botonPrueba = document.getElementById("botonPrueba");
+    if (botonPrueba) {
+        botonPrueba.addEventListener("click", () => {
+            alert("Botón 3.12 activado");
+        });
+    }
+
+    // -----------------------------
+    // Aquí puedes añadir más funciones
+    // -----------------------------
 });
-*/
 </script>
 
   
+<!!--3.13--> 
 <script>
   //CAMARA FOTO
 const videoCamara = document.getElementById('videoCamara');
@@ -1153,9 +1190,14 @@ btnTomarFoto.addEventListener('click', () => {
     fotoCamara.style.transition = 'all 0.5s ease'; // animación suave
 });
 </script>
+
+
+
+
   
 </body>
 </html>
+
 
 
 
