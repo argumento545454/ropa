@@ -1110,28 +1110,9 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
 //3.11.60
 // ====== CAMBIO AUTOMÁTICO DE CATEGORÍA CADA 30s ======
-const botonesCategorias = document.querySelectorAll('#menuInicial button[id^="btn"]');
 
-// Función para seleccionar categoría aleatoria
-function cambiarCategoriaAleatoria() {
-  const botones = Array.from(botonesCategorias);
-  if (botones.length === 0) return;
 
-  // Quitar clase activo de todos
-  botones.forEach(b => b.classList.remove('activo'));
 
-  // Elegir categoría aleatoria
-  const aleatorio = botones[Math.floor(Math.random() * botones.length)];
-  aleatorio.classList.add('activo');
-
-  // Simular clic en el botón para que cargue su carrusel
-  aleatorio.click();
-
-  console.log("Categoría cambiada automáticamente a:", aleatorio.id);
-}
-
-// Cada 30 segundos cambiar de categoría (30000 ms)
-setInterval(cambiarCategoriaAleatoria, 30000);
   
 //3.11.61
 // === Pantalla de entrada aleatoria ===
@@ -1175,6 +1156,7 @@ btnTomarFoto.addEventListener('click', () => {
   
 </body>
 </html>
+
 
 
 
