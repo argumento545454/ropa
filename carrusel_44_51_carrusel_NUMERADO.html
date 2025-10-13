@@ -1109,7 +1109,62 @@ window.addEventListener('DOMContentLoaded', ()=>{
 });
 
 
-//3.11.60
+// 3.11.60
+// TV CARRUSEL - MODO SPOT RANDOM (PROPAGANDA AUTOMÁTICA) ===
+
+// Lista de categorías disponibles (ajústalas según tus botones reales)
+const categoriasTV = ["blusas", "faldas", "pantalones", "zapatos", "accesorios", "vestidos"];
+
+// Variables de control
+let categoriaTVActual = "";
+let intervaloSpot = null;
+
+// Función que elige y muestra una categoría aleatoria
+function spotRandom() {
+  let nueva;
+  do {
+    nueva = categoriasTV[Math.floor(Math.random() * categoriasTV.length)];
+  } while (nueva === categoriaTVActual); // evita repetir la misma seguida
+
+  categoriaTVActual = nueva;
+  console.log("🎬 Spot random mostrando:", nueva);
+
+  // Usa tu función principal para mostrar categoría
+  if (typeof mostrarCategoria === "function") {
+    mostrarCategoria(nueva);
+  }
+
+  // (Opcional) Anuncio por voz
+  const anuncio = new SpeechSynthesisUtterance(`Nueva categoría ${nueva}`);
+  anuncio.lang = "es-ES";
+  speechSynthesis.speak(anuncio);
+}
+
+// Inicia modo automático tipo TV
+function iniciarSpotRandom() {
+  if (!intervaloSpot) {
+    spotRandom(); // primer spot inmediato
+    intervaloSpot = setInterval(spotRandom, 30000); // cambia cada 30 s
+    console.log("📺 Spot random activado");
+  }
+}
+
+// Detiene modo automático
+function detenerSpotRandom() {
+  clearInterval(intervaloSpot);
+  intervaloSpot = null;
+  console.log("⏹️ Spot random detenido");
+}
+
+// Inicia automáticamente al cargar la página
+window.addEventListener("load", () => {
+  iniciarSpotRandom();
+})
+
+
+
+  
+//3.11.61
 // === Pantalla de entrada aleatoria ===
 /*
 window.addEventListener('DOMContentLoaded', ()=>{
@@ -1150,6 +1205,7 @@ btnTomarFoto.addEventListener('click', () => {
   
 </body>
 </html>
+
 
 
 
