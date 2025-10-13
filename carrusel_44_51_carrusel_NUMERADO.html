@@ -1114,11 +1114,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
 
   
-<!--3.12 - Carrusel spot TV -->
-
-
-  
-<!!--3.13--> 
+<!--3.12--> 
 <script>
   //CAMARA FOTO
 const videoCamara = document.getElementById('videoCamara');
@@ -1147,8 +1143,32 @@ btnTomarFoto.addEventListener('click', () => {
 });
 </script>
 
+
+<!--3.13 - Activar doble vista de cámara -->
+<script>
+async function iniciarCamara() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const videoPreview = document.getElementById('videoCamaraPreview');
+    const videoMain = document.getElementById('videoCamaraMain');
+
+    // Muestra ambas vistas
+    videoPreview.srcObject = stream;
+    videoMain.srcObject = stream;
+
+    videoPreview.style.display = "block";
+    videoMain.style.display = "block";
+  } catch (error) {
+    console.error("Error al acceder a la cámara:", error);
+  }
+}
+document.addEventListener("DOMContentLoaded", iniciarCamara);
+</script>
+
+  
 </body>
 </html>
+
 
 
 
