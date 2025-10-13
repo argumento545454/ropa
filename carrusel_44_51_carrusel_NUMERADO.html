@@ -1124,46 +1124,72 @@ window.addEventListener('DOMContentLoaded', ()=>{
 <!!--3.12--> 
 
   
-<!--3.13 - Cámara y foto movibles (solo al activar) -->
-<!--3.13 - Cámara y foto movibles (con apagado real de cámara) -->
+<!--3.13 - Cámara y foto movibles (solo al activar con apagado real de cámara) -->
 <script>
 // --- Selección de elementos ---
 const videoCamara = document.getElementById('videoCamara');
 const canvasCamara = document.getElementById('canvasCamara');
 const btnTomarFoto = document.getElementById('btnTomarFoto');
 const fotoCamara = document.getElementById('fotoCamara');
-const btnCamara = document.getElementById('btnCamara'); // botón de encendido/apagado
+const btnCamara = document.getElementById('btnCamara');
 
 let streamActivo = null;
 
-// --- Encender o apagar cámara ---
+// --- Función para encender cámara ---
+async function encenderCamara() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    streamActivo = stream;
+    videoCamara.srcObject = stream;
+    videoCamara.style.display = 'block';
+    videoCamara.style.position = 'absolute';
+    videoCamara.style.left = '500px';
+    videoCamara.style.top = '80px';
+    videoCamara.style.zIndex = '9999';
+    videoCamara.style.cursor = 'grab';
+    btnCamara.textContent = "Apagar cámara";
+    console.log("✅ Cámara encendida");
+  } catch (error) {
+    console.error("Error al acceder a la cámara:", error);
+  }
+}
+
+// --- Función para apagar cámara ---
+function apagarCamara() {
+  if (!streamActivo) return;
+  
+  try {
+    // 1️⃣ Detener todas las pistas activas
+    streamActivo.getTracks().forEach(track => {
+      track.stop();
+    });
+
+    // 2️⃣ Desvincular del <video>
+    videoCamara.pause();
+    videoCamara.removeAttribute('srcObject');
+    videoCamara.srcObject = null;
+
+    // 3️⃣ Forzar recarga del elemento
+    videoCamara.load();
+
+    // 4️⃣ Ocultar el cuadro
+    videoCamara.style.display = 'none';
+
+    // 5️⃣ Liberar variable
+    streamActivo = null;
+    btnCamara.textContent = "Encender cámara";
+
+    console.log("🔴 Cámara apagada completamente");
+  } catch (e) {
+    console.error("Error al apagar cámara:", e);
+  }
+}
+
+// --- Botón de encendido/apagado ---
 if (btnCamara) {
-  btnCamara.addEventListener('click', async () => {
-    if (!streamActivo) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        streamActivo = stream;
-        videoCamara.srcObject = stream;
-        videoCamara.style.display = 'block';
-        videoCamara.style.position = 'absolute';
-        videoCamara.style.left = '500px';
-        videoCamara.style.top = '80px';
-        videoCamara.style.zIndex = '9999';
-        videoCamara.style.cursor = 'grab';
-        btnCamara.textContent = "Apagar cámara";
-      } catch (error) {
-        console.error("Error al acceder a la cámara:", error);
-      }
-    } else {
-      // 🔴 Apagar correctamente la cámara
-      const tracks = streamActivo.getTracks();
-      tracks.forEach(track => track.stop()); // detiene cámara física
-      videoCamara.srcObject = null;          // libera recurso
-      streamActivo = null;
-      videoCamara.style.display = 'none';
-      btnCamara.textContent = "Encender cámara";
-      console.log("Cámara apagada correctamente");
-    }
+  btnCamara.addEventListener('click', () => {
+    if (!streamActivo) encenderCamara();
+    else apagarCamara();
   });
 }
 
@@ -1172,13 +1198,13 @@ if (btnTomarFoto) {
   btnTomarFoto.addEventListener('click', () => {
     if (!videoCamara || !streamActivo) return;
 
-    // 1️⃣ Capturar foto del video
+    // 1️⃣ Capturar foto
     canvasCamara.width = videoCamara.videoWidth;
     canvasCamara.height = videoCamara.videoHeight;
     const ctx = canvasCamara.getContext('2d');
     ctx.drawImage(videoCamara, 0, 0, canvasCamara.width, canvasCamara.height);
 
-    // 2️⃣ Mostrar la foto tomada
+    // 2️⃣ Mostrar foto
     fotoCamara.src = canvasCamara.toDataURL();
     fotoCamara.style.display = 'block';
     fotoCamara.style.position = 'absolute';
@@ -1222,9 +1248,11 @@ if (videoCamara) hacerMovible(videoCamara);
 if (fotoCamara) hacerMovible(fotoCamara);
 </script>
 
+
   
 </body>
 </html>
+
 
 
 
