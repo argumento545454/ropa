@@ -1108,8 +1108,30 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById(categoriaRandom).click(); // simula clic en esa categoría
 });
 
+//3.11.60
+// ====== CAMBIO AUTOMÁTICO DE CATEGORÍA CADA 30s ======
+const botonesCategorias = document.querySelectorAll('#menuInicial button[id^="btn"]');
 
+// Función para seleccionar categoría aleatoria
+function cambiarCategoriaAleatoria() {
+  const botones = Array.from(botonesCategorias);
+  if (botones.length === 0) return;
 
+  // Quitar clase activo de todos
+  botones.forEach(b => b.classList.remove('activo'));
+
+  // Elegir categoría aleatoria
+  const aleatorio = botones[Math.floor(Math.random() * botones.length)];
+  aleatorio.classList.add('activo');
+
+  // Simular clic en el botón para que cargue su carrusel
+  aleatorio.click();
+
+  console.log("Categoría cambiada automáticamente a:", aleatorio.id);
+}
+
+// Cada 30 segundos cambiar de categoría (30000 ms)
+setInterval(cambiarCategoriaAleatoria, 30000);
   
 //3.11.61
 // === Pantalla de entrada aleatoria ===
@@ -1120,55 +1142,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById(categoriaRandom).click(); // simula clic en esa categoria
 });
 */
-</script>
-
-
-
-<script>
-// 3.11.60
-// TV CARRUSEL - MODO SPOT RANDOM (PROPAGANDA AUTOMÁTICA) ===
-// === Control de Categorías ===
-// ====== Manejo de Categorías ======
-const botonesCategorias = document.querySelectorAll('#menuInicial button[id^="btn"]');
-
-// Diccionario de categorías
-const categorias = {
-  btnSombreros: urlsSombreros,
-  btnBlusas: JSON.parse(localStorage.getItem("blusasLocales") || "[]").length > 0
-              ? JSON.parse(localStorage.getItem("blusasLocales"))
-              : urlsBlusas,
-  btnPantaMujer: urlsPantaMujer,
-  btnZapatos: urlsZapatos,
-  btnVestidos: [],
-  btnFaldas: [],
-  btnChompas: [],
-  btnCamisas: [],
-  btnRopa: [],
-  btnElectro: JSON.parse(localStorage.getItem("electroLocales") || "[]").length > 0
-              ? JSON.parse(localStorage.getItem("electroLocales"))
-              : [],
-  btnCarros: []
-};
-
-// Asignar evento a cada botón
-botonesCategorias.forEach(btn => {
-  btn.addEventListener('click', () => {
-    // 1️⃣ Quitar activo a todos
-    botonesCategorias.forEach(b => b.classList.remove('activo'));
-    // 2️⃣ Activar el actual
-    btn.classList.add('activo');
-    // 3️⃣ Detectar categoría y cargar imágenes
-    const urls = categorias[btn.id] || [];
-    if (urls.length > 0) {
-      cargarCategoria(urls);
-    } else {
-      mostrarMensajeVacio();
-    }
-  });
-});
-
-// Al iniciar: activar "Blusas" por defecto
-document.getElementById("btnBlusas").click();
 </script>
 
   
@@ -1202,6 +1175,7 @@ btnTomarFoto.addEventListener('click', () => {
   
 </body>
 </html>
+
 
 
 
