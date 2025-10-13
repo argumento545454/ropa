@@ -1124,54 +1124,68 @@ window.addEventListener('DOMContentLoaded', ()=>{
 <!!--3.12--> 
 
   
-<!--3.13 - Cámara y foto movibles -->
+<!--3.13 - Cámara y foto movibles (solo al activar) -->
 <script>
 // --- Selección de elementos ---
 const videoCamara = document.getElementById('videoCamara');
 const canvasCamara = document.getElementById('canvasCamara');
 const btnTomarFoto = document.getElementById('btnTomarFoto');
 const fotoCamara = document.getElementById('fotoCamara');
+const btnCamara = document.getElementById('btnCamara'); // botón de encendido/apagado
 
-// --- Activar cámara ---
-(async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    videoCamara.srcObject = stream;
-    videoCamara.style.display = 'block';
-    videoCamara.style.position = 'absolute';
-    videoCamara.style.left = '500px';
-    videoCamara.style.top = '80px';
-    videoCamara.style.zIndex = '9999';
-    videoCamara.style.cursor = 'grab';
-  } catch (error) {
-    console.error("Error al acceder a la cámara:", error);
-  }
-})();
+let streamActivo = null;
+
+// --- Encender o apagar cámara ---
+if (btnCamara) {
+  btnCamara.addEventListener('click', async () => {
+    if (!streamActivo) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        streamActivo = stream;
+        videoCamara.srcObject = stream;
+        videoCamara.style.display = 'block';
+        videoCamara.style.position = 'absolute';
+        videoCamara.style.left = '500px';
+        videoCamara.style.top = '80px';
+        videoCamara.style.zIndex = '9999';
+        videoCamara.style.cursor = 'grab';
+        btnCamara.textContent = "Apagar cámara";
+      } catch (error) {
+        console.error("Error al acceder a la cámara:", error);
+      }
+    } else {
+      streamActivo.getTracks().forEach(track => track.stop());
+      streamActivo = null;
+      videoCamara.style.display = 'none';
+      btnCamara.textContent = "Encender cámara";
+    }
+  });
+}
 
 // --- Tomar foto ---
-btnTomarFoto.addEventListener('click', () => {
-  if (!videoCamara) return;
-  
-  // 1️⃣ Capturar foto del video
-  canvasCamara.width = videoCamara.videoWidth;
-  canvasCamara.height = videoCamara.videoHeight;
-  const ctx = canvasCamara.getContext('2d');
-  ctx.drawImage(videoCamara, 0, 0, canvasCamara.width, canvasCamara.height);
+if (btnTomarFoto) {
+  btnTomarFoto.addEventListener('click', () => {
+    if (!videoCamara || !streamActivo) return;
 
-  // 2️⃣ Mostrar la foto tomada
-  fotoCamara.src = canvasCamara.toDataURL();
-  fotoCamara.style.display = 'block';
+    // 1️⃣ Capturar foto del video
+    canvasCamara.width = videoCamara.videoWidth;
+    canvasCamara.height = videoCamara.videoHeight;
+    const ctx = canvasCamara.getContext('2d');
+    ctx.drawImage(videoCamara, 0, 0, canvasCamara.width, canvasCamara.height);
 
-  // 3️⃣ Preparar posición y tamaño de la foto
-  fotoCamara.style.position = 'absolute';
-  fotoCamara.style.left = '800px';
-  fotoCamara.style.top = '80px';
-  fotoCamara.style.width = '200px';
-  fotoCamara.style.height = '200px';
-  fotoCamara.style.transition = 'all 0.3s ease';
-  fotoCamara.style.cursor = 'grab';
-  fotoCamara.style.zIndex = '9998';
-});
+    // 2️⃣ Mostrar la foto tomada
+    fotoCamara.src = canvasCamara.toDataURL();
+    fotoCamara.style.display = 'block';
+    fotoCamara.style.position = 'absolute';
+    fotoCamara.style.left = '800px';
+    fotoCamara.style.top = '80px';
+    fotoCamara.style.width = '200px';
+    fotoCamara.style.height = '200px';
+    fotoCamara.style.transition = 'all 0.3s ease';
+    fotoCamara.style.cursor = 'grab';
+    fotoCamara.style.zIndex = '9998';
+  });
+}
 
 // --- Función genérica para hacer movible cualquier elemento ---
 function hacerMovible(elemento) {
@@ -1203,8 +1217,10 @@ if (videoCamara) hacerMovible(videoCamara);
 if (fotoCamara) hacerMovible(fotoCamara);
 </script>
 
+  
 </body>
 </html>
+
 
 
 
