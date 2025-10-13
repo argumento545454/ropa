@@ -1113,53 +1113,59 @@ window.addEventListener('DOMContentLoaded', ()=>{
   
 <!--3.12 - Carrusel spot TV -->
 <script>
-// ====== CAMBIO AUTOMÁTICO DE CATEGORÍA CADA 30s ======  
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Bloque 3.12 cargado correctamente");
-    // -----------------------------
-    // Ejemplo: Ajustar foto dentro del recuadro
-    // -----------------------------
-    const foto = document.getElementById("fotoCliente"); // reemplaza con el id real de tu foto
-    if (foto) {
-        // Permitir arrastrar la foto dentro del recuadro
-        let isDragging = false;
-        let startX, startY;
+console.log("Bloque 3.12 cargado");
 
-        foto.addEventListener("mousedown", (e) => {
-            isDragging = true;
-            startX = e.clientX - foto.offsetLeft;
-            startY = e.clientY - foto.offsetTop;
-            foto.style.cursor = "grabbing";
-        });
+// Función para inicializar la foto arrastrable
+function initFotoArrastrable() {
+    const foto = document.querySelector("#fotoCliente"); // cambia por tu id real
+    if (!foto) return; // si no existe, sale
 
-        document.addEventListener("mousemove", (e) => {
-            if (isDragging) {
-                foto.style.left = `${e.clientX - startX}px`;
-                foto.style.top = `${e.clientY - startY}px`;
-            }
-        });
+    let isDragging = false;
+    let startX, startY;
 
-        document.addEventListener("mouseup", () => {
-            isDragging = false;
-            foto.style.cursor = "grab";
-        });
+    foto.style.position = "absolute"; // asegurarse que se pueda mover
+    foto.style.cursor = "grab";
+
+    foto.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        startX = e.clientX - foto.offsetLeft;
+        startY = e.clientY - foto.offsetTop;
+        foto.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            foto.style.left = `${e.clientX - startX}px`;
+            foto.style.top = `${e.clientY - startY}px`;
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+        foto.style.cursor = "grab";
+    });
+}
+
+// Función para inicializar botones
+function initBotones() {
+    const boton = document.querySelector("#botonPrueba"); // cambia por tu id real
+    if (!boton) return;
+    boton.addEventListener("click", () => alert("Botón 3.12 activado"));
+}
+
+// Reintento automático cada 500ms si no encuentra elementos
+const intervalID = setInterval(() => {
+    initFotoArrastrable();
+    initBotones();
+
+    // Si ambos existen, detenemos reintentos
+    if (document.querySelector("#fotoCliente") && document.querySelector("#botonPrueba")) {
+        clearInterval(intervalID);
+        console.log("Bloque 3.12 inicializado correctamente");
     }
-
-    // -----------------------------
-    // Ejemplo: botón de prueba
-    // -----------------------------
-    const botonPrueba = document.getElementById("botonPrueba");
-    if (botonPrueba) {
-        botonPrueba.addEventListener("click", () => {
-            alert("Botón 3.12 activado");
-        });
-    }
-
-    // -----------------------------
-    // Aquí puedes añadir más funciones
-    // -----------------------------
-});
+}, 500);
 </script>
+
 
   
 <!!--3.13--> 
@@ -1191,12 +1197,9 @@ btnTomarFoto.addEventListener('click', () => {
 });
 </script>
 
-
-
-
-  
 </body>
 </html>
+
 
 
 
