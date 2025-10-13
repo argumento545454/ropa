@@ -1118,8 +1118,38 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById(categoriaRandom).click(); // simula clic en esa categoria
 });
 */
-
-
 </script>
+
+<!!--3.12--> 
+<script>
+  //CAMARA FOTO
+const videoCamara = document.getElementById('videoCamara');
+const canvasCamara = document.getElementById('canvasCamara');
+const btnTomarFoto = document.getElementById('btnTomarFoto');
+const fotoCamara = document.getElementById('fotoCamara');
+
+btnTomarFoto.addEventListener('click', () => {
+    // 1️⃣ Capturar foto del video
+    canvasCamara.width = videoCamara.videoWidth;
+    canvasCamara.height = videoCamara.videoHeight;
+    const ctx = canvasCamara.getContext('2d');
+    ctx.drawImage(videoCamara, 0, 0, canvasCamara.width, canvasCamara.height);
+
+    // 2️⃣ Poner la foto en el <img> original
+    fotoCamara.src = canvasCamara.toDataURL();
+    fotoCamara.style.display = 'block';
+
+    // 3️⃣ Preparar estilo para moverla
+    fotoCamara.style.position = 'absolute';
+    fotoCamara.style.left = '800px';   // X deseada
+    fotoCamara.style.top = '80px';     // Y deseada
+    fotoCamara.style.width = '200px';
+    fotoCamara.style.height = '200px';
+    fotoCamara.style.transition = 'all 0.5s ease'; // animación suave
+});
+</script>
+
+
 </body>
 </html>
+
