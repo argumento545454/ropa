@@ -1110,59 +1110,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
   
 <!--3.12 - Carrusel spot TV -->
-<script>
-console.log("Bloque 3.12 cargado");
-
-// Función para inicializar la foto arrastrable
-function initFotoArrastrable() {
-    const foto = document.querySelector("#fotoCliente"); // cambia por tu id real
-    if (!foto) return; // si no existe, sale
-
-    let isDragging = false;
-    let startX, startY;
-
-    foto.style.position = "absolute"; // asegurarse que se pueda mover
-    foto.style.cursor = "grab";
-
-    foto.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        startX = e.clientX - foto.offsetLeft;
-        startY = e.clientY - foto.offsetTop;
-        foto.style.cursor = "grabbing";
-    });
-
-    document.addEventListener("mousemove", (e) => {
-        if (isDragging) {
-            foto.style.left = `${e.clientX - startX}px`;
-            foto.style.top = `${e.clientY - startY}px`;
-        }
-    });
-
-    document.addEventListener("mouseup", () => {
-        isDragging = false;
-        foto.style.cursor = "grab";
-    });
-}
-
-// Función para inicializar botones
-function initBotones() {
-    const boton = document.querySelector("#botonPrueba"); // cambia por tu id real
-    if (!boton) return;
-    boton.addEventListener("click", () => alert("Botón 3.12 activado"));
-}
-
-// Reintento automático cada 500ms si no encuentra elementos
-const intervalID = setInterval(() => {
-    initFotoArrastrable();
-    initBotones();
-
-    // Si ambos existen, detenemos reintentos
-    if (document.querySelector("#fotoCliente") && document.querySelector("#botonPrueba")) {
-        clearInterval(intervalID);
-        console.log("Bloque 3.12 inicializado correctamente");
-    }
-}, 500);
-</script>
 
 
   
@@ -1197,6 +1144,7 @@ btnTomarFoto.addEventListener('click', () => {
 
 </body>
 </html>
+
 
 
 
