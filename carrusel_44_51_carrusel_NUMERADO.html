@@ -1125,6 +1125,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
   
 <!--3.13 - Cámara y foto movibles (solo al activar) -->
+<!--3.13 - Cámara y foto movibles (con apagado real de cámara) -->
 <script>
 // --- Selección de elementos ---
 const videoCamara = document.getElementById('videoCamara');
@@ -1154,10 +1155,14 @@ if (btnCamara) {
         console.error("Error al acceder a la cámara:", error);
       }
     } else {
-      streamActivo.getTracks().forEach(track => track.stop());
+      // 🔴 Apagar correctamente la cámara
+      const tracks = streamActivo.getTracks();
+      tracks.forEach(track => track.stop()); // detiene cámara física
+      videoCamara.srcObject = null;          // libera recurso
       streamActivo = null;
       videoCamara.style.display = 'none';
       btnCamara.textContent = "Encender cámara";
+      console.log("Cámara apagada correctamente");
     }
   });
 }
@@ -1220,6 +1225,7 @@ if (fotoCamara) hacerMovible(fotoCamara);
   
 </body>
 </html>
+
 
 
 
