@@ -1109,9 +1109,22 @@ window.addEventListener('DOMContentLoaded', ()=>{
 });
 
 
+
+  
+//3.11.61
+// === Pantalla de entrada aleatoria ===
+/*
+window.addEventListener('DOMContentLoaded', ()=>{
+  const categorias = Object.keys(botonesCategorias); // todas las categorias disponibles
+  const categoriaRandom = categorias[Math.floor(Math.random() * categorias.length)]; // selecciona una al azar
+  document.getElementById(categoriaRandom).click(); // simula clic en esa categoria
+});
+*/
+</script>
+
+
 // 3.11.60
 // TV CARRUSEL - MODO SPOT RANDOM (PROPAGANDA AUTOMÁTICA) ===
-
 <!-- === Control de Categorías === -->
 <script>
 // ====== Manejo de Categorías ======
@@ -1158,17 +1171,6 @@ document.getElementById("btnBlusas").click();
 </script>
 
   
-//3.11.61
-// === Pantalla de entrada aleatoria ===
-/*
-window.addEventListener('DOMContentLoaded', ()=>{
-  const categorias = Object.keys(botonesCategorias); // todas las categorias disponibles
-  const categoriaRandom = categorias[Math.floor(Math.random() * categorias.length)]; // selecciona una al azar
-  document.getElementById(categoriaRandom).click(); // simula clic en esa categoria
-});
-*/
-</script>
-
 <script>
   //CAMARA FOTO
 const videoCamara = document.getElementById('videoCamara');
@@ -1199,6 +1201,7 @@ btnTomarFoto.addEventListener('click', () => {
   
 </body>
 </html>
+
 
 
 
