@@ -86,7 +86,7 @@ h2 { margin-bottom:20px; }
   object-fit: cover;
   border: 0px solid #555;
   transition: transform 0.2s ease; /* suaviza la rotación */
-  margin-bottom: 400px;  /* <-- margen de top */
+  margin-bottom: 20px;  /* <-- margen de top */
   /*cursor: pointer; */
   /*animation: rotarFoto 5s linear infinite;*/ /* rotación continua */
 }
@@ -98,10 +98,24 @@ h2 { margin-bottom:20px; }
   to { transform: rotate(360deg); }
 }
 
-/*2.2.4*/
+/*2.2.4.1*/
 /*foto cliente se agranda*/
 #fotoCliente:hover { transform:scale(2.3); z-index:2000; }  
 
+/*2.2.4.2*/
+/* === Posicionar la FOTO subida desde PC === */
+#fotoCliente {
+  position: absolute;
+  left: 900px;   /* 👈 mueve horizontalmente */
+  top: 100px;    /* 👆 mueve verticalmente */
+  width: 200px;  /* tamaño del cuadro */
+  height: auto;
+  border: 2px solid #666;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  z-index: 2000;
+}
+  
 /*2.2.5*/
 /* foto pc Botón subir foto */
 #btnSubirfoto {
@@ -1145,6 +1159,7 @@ btnTomarFoto.addEventListener('click', () => {
 
 </body>
 </html>
+
 
 
 
