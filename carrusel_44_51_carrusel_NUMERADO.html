@@ -418,6 +418,16 @@ btnTomarFoto.addEventListener('click', () => {
   const ctx = canvas.getContext('2d');
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+const fotoCamara = document.getElementById('fotoCamara');
+const fotoCliente = document.getElementById('fotoCliente');
+
+// Cuando tomas la foto
+fotoCamara.src = canvasCamara.toDataURL();  // ya deberías tener esto
+fotoCamara.style.display = 'block';
+
+// Mover al lugar del cliente
+fotoCliente.parentNode.replaceChild(fotoCamara, fotoCliente);
+  
 //3.9.4
   // Convertir a data URL
   const dataURL = canvas.toDataURL('image/png');
@@ -1123,3 +1133,4 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
+
