@@ -1149,73 +1149,28 @@ btnTomarFoto.addEventListener('click', () => {
 
 
 
+
+
+  
 <!--3.14 - Carrusel 30s spot TV -->
+<!-- Carrusel automático cada 30 segundos -->
 <script>
-// === Reconocimiento de voz completo ===
-if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'es-ES';
-  recognition.continuous = true;
-  recognition.interimResults = false;
+document.addEventListener("DOMContentLoaded", () => {
+  const imagenes = document.querySelectorAll('#carrusel img');
+  let indice = 0;
 
-  recognition.onresult = function(event){
-    const last = event.results.length -1;
-    const text = event.results[last][0].transcript.toLowerCase().trim();
-    console.log("Comando voz:", text);
+  if (imagenes.length > 0) {
+    // Mostrar la primera imagen
+    imagenes[0].classList.add('active');
 
-    // === Control cámara ===
-    if(text.includes("encender cámara")) document.getElementById('btnCamara').click();
-    if(text.includes("apagar cámara")) detenerCamaraPC();
-    if(text.includes("tomar foto")) document.getElementById('btnTomarFoto').click();
-    if(text.includes("mostrar foto")) mostrarFoto();
-    if(text.includes("esconder foto")) esconderFoto();
-    if(text.includes("alternar foto")) toggleFoto();
-
-    // === Control franja ===
-    if(text.includes("mostrar franja") || text.includes("abrir franja")) toggleFranja();
-    if(text.includes("ocultar franja") || text.includes("cerrar franja")) toggleFranja();
-
-    // === Categorías ===
-    const categoriasVoz = {
-      "sombreros": "btnSombreros",
-      "blusas": "btnBlusas",
-      "pantalones": "btnPantaMujer",
-      "zapatos": "btnZapatos",
-      "vestidos": "btnVestidos",
-      "faldas": "btnFaldas",
-      "chompas": "btnChompas",
-      "camisas": "btnCamisas",
-      "ropa": "btnRopa",
-      "electrodomésticos": "btnElectro",
-      "carros": "btnCarros"
-    };
-
-    for(const palabra in categoriasVoz){
-      if(text.includes(palabra)) document.getElementById(categoriasVoz[palabra]).click();
-    }
-
-    // === Carrusel ===
-    if(text.includes("vaciar carrusel")) document.getElementById('btnCarruselToggle').click();
-    if(text.includes("recuperar carrusel")) document.getElementById('btnCarruselToggle').click();
-
-    // === Franja ===
-    if(text.includes("vaciar franja")) document.getElementById('btnFranjaToggle').click();
-    if(text.includes("recuperar franja")) document.getElementById('btnFranjaToggle').click();
-  };
-
-  recognition.onerror = function(event){
-    console.error("Error reconocimiento voz:", event.error);
-  };
-
-  recognition.onend = function(){
-    recognition.start(); // reinicia para escucha continua
-  };
-
-  recognition.start();
-}else{
-  console.warn("¡Reconocimiento de voz no soportado en este navegador!");
-}
+    // Cambiar imagen cada 30 segundos
+    setInterval(() => {
+      imagenes[indice].classList.remove('active');
+      indice = (indice + 1) % imagenes.length;
+      imagenes[indice].classList.add('active');
+    }, 30000); // 30 segundos = 30000 milisegundos
+  }
+});
 </script>
 
 
@@ -1223,6 +1178,7 @@ if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
   
 </body>
 </html>
+
 
 
 
