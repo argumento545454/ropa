@@ -94,6 +94,7 @@ h2 { margin-bottom:20px; }
   margin-bottom: 20px;
 }
 
+
 /*2.2.3*/
 /*foto cliente rotacion infinita */
 @keyframes rotarFoto {
@@ -110,7 +111,7 @@ h2 { margin-bottom:20px; }
 /* foto pc Botón subir foto */
 #btnSubirfoto {
   position: absolute;   /* se posiciona relativo al contenedor */
-  bottom: 1000px;         /* 10px desde la parte inferior de la foto */
+  bottom: 900px;         /* 10px desde la parte inferior de la foto */
   left: 70%;            /* centrado horizontal */
   transform: translateX(-50%); /* ajustar centro exacto */
   padding: 8px 16px;
@@ -209,33 +210,9 @@ video button,
   opacity: 0 !important;
   pointer-events: none !important;
 }
-
-/*2.2.17*/ 
-/*Carrusel 30s spot TV*/ 
-#carrusel { 
-  position: relative; 
-  width: 100%; 
-  height: 100vh; 
-  overflow: hidden; 
-} 
-  
-/*2.2.18*/   
-#carrusel img { 
-  position: absolute; 
-  width: 100%; 
-  height: 100%; 
-  object-fit: cover; 
-  opacity: 0; 
-  transition: opacity 1s ease-in-out; 
-}
-/*2.2.19*/   
-#carrusel img.active { opacity: 1; 
-} 
-</style> 
+</style>
 
 
-
-  
 
 <!--2.3-->  
 <script>
@@ -318,16 +295,8 @@ Voz/Clic Comandos
 
 <!--3.4-->
 <main>
-<!--3.4.1.1-->
-  <!--30s carrusel treinta s-->
-<section id="carrusel"> 
-  <img src="https://icon2.cleanpng.com/ci2/kyi/yld/abf0atjcr.webp" alt="Imagen 1"> <!--mujer tejiendo-->
-  <img src="foto2.jpg" alt="Imagen 2"> 
-  <img src="foto3.jpg" alt="Imagen 3"> 
-  <img src="foto4.jpg" alt="Imagen 4"> 
-</section> 
- 
-<!--3.4.1.2-->
+
+<!--3.4.1-->
   <!-- Contenedor título + cámara + foto cliente (solo UNA vez) -->
   <div style="display:flex; align-items:center; gap:20px; margin-bottom:20px;">
 
@@ -359,7 +328,7 @@ Voz/Clic Comandos
 <!--3.4.5-->
     <!-- Título y foto cliente (único) -->
     <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-      <h2>Centro Comercial 45 "Vitrinas Virtuales"</h2>
+      <h2>Centro Comercial 45 30s "Vitrinas Virtuales"</h2>
       <img id="fotoCliente" 
 src="imagenes/cliente_default.jpg" alt="Foto" width="200" height="200">
       <button id="btnSubirfoto">Foto pc</button>
@@ -1136,43 +1105,21 @@ window.addEventListener('DOMContentLoaded', ()=>{
     imagenesLocalesElectro = JSON.parse(electroGuardadas);
   }
 
-  
-//3.11.60
+//3.11.59
   // --- Selección aleatoria de categoría ---
   const categorias = Object.keys(botonesCategorias); // todas las categorías disponibles
   const categoriaRandom = categorias[Math.floor(Math.random() * categorias.length)]; // selecciona una al azar
   document.getElementById(categoriaRandom).click(); // simula clic en esa categoría
 });
-
-
-
-//3.11.61
-// Carrusel 30s automático cada 30 segundos
-const carruselImgs = document.querySelectorAll('#carrusel img');
-let indiceCarrusel = 0;
-
-function mostrarImagenCarrusel() {
-  carruselImgs.forEach(img => img.classList.remove('active'));
-  if(carruselImgs[indiceCarrusel]) {
-    carruselImgs[indiceCarrusel].classList.add('active');
-  }
-  indiceCarrusel = (indiceCarrusel + 1) % carruselImgs.length;
-}
-
-// Mostrar primera imagen al cargar
-mostrarImagenCarrusel();
-
-// Cambiar imagen cada 30 segundos
-setInterval(mostrarImagenCarrusel, 30000); // 30000ms = 30s
 </script>
 
 
   
-<!--3.12 -->
+<!--3.12 - Carrusel spot TV -->
 
 
   
-<!--3.13--> 
+<!!--3.13--> 
 <script>
   //CAMARA FOTO
 const videoCamara = document.getElementById('videoCamara');
@@ -1201,37 +1148,8 @@ btnTomarFoto.addEventListener('click', () => {
 });
 </script>
 
-
-  
-  
-<!--3.14-->
-<!--Carrusel 30s spot TV -->
-
-  
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
