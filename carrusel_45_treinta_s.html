@@ -1186,28 +1186,44 @@ btnTomarFoto.addEventListener('click', () => {
 <!--Carrusel 30s spot TV -->
 <!-- === Carrusel automático cada 30 segundos === -->
 <script>
-// === Carrusel 30s spot TV ===
-document.addEventListener("DOMContentLoaded", () => {
-  const carrusel = document.getElementById("carrusel");
-  const imagenes = carrusel.querySelectorAll("img");
-  let indice = 0;
-  const tiempo = 30000; // 30 segundos
+// Carrusel 30s por categoría
+function iniciarCarruselCategoria() {
+    const imgs = container.querySelectorAll('img');
+    if (imgs.length === 0) return;
 
-  // Mostrar primera imagen
-  imagenes[indice].classList.add("active");
+    // Calculamos tiempo por imagen
+    const tiempoTotal = 30000; // 30 segundos en ms
+    const tiempoPorImagen = tiempoTotal / imgs.length;
 
-  // Cambiar imagen cada 30s
-  setInterval(() => {
-    imagenes[indice].classList.remove("active");
-    indice = (indice + 1) % imagenes.length;
-    imagenes[indice].classList.add("active");
-  }, tiempo);
-});
+    let index = 0;
+
+    // Primero, ocultamos todas las imágenes
+    imgs.forEach(img => img.classList.remove('active'));
+    imgs[index].classList.add('active');
+
+    // Limpiar interval anterior si existiera
+    if (window.carruselInterval) clearInterval(window.carruselInterval);
+
+    // Cambiar imagen según el tiempo calculado
+    window.carruselInterval = setInterval(() => {
+        imgs[index].classList.remove('active');
+        index = (index + 1) % imgs.length;
+        imgs[index].classList.add('active');
+    }, tiempoPorImagen);
+}
+
+// Llamar cuando cargues la categoría
+function cargarCategoriaConCarrusel(urls) {
+    vaciarCarrusel();
+    urls.forEach(src => agregarImagen(src));
+    iniciarCarruselCategoria();
+}
 </script>
- 
+
   
 </body>
 </html>
+
 
 
 
