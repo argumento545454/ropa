@@ -1186,33 +1186,29 @@ btnTomarFoto.addEventListener('click', () => {
 <!--Carrusel 30s spot TV -->
 <!-- === Carrusel automático cada 30 segundos === -->
 <script>
+// === Carrusel 30s spot TV ===
 document.addEventListener("DOMContentLoaded", () => {
-  const imagenes = document.querySelectorAll("#carrusel img");
+  const carrusel = document.getElementById("carrusel");
+  const imagenes = carrusel.querySelectorAll("img");
   let indice = 0;
+  const tiempo = 30000; // 30 segundos
 
-  if (imagenes.length === 0) return; // no hay imágenes, salir
-
-  // Mostrar la primera imagen al iniciar
+  // Mostrar primera imagen
   imagenes[indice].classList.add("active");
 
-  // Cambiar cada 30 segundos (30000 ms)
+  // Cambiar imagen cada 30s
   setInterval(() => {
-    // Oculta la imagen actual
     imagenes[indice].classList.remove("active");
-
-    // Avanza a la siguiente (o vuelve al inicio)
     indice = (indice + 1) % imagenes.length;
-
-    // Muestra la siguiente
     imagenes[indice].classList.add("active");
-  }, 30000);
+  }, tiempo);
 });
 </script>
-
  
   
 </body>
 </html>
+
 
 
 
