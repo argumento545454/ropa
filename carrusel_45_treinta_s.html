@@ -1199,7 +1199,6 @@ let intervaloCategoria = null;
 let categoriaActual = null;
 
 // ----- Funciones -----
-
 function resaltarBoton(idBoton) {
     categorias.forEach(cat => {
         document.getElementById('btn' + cat).classList.remove('activo');
@@ -1231,7 +1230,6 @@ function mostrarImagenesConTiempo(urls) {
 
     if (intervaloImagen) clearInterval(intervaloImagen);
 
-    // Mostrar primera imagen inmediatamente
     imgs.forEach(img => img.style.display = 'none');
     imgs[indiceImagen].style.display = 'block';
 
@@ -1250,11 +1248,12 @@ function mostrarCategoriaRandom() {
 }
 
 function cambiarCategoria(categoria) {
-    resaltarBoton('btn' + categoria);
+    if (categoria === categoriaActual) return; // no cambiar si es la misma
     cargarCategoria(categoria);
+    resaltarBoton('btn' + categoria);
 }
 
-// ----- Cambiar categoría automáticamente cada 30s -----
+// ----- Rotación automática de categorías cada 30s -----
 function rotarCategoriasAutomaticamente() {
     if (intervaloCategoria) clearInterval(intervaloCategoria);
 
@@ -1263,7 +1262,7 @@ function rotarCategoriasAutomaticamente() {
         let nuevasCategorias = categorias.filter(c => c !== categoriaActual);
         const index = Math.floor(Math.random() * nuevasCategorias.length);
         cambiarCategoria(nuevasCategorias[index]);
-    }, 30000); // Cambiar cada 30s
+    }, 30000);
 }
 
 // ----- Listeners de botones -----
@@ -1273,14 +1272,14 @@ categorias.forEach(cat => {
     });
 });
 
-// ----- Voz -----
+// ----- Comando por voz -----
 function cambiarCategoriaPorVoz(categoria) {
     if (categorias.includes(categoria)) {
         cambiarCategoria(categoria);
     }
 }
 
-// ----- Iniciar al cargar la página -----
+// ----- Inicializar página -----
 window.addEventListener('DOMContentLoaded', () => {
     mostrarCategoriaRandom();
     rotarCategoriasAutomaticamente();
@@ -1289,6 +1288,7 @@ window.addEventListener('DOMContentLoaded', () => {
   
 </body>
 </html>
+
 
 
 
