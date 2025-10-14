@@ -219,6 +219,7 @@ video button,
   overflow: hidden; 
 } 
   
+/*2.2.18*/   
 #carrusel img { 
   position: absolute; 
   width: 100%; 
@@ -227,7 +228,7 @@ video button,
   opacity: 0; 
   transition: opacity 1s ease-in-out; 
 }
-  
+/*2.2.19*/   
 #carrusel img.active { opacity: 1; 
 } 
 </style> 
@@ -1205,110 +1206,11 @@ btnTomarFoto.addEventListener('click', () => {
   
 <!--3.14-->
 <!--Carrusel 30s spot TV -->
-<script>
-// ----- Configuración -----
-const categorias = ['Sombreros', 'Blusas', 'Zapatos']; 
-const urlsCategorias = {
-    'Sombreros': urlsSombreros,
-    'Blusas': urlsBlusas.concat(imagenesLocalesBlusas),
-    'Zapatos': urlsZapatos
-};
 
-let indiceImagen = 0;
-let intervaloImagen = null;
-let intervaloCategoria = null;
-let categoriaActual = null;
-
-// ----- Funciones -----
-function resaltarBoton(idBoton) {
-    categorias.forEach(cat => {
-        document.getElementById('btn' + cat).classList.remove('activo');
-    });
-    document.getElementById(idBoton).classList.add('activo');
-}
-
-function cargarCategoria(categoria) {
-    categoriaActual = categoria;
-    const urls = urlsCategorias[categoria];
-    const carrusel = document.getElementById('carrusel');
-    carrusel.innerHTML = '';
-
-    urls.forEach(url => {
-        const img = document.createElement('img');
-        img.src = url;
-        img.style.display = 'none';
-        carrusel.appendChild(img);
-    });
-
-    indiceImagen = 0;
-    mostrarImagenesConTiempo(urls);
-}
-
-function mostrarImagenesConTiempo(urls) {
-    const carrusel = document.getElementById('carrusel');
-    const imgs = carrusel.querySelectorAll('img');
-    const tiempoPorImagen = 30000 / urls.length; // 30s para toda la categoría
-
-    if (intervaloImagen) clearInterval(intervaloImagen);
-
-    imgs.forEach(img => img.style.display = 'none');
-    imgs[indiceImagen].style.display = 'block';
-
-    intervaloImagen = setInterval(() => {
-        imgs[indiceImagen].style.display = 'none';
-        indiceImagen = (indiceImagen + 1) % urls.length;
-        imgs[indiceImagen].style.display = 'block';
-    }, tiempoPorImagen);
-}
-
-function mostrarCategoriaRandom() {
-    const index = Math.floor(Math.random() * categorias.length);
-    const cat = categorias[index];
-    resaltarBoton('btn' + cat);
-    cargarCategoria(cat);
-}
-
-function cambiarCategoria(categoria) {
-    if (categoria === categoriaActual) return; // no cambiar si es la misma
-    cargarCategoria(categoria);
-    resaltarBoton('btn' + categoria);
-}
-
-// ----- Rotación automática de categorías cada 30s -----
-function rotarCategoriasAutomaticamente() {
-    if (intervaloCategoria) clearInterval(intervaloCategoria);
-
-    intervaloCategoria = setInterval(() => {
-        // Elegir otra categoría al azar diferente de la actual
-        let nuevasCategorias = categorias.filter(c => c !== categoriaActual);
-        const index = Math.floor(Math.random() * nuevasCategorias.length);
-        cambiarCategoria(nuevasCategorias[index]);
-    }, 30000);
-}
-
-// ----- Listeners de botones -----
-categorias.forEach(cat => {
-    document.getElementById('btn' + cat).addEventListener('click', () => {
-        cambiarCategoria(cat);
-    });
-});
-
-// ----- Comando por voz -----
-function cambiarCategoriaPorVoz(categoria) {
-    if (categorias.includes(categoria)) {
-        cambiarCategoria(categoria);
-    }
-}
-
-// ----- Inicializar página -----
-window.addEventListener('DOMContentLoaded', () => {
-    mostrarCategoriaRandom();
-    rotarCategoriasAutomaticamente();
-});
-</script>
   
 </body>
 </html>
+
 
 
 
