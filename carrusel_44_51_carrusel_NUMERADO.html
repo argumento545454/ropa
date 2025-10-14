@@ -78,17 +78,19 @@ h2 { margin-bottom:20px; }
 }
 
 /*2.2.2*/
-/* Foto cliente en círculo y rotacion infinita */
 #fotoCliente {
-  width: 160px;
+  position: absolute;
+  left: 1300px;
+  top: 250px;
+  width: 200px;
   height: 180px;
-  border-radius: 0%;     /* <-- Esto hace el círculo */
   object-fit: cover;
-  border: 0px solid #555;
-  transition: transform 0.2s ease; /* suaviza la rotación */
-  margin-bottom: 20px;  /* <-- margen de top */
-  /*cursor: pointer; */
-  /*animation: rotarFoto 5s linear infinite;*/ /* rotación continua */
+  border: 6px solid #666;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+  z-index: 2000;
+  margin-bottom: 20px;
 }
 
 /*2.2.3*/
@@ -102,20 +104,7 @@ h2 { margin-bottom:20px; }
 /*foto cliente se agranda*/
 #fotoCliente:hover { transform:scale(2.3); z-index:2000; }  
 
-/*2.2.4.2*/
-/* === Posicionar la FOTO subida desde PC === */
-#fotoCliente {
-  position: absolute;
-  left: 1300px;   /* 👈 mueve horizontalmente */
-  top: 100px;    /* 👆 mueve verticalmente */
-  width: 200px;  /* tamaño del cuadro */
-  height: auto;
-  border: 6px solid #666; 
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  z-index: 2000;
-}
-  
+ 
 /*2.2.5*/
 /* foto pc Botón subir foto */
 #btnSubirfoto {
@@ -1159,6 +1148,7 @@ btnTomarFoto.addEventListener('click', () => {
 
 </body>
 </html>
+
 
 
 
