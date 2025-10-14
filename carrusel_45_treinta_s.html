@@ -1135,12 +1135,34 @@ window.addEventListener('DOMContentLoaded', ()=>{
     imagenesLocalesElectro = JSON.parse(electroGuardadas);
   }
 
-//3.11.59
+  
+//3.11.60
   // --- Selección aleatoria de categoría ---
   const categorias = Object.keys(botonesCategorias); // todas las categorías disponibles
   const categoriaRandom = categorias[Math.floor(Math.random() * categorias.length)]; // selecciona una al azar
   document.getElementById(categoriaRandom).click(); // simula clic en esa categoría
 });
+
+
+
+//3.11.61
+// Carrusel 30s automático cada 30 segundos
+const carruselImgs = document.querySelectorAll('#carrusel img');
+let indiceCarrusel = 0;
+
+function mostrarImagenCarrusel() {
+  carruselImgs.forEach(img => img.classList.remove('active'));
+  if(carruselImgs[indiceCarrusel]) {
+    carruselImgs[indiceCarrusel].classList.add('active');
+  }
+  indiceCarrusel = (indiceCarrusel + 1) % carruselImgs.length;
+}
+
+// Mostrar primera imagen al cargar
+mostrarImagenCarrusel();
+
+// Cambiar imagen cada 30 segundos
+setInterval(mostrarImagenCarrusel, 30000); // 30000ms = 30s
 </script>
 
 
@@ -1287,6 +1309,7 @@ window.addEventListener('DOMContentLoaded', () => {
   
 </body>
 </html>
+
 
 
 
