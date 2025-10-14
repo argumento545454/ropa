@@ -1184,13 +1184,27 @@ btnTomarFoto.addEventListener('click', () => {
   
 <!--3.14-->
 <!--Carrusel 30s spot TV -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const imagenes = document.querySelectorAll('#carrusel img');
+    let indice = 0;
 
+    if (imagenes.length > 0) {
+      imagenes[0].classList.add('active');
+      setInterval(() => {
+        imagenes[indice].classList.remove('active');
+        indice = (indice + 1) % imagenes.length;
+        imagenes[indice].classList.add('active');
+      }, 30000); // 30 segundos
+    }
+  });
+  </script>
 
-
-  
+ 
   
 </body>
 </html>
+
 
 
 
