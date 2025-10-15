@@ -1111,6 +1111,57 @@ window.addEventListener('DOMContentLoaded', ()=>{
   const categoriaRandom = categorias[Math.floor(Math.random() * categorias.length)]; // selecciona una al azar
   document.getElementById(categoriaRandom).click(); // simula clic en esa categoría
 });
+
+
+//3.12.1 - Cambio automático categoría cada 30s - Carrusel spot TV 
+
+let indiceCategoriaActual = 0;
+let intervaloCategorias = null;
+
+function mostrarCategoria(indice) {
+  const categorias = Object.keys(categoriasData);
+  if (categorias.length === 0) return;
+
+  const nombreCategoria = categorias[indice];
+  const urls = categoriasData[nombreCategoria];
+
+  // Generar imágenes en el carrusel para esta categoría
+  generarCarrusel(urls);   // asegúrate que esta función ya exista
+  generarFranja(urls);
+
+  console.log(`✅ Mostrando categoría: ${nombreCategoria}`);
+}
+
+function iniciarCambioAutomatico() {
+  const categorias = Object.keys(categoriasData);
+  if (categorias.length === 0) return;
+
+  // Mostrar una categoría aleatoria al iniciar
+  indiceCategoriaActual = Math.floor(Math.random() * categorias.length);
+  mostrarCategoria(indiceCategoriaActual);
+
+  // Limpiar si ya hay un intervalo activo
+  if (intervaloCategorias) clearInterval(intervaloCategorias);
+
+  // Cambiar de categoría cada 30 segundos
+  intervaloCategorias = setInterval(() => {
+    const categorias = Object.keys(categoriasData);
+    if (categorias.length === 0) return;
+
+    // Elegir una nueva categoría aleatoria distinta de la actual
+    let nuevaCategoria;
+    do {
+      nuevaCategoria = Math.floor(Math.random() * categorias.length);
+    } while (nuevaCategoria === indiceCategoriaActual);
+
+    indiceCategoriaActual = nuevaCategoria;
+    mostrarCategoria(indiceCategoriaActual);
+  }, 30000); // 30 segundos
+}
+
+// Inicia automáticamente al cargar la página
+window.addEventListener('load', iniciarCambioAutomatico);
+  
 </script>
 
 
@@ -1150,6 +1201,7 @@ btnTomarFoto.addEventListener('click', () => {
 
 </body>
 </html>
+
 
 
 
