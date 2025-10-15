@@ -1171,31 +1171,11 @@ btnTomarFoto.addEventListener('click', () => {
 </script>
 
 
-<script>
-// === Carrusel por categorías 30s ===
-document.addEventListener("DOMContentLoaded", () => {
-  const categorias = document.querySelectorAll('.categoria'); // contenedores de cada categoría
-  let indexCategoria = 0;
 
-  function mostrarCategoria(indice) {
-    categorias.forEach((cat, i) => {
-      cat.style.display = (i === indice) ? 'flex' : 'none';
-    });
-  }
-
-  // Mostrar la primera categoría
-  mostrarCategoria(indexCategoria);
-
-  // Cambiar de categoría cada 30 segundos
-  setInterval(() => {
-    indexCategoria = (indexCategoria + 1) % categorias.length;
-    mostrarCategoria(indexCategoria);
-  }, 30000);
-});
-</script>
 
 </body>
 </html>
+
 
 
 
