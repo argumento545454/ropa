@@ -1173,56 +1173,32 @@ btnTomarFoto.addEventListener('click', () => {
 
 
 <script>
-// --- Funciones para mostrar cada categoría (ajústalas según tu código) ---
-const botonesCategorias = {
-    categoria1: function() { 
-        // tu código para mostrar imágenes de categoría 1
-        console.log("Mostrando categoría 1"); 
-    },
-    categoria2: function() { 
-        // tu código para mostrar imágenes de categoría 2
-        console.log("Mostrando categoría 2"); 
-    },
-    categoria3: function() { 
-        // tu código para mostrar imágenes de categoría 3
-        console.log("Mostrando categoría 3"); 
-    }
-};
+// === Carrusel automático cada 30 segundos ===
+let indiceActual = 0; // índice de la imagen actual en el carrusel
 
-// --- Función para resaltar el botón activo ---
-function resaltarBoton(id) {
-    document.querySelectorAll('#botones-categorias button').forEach(btn => btn.classList.remove('activo'));
-    const btn = document.querySelector(`#botones-categorias button[data-categoria="${id}"]`);
-    if(btn) btn.classList.add('activo');
+function mostrarSiguienteImagen() {
+  if(images.length === 0) return;
+  
+  // Oculta todas las imágenes (opcional si quieres efecto de transición)
+  images.forEach((img, i) => img.style.opacity = '0.3');
+  
+  // Mostrar solo la imagen actual con más opacidad
+  images[indiceActual].style.opacity = '1';
+  
+  // Preparar siguiente índice
+  indiceActual = (indiceActual + 1) % images.length;
 }
 
-// --- Rotación automática de categorías cada 30 segundos ---
-const categorias = Object.keys(botonesCategorias); // ['categoria1','categoria2','categoria3']
-let indiceCategoria = 0;
+// Ejecutar inmediatamente para mostrar la primera imagen
+mostrarSiguienteImagen();
 
-function mostrarCategoria(id) {
-    if(botonesCategorias[id]) botonesCategorias[id]();
-    resaltarBoton(id);
-}
-
-function iniciarRotacionCategorias() {
-    // Mostrar la categoría inicial
-    mostrarCategoria(categorias[indiceCategoria]);
-
-    // Cambiar de categoría cada 30s
-    setInterval(() => {
-        indiceCategoria = (indiceCategoria + 1) % categorias.length;
-        mostrarCategoria(categorias[indiceCategoria]);
-    }, 3000); // 30.000ms = 30s
-}
-
-// --- Iniciar cuando cargue la página ---
-document.addEventListener('DOMContentLoaded', iniciarRotacionCategorias);
+// Ejecutar cada 30s (3000 ms)
+setInterval(mostrarSiguienteImagen, 3000);
 </script>
-
   
 </body>
 </html>
+
 
 
 
