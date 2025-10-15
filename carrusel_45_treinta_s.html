@@ -1113,13 +1113,19 @@ window.addEventListener('DOMContentLoaded', ()=>{
 });
 
 
-//3.12.5 - Inicialización automática cada 30s con refresco de página
-window.addEventListener('load', () => {
-  iniciarCambioAutomatico();  // inicia la rotación normal
+//3.12.5 - Inicialización automática con "reset" cada 30s
+function iniciarCambioAutomatico() {
+  // 🔹 Elegir categoría aleatoria al inicio
+  elegirCategoriaAleatoria();  // tu función que elige category random
+  // 🔹 Aquí sigue tu lógica de carrusel normal
+}
 
-  // 🔹 Refrescar la página cada 30 s (reinicio completo)
+window.addEventListener('load', () => {
+  iniciarCambioAutomatico(); // inicial al entrar
+
+  // 🔹 Reinicio completo del carrusel cada 30s
   setInterval(() => {
-    location.reload(true);  // fuerza recarga desde el servidor
+    iniciarCambioAutomatico(); // reinicia carrusel y elige nueva categoría
   }, 30000);
 });
 
@@ -1166,6 +1172,7 @@ btnTomarFoto.addEventListener('click', () => {
 
 </body>
 </html>
+
 
 
 
