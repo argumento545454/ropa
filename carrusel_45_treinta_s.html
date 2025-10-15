@@ -1170,8 +1170,60 @@ btnTomarFoto.addEventListener('click', () => {
 });
 </script>
 
+
+
+<script>
+// --- Funciones para mostrar cada categoría (ajústalas según tu código) ---
+const botonesCategorias = {
+    categoria1: function() { 
+        // tu código para mostrar imágenes de categoría 1
+        console.log("Mostrando categoría 1"); 
+    },
+    categoria2: function() { 
+        // tu código para mostrar imágenes de categoría 2
+        console.log("Mostrando categoría 2"); 
+    },
+    categoria3: function() { 
+        // tu código para mostrar imágenes de categoría 3
+        console.log("Mostrando categoría 3"); 
+    }
+};
+
+// --- Función para resaltar el botón activo ---
+function resaltarBoton(id) {
+    document.querySelectorAll('#botones-categorias button').forEach(btn => btn.classList.remove('activo'));
+    const btn = document.querySelector(`#botones-categorias button[data-categoria="${id}"]`);
+    if(btn) btn.classList.add('activo');
+}
+
+// --- Rotación automática de categorías cada 30 segundos ---
+const categorias = Object.keys(botonesCategorias); // ['categoria1','categoria2','categoria3']
+let indiceCategoria = 0;
+
+function mostrarCategoria(id) {
+    if(botonesCategorias[id]) botonesCategorias[id]();
+    resaltarBoton(id);
+}
+
+function iniciarRotacionCategorias() {
+    // Mostrar la categoría inicial
+    mostrarCategoria(categorias[indiceCategoria]);
+
+    // Cambiar de categoría cada 30s
+    setInterval(() => {
+        indiceCategoria = (indiceCategoria + 1) % categorias.length;
+        mostrarCategoria(categorias[indiceCategoria]);
+    }, 30000); // 30.000ms = 30s
+}
+
+// --- Iniciar cuando cargue la página ---
+document.addEventListener('DOMContentLoaded', iniciarRotacionCategorias);
+</script>
+
+  
 </body>
 </html>
+
 
 
 
