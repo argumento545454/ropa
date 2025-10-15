@@ -1159,8 +1159,17 @@ function iniciarCambioAutomatico() {
   }, 30000); // 30 segundos
 }
 
+
+//3.12.5 - Inicialización automática con refresco de página
+window.addEventListener('load', () => {
+  iniciarCambioAutomatico();  // inicia la rotación normal
+
+  // 🔹 Refrescar la página cada 30 s (reinicio completo)
+  setTimeout(() => {
+    location.reload();  // recarga la misma página
+  
 // Inicia automáticamente al cargar la página
-window.addEventListener('load', iniciarCambioAutomatico);
+//window.addEventListener('load', iniciarCambioAutomatico);
   
 </script>
 
@@ -1201,6 +1210,7 @@ btnTomarFoto.addEventListener('click', () => {
 
 </body>
 </html>
+
 
 
 
