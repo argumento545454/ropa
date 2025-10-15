@@ -1213,7 +1213,7 @@ function iniciarRotacionCategorias() {
     setInterval(() => {
         indiceCategoria = (indiceCategoria + 1) % categorias.length;
         mostrarCategoria(categorias[indiceCategoria]);
-    }, 30000); // 30.000ms = 30s
+    }, 3000); // 30.000ms = 30s
 }
 
 // --- Iniciar cuando cargue la página ---
@@ -1223,6 +1223,7 @@ document.addEventListener('DOMContentLoaded', iniciarRotacionCategorias);
   
 </body>
 </html>
+
 
 
 
