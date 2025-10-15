@@ -1172,32 +1172,10 @@ btnTomarFoto.addEventListener('click', () => {
 
 
 
-<script>
-// === Carrusel automático cada 30 segundos ===
-let indiceActual = 0; // índice de la imagen actual en el carrusel
 
-function mostrarSiguienteImagen() {
-  if(images.length === 0) return;
-  
-  // Oculta todas las imágenes (opcional si quieres efecto de transición)
-  images.forEach((img, i) => img.style.opacity = '0.3');
-  
-  // Mostrar solo la imagen actual con más opacidad
-  images[indiceActual].style.opacity = '1';
-  
-  // Preparar siguiente índice
-  indiceActual = (indiceActual + 1) % images.length;
-}
-
-// Ejecutar inmediatamente para mostrar la primera imagen
-mostrarSiguienteImagen();
-
-// Ejecutar cada 30s (3000 ms)
-setInterval(mostrarSiguienteImagen, 3000);
-</script>
-  
 </body>
 </html>
+
 
 
 
