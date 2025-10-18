@@ -534,48 +534,60 @@ function generarCarrusel(urls) {
   urls.forEach(src => agregarImagenCarrusel(src)); // función que agrega solo al carrusel
 }
 
-//3.11.5
+
+
+//3.11.15
 function generarFranja(urls) {
+  const franja = document.getElementById('franja');
+  if (!franja) return console.error("No se encontró el contenedor franja");
+
+  // Limpiar franja antes de generar
   franja.innerHTML = '';
-  urls.forEach(src => {
+
+  urls.forEach((src) => {
+    // Crear contenedor de miniatura
     const thumbContainer = document.createElement('div');
     thumbContainer.className = 'thumb-container';
 
+    // Crear imagen
     const thumb = document.createElement('img');
     thumb.src = src;
+    thumbContainer.appendChild(thumb);
 
+    // Crear botón eliminar
     const btnEliminar = document.createElement('button');
     btnEliminar.className = 'btnEliminar';
     btnEliminar.textContent = '×';
+    thumbContainer.appendChild(btnEliminar);
 
-  btnEliminar.onclick = (e) => { 
-  e.stopPropagation(); 
-  // --- Quitar del carrusel ---
-  const idx = images.findIndex(i => i.dataset.id == img.dataset.id); 
-  if(idx >= 0){ 
-    const imgToRemove = images.splice(idx,1)[0]; 
-    container.removeChild(imgToRemove);
-  } 
+    // Añadir la miniatura a la franja
+    franja.appendChild(thumbContainer);
 
-  // --- Quitar de la franja ---
-  franja.removeChild(thumbContainer);
+    // Función de eliminar
+    btnEliminar.addEventListener('click', (e) => {
+      e.stopPropagation();
 
-  // --- Quitar del LocalStorage (solo si estoy en BLUSAS) ---
-  if(document.getElementById('btnBlusas')?.classList.contains('activo')){
-    let blusasGuardadas = JSON.parse(localStorage.getItem("blusasLocales") || "[]");
-    blusasGuardadas = blusasGuardadas.filter(item => item !== img.src);
-    localStorage.setItem("blusasLocales", JSON.stringify(blusasGuardadas));
-    imagenesLocalesBlusas = blusasGuardadas; 
-  }
+      // --- Quitar la miniatura del DOM ---
+      thumbContainer.remove();
 
-  // --- Quitar del LocalStorage (solo si estoy en Electro) ---
-  if(document.getElementById('btnElectro')?.classList.contains('activo')){
-    let electroGuardadas = JSON.parse(localStorage.getItem("electroLocales") || "[]");
-    electroGuardadas = electroGuardadas.filter(item => item !== img.src);
-    localStorage.setItem("electroLocales", JSON.stringify(electroGuardadas));
-    imagenesLocalesElectro = electroGuardadas;
-  }
-};
+      // --- Quitar del LocalStorage y del array correspondiente ---
+      if (document.getElementById('btnBlusas')?.classList.contains('activo')) {
+        imagenesLocalesBlusas = imagenesLocalesBlusas.filter(item => item !== src);
+        localStorage.setItem("blusasLocales", JSON.stringify(imagenesLocalesBlusas));
+      }
+
+      if (document.getElementById('btnElectro')?.classList.contains('activo')) {
+        imagenesLocalesElectro = imagenesLocalesElectro.filter(item => item !== src);
+        localStorage.setItem("electroLocales", JSON.stringify(imagenesLocalesElectro));
+      }
+
+      // --- Actualizar urls para que la franja no lo regenere ---
+      const index = urls.indexOf(src);
+      if (index > -1) urls.splice(index, 1);
+    });
+  });
+}
+
 
 
 /*
