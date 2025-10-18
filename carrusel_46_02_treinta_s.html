@@ -1212,7 +1212,7 @@ function iniciarRotacionCategorias() {
   intervaloCambio = setInterval(() => {
     indiceActual = (indiceActual + 1) % categorias.length;
     mostrarCategoriaActual();
-  }, 3000); // 30 segundos por categoría
+  }, 40000); // 30 segundos por categoría
 }
 
 //3.13.6
@@ -1260,12 +1260,13 @@ function iniciarRotacionCategorias() {
   intervaloCambio = setInterval(() => {
     indiceActual = (indiceActual + 1) % categorias.length;
     mostrarCategoriaActualSuave();
-  }, 3000); // 30 segundos
+  }, 40000); // 30 segundos
 }
 </script>
 
 </body>
 </html>
+
 
 
 
