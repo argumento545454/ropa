@@ -5,7 +5,7 @@
 <!--2--> 
 <head>
 <meta charset="UTF-8">
-<title>carrusel_46_02_treinta_s</title> 
+<title>carrusel_46_03_treinta_s</title> 
 
 <!--2.1-->
 <style>
@@ -340,7 +340,7 @@ Voz/Clic Comandos
 <!--3.4.5-->
     <!-- Título y foto cliente (único) -->
     <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-      <h2>Centro Comercial 46 30s "Vitrinas Virtuales"</h2>
+      <h2>Centro Comercial 46_03 30s "Vitrinas Virtuales"</h2>
       <img id="fotoCliente" 
 src="imagenes/cliente_default.jpg" alt="Foto" width="200" height="200">
       <button id="btnSubirfoto">Foto pc</button>
@@ -817,7 +817,6 @@ const urlsSombreros = [
 ];
 
 const urlsBlusas = [
-/*
 "https://icon2.cleanpng.com/ci2/kyi/yld/abf0atjcr.webp",  //mujer tejiendo
 "https://koaj.ec/284138-thickbox_default/blusa-camisera-oversize-manga-larga.jpg",   //blusa mujer 2
 "https://studiofpa.vtexassets.com/arquivos/ids/343385-2000-NaN?v=638929460513270000&width=2000&height=NaN&aspect=true",    //blusa mujer 3
@@ -826,7 +825,6 @@ const urlsBlusas = [
 "https://studiofpa.vtexassets.com/arquivos/ids/317680-2000-NaN?v=638748081191300000&width=2000&height=NaN&aspect=true",    //blusa mujer 6
 "https://leonisa.ec/cdn/shop/files/F7028_001_1200X1500_1_380x.jpg?v=1754061341",   //blusa mujer 7
 "https://studiofpa.vtexassets.com/arquivos/ids/342969-2000-NaN?v=638923590454830000&width=2000&height=NaN&aspect=true"     //blusa mujer 99
-*/
 ];
 
 const urlsPantaMujer = [
@@ -929,22 +927,18 @@ function cargarSombreros(){
 }
 
 //3.11.32
-function cargarBlusas(){ 
-vaciarCarrusel(); 
+// === Blusas - LOCALSTORAGE Funciones para cargar ===
+function cargarBlusas() { 
+  vaciarCarrusel(); 
+
   // Primero las imágenes predeterminadas
   urlsBlusas.forEach(src => agregarImagen(src));
-  // Luego agregar las imágenes locales subidas desde PC
+
+  // 🔹 Cargar imágenes guardadas en LocalStorage
+  imagenesLocalesBlusas = JSON.parse(localStorage.getItem("blusasLocales") || "[]");
   imagenesLocalesBlusas.forEach(src => agregarImagen(src));
 }
 
-
-//3.11.33
-/*
-function cargarBlusas(){ 
-  vaciarCarrusel(); 
-  urlsBlusas.forEach(src => agregarImagen(src));
-}
-*/
 
 //3.11.34
 function cargarPantaMujer(){ 
@@ -990,22 +984,17 @@ function cargarRopa(){
 }
 
 //3.11.41
-// === Electro - LOCALSTORAGE Funciones para cargar   ===
+// === Electro - LOCALSTORAGE Funciones para cargar ===
 function cargarElectro(){ 
   vaciarCarrusel(); 
 
   // Primero las imágenes predeterminadas
   urlsElectro.forEach(src => agregarImagen(src));
 
-//3.11.42
-  // Luego agregar las imágenes locales guardadas en LocalStorage
-  const electroGuardadas = localStorage.getItem("electroLocales");
-  if(electroGuardadas){
-    imagenesLocalesElectro = JSON.parse(electroGuardadas);
-    imagenesLocalesElectro.forEach(src => agregarImagen(src));
-  }
+  // 🔹 Cargar imágenes guardadas en LocalStorage
+  imagenesLocalesElectro = JSON.parse(localStorage.getItem("electroLocales") || "[]");
+  imagenesLocalesElectro.forEach(src => agregarImagen(src));
 }
-
 //3.11.43
 function cargarCarros(){ vaciarCarrusel(); agregarImagenRandom(urlsCarros); }
 function cargarFerreteria(){ mostrarMensajeVacio(); }
@@ -1221,10 +1210,11 @@ btnTomarFoto.addEventListener('click', () => {
 
 const categorias = [
   { nombre: "Sombreros Mujer", urls: urlsSombreros },
-  { nombre: "Blusas", urls: urlsBlusas },
+  //{ nombre: "Blusas", urls: urlsBlusas },
   { nombre: "Pantalones Mujer", urls: urlsPantaMujer },
   { nombre: "Zapatos", urls: urlsZapatos },
-  { nombre: "Vestidos", urls: urlsVestidos }
+  { nombre: "Vestidos", urls: urlsVestidos },
+  { nombre: "Faldas", urls: urlsFaldas }
 
 ];
 
