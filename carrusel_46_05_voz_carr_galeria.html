@@ -1327,52 +1327,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <!--3.15-->
 <!--CATEGORIAS CAMBIO CONTROL  POR VOZ-->
-<!-- === BOTÓN + VOZ: CAMBIO DE CATEGORÍA === -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
 
-  // ✅ Botón existente al inicio del menú
-  const btn = document.getElementById("btnRotacion");
-  if (!btn) {
-    console.warn("⚠️ No se encontró el botón #btnRotacion");
-    return;
-  }
-
-  // ✅ Función que cambia categoría manualmente
-  function cambiarCategoriaManual() {
-    indiceActual = (indiceActual + 1) % categorias.length;
-    mostrarCategoriaActual();
-    console.log("➡️ Cambio de categoría manual (botón o voz)");
-  }
-
-  // ✅ Evento del botón
-  btn.addEventListener("click", cambiarCategoriaManual);
-  console.log("🟢 Botón listo: pulsa o di 'categoría' para cambiar");
-
-  // ✅ Activar reconocimiento de voz
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    const reconocimiento = new SpeechRecognition();
-    reconocimiento.lang = 'es-ES';
-    reconocimiento.continuous = true;
-    reconocimiento.interimResults = false;
-
-    reconocimiento.onresult = (event) => {
-      const texto = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-      console.log("🎤 Dijo:", texto);
-      if (texto.includes("categoría")) cambiarCategoriaManual();
-    };
-
-    reconocimiento.onerror = e => console.warn("⚠️ Error de voz:", e.error);
-    reconocimiento.onend = () => reconocimiento.start();
-    reconocimiento.start();
-    console.log("🎙️ Voz lista: di 'categoría' para cambiar");
-  } else {
-    console.warn("❌ Este navegador no soporta reconocimiento de voz");
-  }
-
-});
-</script>
 
 
 
