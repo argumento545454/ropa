@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>carrusel_51_01_r3</title>
+<style>
+  body {margin:0; padding:0; height:100vh; width:100vw; display:flex; background:#ddd; overflow:hidden; font-family:Arial,sans-serif;}
+  
+  /* ===== Menú lateral ===== */
+  #menuColDerecha {
+    flex:0 0 180px; background:#222; color:#fff; padding:10px; display:flex; flex-direction:column;
+  }
+  #botonesExtraDerecha { margin-top:auto; display:flex; flex-direction:column; gap:8px; }
+
+  /* ===== Título categoría ===== */
+  #nombreCategoriaMenuDerecha {
+    position:absolute; top:40px; left:50%; transform:translateX(-50%);
+    display:flex; gap:20px; overflow-x:auto; white-space:nowrap;
+    padding:20px; width:85%; max-width:1200px;
+    scrollbar-width:thin; -webkit-overflow-scrolling:touch;
+    background:yellow; border-radius:12px; justify-content:center; align-items:center; z-index:4;
+  }
+
+  /* ===== Carrusel principal (ovalado) ===== */
+  #carruselAutomatico {
+    position:absolute; top:400px; left:50%; transform:translateX(-50%);
+    width:80%; max-width:1200px; height:320px;
+    perspective:1200px; display:flex; justify-content:center; align-items:center; overflow:visible; z-index:5;
+  }
+  #carruselAutomatico img {
+    position:absolute; width:500px; height:500px; object-fit:cover; border-radius:50%;
+    transition:transform 0.3s linear, opacity 0.3s linear; will-change: transform, opacity;
+  }
+
+  /* ===== Franja de miniaturas ===== */
+  #contenedorCarruselDerecha {
+    position:absolute; top:1100px; left:50%; transform:translateX(-50%);
+    display:flex; gap:20px; overflow-x:auto; white-space:nowrap; padding:20px;
+    width:85%; max-width:600px; scrollbar-width:thin; -webkit-overflow-scrolling:touch;
+    background:#ccc; border-radius:12px; justify-content:center; align-items:center; z-index:4;
+  }
+  #contenedorCarruselDerecha::-webkit-scrollbar { height:8px; }
+  #contenedorCarruselDerecha::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.3); border-radius:4px; }
+  #contenedorCarruselDerecha { -ms-overflow-style:none; scrollbar-width:none; }
+
+  /* ===== Botón Ropa 1 discreto ===== */
+  #btnMostrarRopa1 {
+    position:fixed; bottom:10px; right:10px;
+    background:#ff9800; color:#fff; border:none; border-radius:10px;
+    padding:8px 14px; cursor:pointer; z-index:9999; opacity:0.2;
+    transition:opacity 0.3s, transform 0.2s; font-size:16px;
+  }
+</style>
+</head>
+
+
+<body>
+
+  <!-- Menú lateral -->
+  <div id="menuColDerecha">
+    <div id="botonesExtraDerecha"></div>
+  </div>
+
+  <!-- Zona principal -->
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+    <h2 id="nombreCategoriaMenuDerecha">Título categoría</h2>
+    <div id="carruselAutomatico"></div>
+    <div id="contenedorCarruselDerecha"></div>
+  </div>
+
+  <!-- Cámara -->
+  <video id="videoCamara" autoplay style="display:none;"></video>
+  <canvas id="canvasCamara" style="display:none;"></canvas>
+  <img id="fotoCamara" style="display:none; position:absolute; left:1000px; top:80px; width:200px; height:200px; transition:all 0.5s ease;"/>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ====== Variables principales ======
+  let categoriasIniciales = JSON.parse(localStorage.getItem('categoriasIniciales') || '[]');
+  if (categoriasIniciales.length===0){
+    categoriasIniciales = [
+      {nombre:"Sombreros", imagenes:[]},
+      {nombre:"Blusas", imagenes:[]},
+      {nombre:"Pantalones", imagenes:[]},
+      {nombre:"Zapatos", imagenes:[]},
+      {nombre:"Vestidos", imagenes:[]}
+    ];
+    localStorage.setItem('categoriasIniciales', JSON.stringify(categoriasIniciales));
+  }
+
+  let indiceCategoria=0;
+  let tiempoMenu=parseInt(localStorage.getItem('tiempoRotacion'))||3000;
+  let velocidadCarrusel=parseFloat(localStorage.getItem('velocidadCarrusel'))||1;
+  let intervaloCategorias;
+
+  const menuColDerecha = document.getElementById('menuColDerecha');
+  const botonesExtraDerecha = document.getElementById('botonesExtraDerecha');
+  const nombreCategoriaElem = document.getElementById('nombreCategoriaMenuDerecha');
+  const contenedorCarrusel = document.getElementById('contenedorCarruselDerecha');
+  const carruselAutomatico = document.getElementById('carruselAutomatico');
+
+  // ====== Menú lateral de categorías ======
+  categoriasIniciales.forEach((cat, idx)=>{
+    const btn=document.createElement('button');
+    btn.textContent=cat.nombre;
+    btn.style.cssText="display:block;width:100%;font-size:20px;margin:5px 0;padding:10px;background:#007bff;color:#fff;border:none;border-radius:4px;cursor:pointer;";
+    btn.addEventListener('click',()=>{ indiceCategoria=idx; mostrarCategoria(); });
+    menuColDerecha.insertBefore(btn, botonesExtraDerecha);
+  });
+
+  // ====== Botones extra ======
+  const btnSubirImg=document.createElement("button");
+  btnSubirImg.textContent="Subir img";
+  btnSubirImg.style.cssText="padding:6px;background:#28a745;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:20px;";
+
+  const contTiempo=document.createElement("div");
+  contTiempo.style.cssText="display:flex;flex-direction:column;align-items:center;gap:4px;background:#ff9800;border-radius:6px;padding:6px;font-size:18px;";
+  const textoTiempo=document.createElement("div");
+  textoTiempo.style.cssText="color:#fff;font-weight:bold;";
+  const flechaArriba=document.createElement("button");
+  const flechaAbajo=document.createElement("button");
+  [flechaArriba,flechaAbajo].forEach(b=>{ b.style.cssText="width:100%;border:none;background:#fff;color:#ff9800;font-size:16px;border-radius:4px;cursor:pointer;"; });
+  flechaArriba.textContent="?"; flechaAbajo.textContent="?";
+  contTiempo.append(flechaArriba,textoTiempo,flechaAbajo);
+
+  const btnVelocidad=document.createElement("button");
+  btnVelocidad.textContent="Velocidad";
+  btnVelocidad.style.cssText="padding:6px;background:#673ab7;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:20px;";
+
+  botonesExtraDerecha.append(btnSubirImg,contTiempo,btnVelocidad);
+
+  // ====== Subir imagen ======
+  btnSubirImg.addEventListener("click",()=>{
+    const input=document.createElement("input");
+    input.type="file"; input.accept="image/*"; input.multiple=true;
+    input.onchange=e=>{
+      Array.from(e.target.files).forEach(f=>{
+        const fr=new FileReader();
+        fr.onload=ev=>{
+          categoriasIniciales[indiceCategoria].imagenes.push(ev.target.result);
+          localStorage.setItem('categoriasIniciales',JSON.stringify(categoriasIniciales));
+          mostrarCategoria();
+        };
+        fr.readAsDataURL(f);
+      });
+    };
+    input.click();
+  });
+
+  // ====== Control tiempo ======
+  function reiniciarIntervaloMenu(){
+    clearInterval(intervaloCategorias);
+    intervaloCategorias=setInterval(()=>{
+      indiceCategoria=(indiceCategoria+1)%categoriasIniciales.length;
+      mostrarCategoria();
+    }, tiempoMenu);
+    localStorage.setItem('tiempoRotacion',tiempoMenu);
+  }
+  flechaArriba.addEventListener("click",()=>{ tiempoMenu=Math.min(tiempoMenu+5000,90000); textoTiempo.textContent=`Tiempo: ${(tiempoMenu/1000).toFixed(1)}s`; reiniciarIntervaloMenu(); });
+  flechaAbajo.addEventListener("click",()=>{ tiempoMenu=Math.max(tiempoMenu-5000,5000); textoTiempo.textContent=`Tiempo: ${(tiempoMenu/1000).toFixed(1)}s`; reiniciarIntervaloMenu(); });
+
+  // ====== Control velocidad ======
+  btnVelocidad.addEventListener("click",()=>{
+    velocidadCarrusel+=0.2; if(velocidadCarrusel>3) velocidadCarrusel=0.4;
+    localStorage.setItem('velocidadCarrusel',velocidadCarrusel);
+    btnVelocidad.textContent=`Velocidad ×${velocidadCarrusel.toFixed(1)}`;
+  });
+
+  // ====== Carrusel ovalado ======
+  function iniciarCarrusel(){
+    carruselAutomatico.innerHTML="";
+    const categoria=categoriasIniciales[indiceCategoria];
+    if(!categoria || !categoria.imagenes || categoria.imagenes.length===0) return;
+
+    const radioX=Math.max(200,(carruselAutomatico.clientWidth/2)-120);
+
+    const radioY=Math.max(120,(carruselAutomatico.clientHeight/2)-40);
+
+    const imgs=[];
+    categoria.imagenes.forEach((url,idx)=>{
+      const img=document.createElement("img");
+      img.src=url; img.className="imgCarrusel"; img.dataset.index=idx; img._hover=false;
+      carruselAutomatico.appendChild(img); imgs.push(img);
+
+      img.addEventListener("mouseenter",()=>{ img._hover=true; window.__ropa3_paused=true; });
+      img.addEventListener("mouseleave",()=>{ img._hover=false; window.__ropa3_paused=false; });
+
+      img.addEventListener("click",()=>{
+        const arr=categoria.imagenes; const i=parseInt(img.dataset.index,10);
+        if(!isNaN(i) && arr[i]){
+          const item=arr.splice(i,1)[0]; arr.unshift(item);
+          localStorage.setItem('categoriasIniciales',JSON.stringify(categoriasIniciales));
+          mostrarCategoria();
+        }
+      });
+    });
+
+    let angulo=0; let ultimo=performance.now(); window.__ropa3_paused=false;
+    function animarOval(now){
+      const delta=(now-ultimo)/1000; ultimo=now;
+      if(!window.__ropa3_paused) angulo+=velocidadCarrusel*60*delta;
+      imgs.forEach((el,i)=>{
+        const fase=(i*360/imgs.length+angulo)*Math.PI/180;
+        const x=Math.cos(fase)*radioX;
+        const y=Math.sin(fase)*radioY*0.7;
+        const z=Math.sin(fase)*80;
+        const baseScale=1+z/400;
+        const hoverExtra=el._hover?1.35:1;
+        const escalaFinal=baseScale*hoverExtra;
+        const op=Math.min(1,Math.max(0.2,0.55+z/200));
+        el.style.transform=`translate3d(${x}px,${y}px,${z}px) scale(${escalaFinal})`;
+        el.style.opacity=op;
+        el.style.zIndex=Math.round(300+z);
+        el.dataset.index=i;
+      });
+      requestAnimationFrame(animarOval);
+    }
+    ultimo=performance.now(); requestAnimationFrame(animarOval);
+  }
+
+  // ====== Mostrar categoría ======
+  function mostrarCategoria(){
+    const categoria=categoriasIniciales[indiceCategoria];
+    nombreCategoriaElem.textContent=categoria.nombre;
+
+    // Franja miniaturas
+    contenedorCarrusel.innerHTML="";
+    categoria.imagenes.forEach((imgSrc,idx)=>{
+      const wrapper=document.createElement("div"); wrapper.style.cssText="position:relative;width:60px;height:60px;";
+      const miniatura=document.createElement("img"); miniatura.src=imgSrc; miniatura.style.cssText="width:100%;height:100%;object-fit:cover;border-radius:8px;cursor:pointer;";
+      miniatura.addEventListener("click",()=>{ mostrarCategoria(); });
+      const btnEliminar=document.createElement("button"); btnEliminar.textContent="×";
+      btnEliminar.style.cssText="position:absolute;top:-6px;right:-6px;width:18px;height:18px;font-size:14px;color:#fff;background:#f44336;border:none;border-radius:50%;cursor:pointer;";
+      btnEliminar.addEventListener("click",()=>{ categoria.imagenes.splice(idx,1); localStorage.setItem('categoriasIniciales',JSON.stringify(categoriasIniciales)); mostrarCategoria(); });
+      wrapper.append(miniatura,btnEliminar); contenedorCarrusel.appendChild(wrapper);
+    });
+
+    iniciarCarrusel();
+    textoTiempo.textContent=`Tiempo: ${(tiempoMenu/1000).toFixed(1)}s`;
+    btnVelocidad.textContent=`Velocidad Images ×${velocidadCarrusel.toFixed(1)}`;
+  }
+
+  mostrarCategoria();
+  reiniciarIntervaloMenu();
+
+  // ====== Cámara foto ======
+  const videoCamara=document.getElementById('videoCamara');
+  const canvasCamara=document.getElementById('canvasCamara');
+  const fotoCamara=document.getElementById('fotoCamara');
+  navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{ videoCamara.srcObject=stream; });
+
+  videoCamara.style.display='block';
+  const btnTomarFoto=document.createElement("button");
+  btnTomarFoto.textContent="Tomar foto";
+  btnTomarFoto.style.cssText="position:fixed; bottom:10px; left:10px; padding:8px;background:#2196f3;color:#fff;border:none;border-radius:6px; cursor:pointer; z-index:9999;";
+  document.body.appendChild(btnTomarFoto);
+  btnTomarFoto.addEventListener("click",()=>{
+    canvasCamara.width=videoCamara.videoWidth;
+    canvasCamara.height=videoCamara.videoHeight;
+    const ctx=canvasCamara.getContext('2d');
+    ctx.drawImage(videoCamara,0,0,canvasCamara.width,canvasCamara.height);
+    fotoCamara.src=canvasCamara.toDataURL(); fotoCamara.style.display='block';
+  });
+
+  // ====== Botón discreto Ropa1 ======
+  const ropa1=document.getElementById("ropa1")||document.querySelector(".ropa1");
+  if(ropa1){ ropa1.style.display="none"; ropa1.style.opacity="0"; }
+  const btnMostrarRopa1=document.createElement("button"); btnMostrarRopa1.id="btnMostrarRopa1"; btnMostrarRopa1.textContent="?? Ropa 1";
+  btnMostrarRopa1.title="Click o Ctrl+Alt+R para mostrar/ocultar Ropa 1";
+  btnMostrarRopa1.addEventListener("click",()=>{ 
+    if(!ropa1) return;
+    const visible=ropa1.style.display!=="none";
+    ropa1.style.display=visible?"none":"block";
+    ropa1.style.opacity=visible?"0":"1";
+  });
+  btnMostrarRopa1.addEventListener("mouseenter",()=>{ btnMostrarRopa1.style.opacity="1"; btnMostrarRopa1.style.transform="scale(1.05)"; });
+  btnMostrarRopa1.addEventListener("mouseleave",()=>{ btnMostrarRopa1.style.opacity="0.2"; btnMostrarRopa1.style.transform="scale(1)"; });
+  document.body.appendChild(btnMostrarRopa1);
+
+  document.addEventListener("keydown",(e)=>{ if(e.ctrlKey && e.altKey && e.key.toLowerCase()==="r"){ btnMostrarRopa1.click(); } });
+});
+</script>
+
+
+
+
+
+
+
+
+</body>
+</html>
