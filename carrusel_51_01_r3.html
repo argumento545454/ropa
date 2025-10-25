@@ -305,8 +305,139 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
+
+<!-- ================= Cámara independiente ================= -->
+<div id="camaraWidget">
+  <video id="videoCamara" autoplay></video>
+  <canvas id="canvasCamara" style="display:none;"></canvas>
+  <div id="camaraControles">
+    <button id="btnCapturar">📸 Capturar</button>
+    <button id="btnCerrarCamara">✖ Cerrar</button>
+  </div>
+</div>
+
+<style>
+  /* Contenedor general */
+  #camaraWidget {
+    display: none; /* se activa con JS */
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    height: 240px;
+    background: #000;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    overflow: hidden;
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  #camaraWidget video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+  #camaraControles {
+    position: absolute;
+    bottom: 8px; left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+  #camaraControles button {
+    padding: 6px 12px;
+    background: #ff9800;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const camaraWidget = document.getElementById('camaraWidget');
+  const videoCamara = document.getElementById('videoCamara');
+  const canvasCamara = document.getElementById('canvasCamara');
+  const btnCapturar = document.getElementById('btnCapturar');
+  const btnCerrarCamara = document.getElementById('btnCerrarCamara');
+
+  let streamCamara = null;
+  let modoPantallaCompleta = false;
+
+  // Función abrir cámara
+  function abrirCamara() {
+    camaraWidget.style.display = 'flex';
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        streamCamara = stream;
+        videoCamara.srcObject = stream;
+      })
+      .catch(err => alert('No se pudo acceder a la cámara: ' + err));
+  }
+
+  // Cerrar cámara
+  btnCerrarCamara.addEventListener('click', () => {
+    if(streamCamara){
+      streamCamara.getTracks().forEach(track=>track.stop());
+      streamCamara=null;
+    }
+    camaraWidget.style.display='none';
+    modoPantallaCompleta=false;
+    btnCapturar.textContent='📸 Capturar';
+    videoCamara.style.width='100%';
+    videoCamara.style.height='100%';
+  });
+
+  // Capturar foto
+  btnCapturar.addEventListener('click', () => {
+    if(!modoPantallaCompleta){
+      // expandir a pantalla completa
+      camaraWidget.style.position='fixed';
+      camaraWidget.style.top='0';
+      camaraWidget.style.left='0';
+      camaraWidget.style.width='100vw';
+      camaraWidget.style.height='100vh';
+      camaraWidget.style.transform='none';
+      videoCamara.style.width='100%';
+      videoCamara.style.height='100%';
+      btnCapturar.textContent='📸 Tomar foto ahora';
+      modoPantallaCompleta=true;
+      return;
+    }
+    // tomar foto
+    canvasCamara.width = videoCamara.videoWidth;
+    canvasCamara.height = videoCamara.videoHeight;
+    const ctx = canvasCamara.getContext('2d');
+    ctx.drawImage(videoCamara,0,0,canvasCamara.width,canvasCamara.height);
+    const foto = canvasCamara.toDataURL('image/png');
+    console.log('Foto capturada:', foto);
+
+    // volver a tamaño pequeño
+    camaraWidget.style.position='absolute';
+    camaraWidget.style.top='50%';
+    camaraWidget.style.left='50%';
+    camaraWidget.style.transform='translate(-50%, -50%)';
+    camaraWidget.style.width='320px';
+    camaraWidget.style.height='240px';
+    modoPantallaCompleta=false;
+    btnCapturar.textContent='📸 Capturar';
+  });
+
+  // Abrir cámara automáticamente o desde botón externo
+  abrirCamara();
+});
+</script>
+  
+
 </body>
 </html>
+
 
 
 
