@@ -7,13 +7,13 @@
 <style>
   body {margin:0; padding:0; height:100vh; width:100vw; display:flex; background:#ddd; overflow:hidden; font-family:Arial,sans-serif;}
   
-  /* ===== Menú lateral ===== */
+  /* ===== Menï¿½ lateral ===== */
   #menuColDerecha {
     flex:0 0 180px; background:#222; color:#fff; padding:10px; display:flex; flex-direction:column;
   }
   #botonesExtraDerecha { margin-top:auto; display:flex; flex-direction:column; gap:8px; }
 
-  /* ===== Título categoría ===== */
+  /* ===== Tï¿½tulo categorï¿½a ===== */
   #nombreCategoriaMenuDerecha {
     position:absolute; top:40px; left:50%; transform:translateX(-50%);
     display:flex; gap:20px; overflow-x:auto; white-space:nowrap;
@@ -44,7 +44,7 @@
   #contenedorCarruselDerecha::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.3); border-radius:4px; }
   #contenedorCarruselDerecha { -ms-overflow-style:none; scrollbar-width:none; }
 
-  /* ===== Botón Ropa 1 discreto ===== */
+  /* ===== Botï¿½n Ropa 1 discreto ===== */
   #btnMostrarRopa1 {
     position:fixed; bottom:10px; right:10px;
     background:#ff9800; color:#fff; border:none; border-radius:10px;
@@ -57,22 +57,23 @@
 
 <body>
 
-  <!-- Menú lateral -->
+  <!-- Menï¿½ lateral -->
   <div id="menuColDerecha">
     <div id="botonesExtraDerecha"></div>
   </div>
 
   <!-- Zona principal -->
   <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-    <h2 id="nombreCategoriaMenuDerecha">Título categoría</h2>
+    <h2 id="nombreCategoriaMenuDerecha">Tï¿½tulo categorï¿½a</h2>
     <div id="carruselAutomatico"></div>
     <div id="contenedorCarruselDerecha"></div>
   </div>
 
-  <!-- Cámara -->
+  <!-- Camara 
   <video id="videoCamara" autoplay style="display:none;"></video>
   <canvas id="canvasCamara" style="display:none;"></canvas>
   <img id="fotoCamara" style="display:none; position:absolute; left:1000px; top:80px; width:200px; height:200px; transition:all 0.5s ease;"/>
+-->  
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -101,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const contenedorCarrusel = document.getElementById('contenedorCarruselDerecha');
   const carruselAutomatico = document.getElementById('carruselAutomatico');
 
-  // ====== Menú lateral de categorías ======
+  // ====== Menï¿½ lateral de categorï¿½as ======
   categoriasIniciales.forEach((cat, idx)=>{
     const btn=document.createElement('button');
     btn.textContent=cat.nombre;
@@ -165,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
   btnVelocidad.addEventListener("click",()=>{
     velocidadCarrusel+=0.2; if(velocidadCarrusel>3) velocidadCarrusel=0.4;
     localStorage.setItem('velocidadCarrusel',velocidadCarrusel);
-    btnVelocidad.textContent=`Velocidad ×${velocidadCarrusel.toFixed(1)}`;
+    btnVelocidad.textContent=`Velocidad ï¿½${velocidadCarrusel.toFixed(1)}`;
   });
 
   // ====== Carrusel ovalado ======
@@ -220,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ultimo=performance.now(); requestAnimationFrame(animarOval);
   }
 
-  // ====== Mostrar categoría ======
+  // ====== Mostrar categorï¿½a ======
   function mostrarCategoria(){
     const categoria=categoriasIniciales[indiceCategoria];
     nombreCategoriaElem.textContent=categoria.nombre;
@@ -231,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const wrapper=document.createElement("div"); wrapper.style.cssText="position:relative;width:60px;height:60px;";
       const miniatura=document.createElement("img"); miniatura.src=imgSrc; miniatura.style.cssText="width:100%;height:100%;object-fit:cover;border-radius:8px;cursor:pointer;";
       miniatura.addEventListener("click",()=>{ mostrarCategoria(); });
-      const btnEliminar=document.createElement("button"); btnEliminar.textContent="×";
+      const btnEliminar=document.createElement("button"); btnEliminar.textContent="ï¿½";
       btnEliminar.style.cssText="position:absolute;top:-6px;right:-6px;width:18px;height:18px;font-size:14px;color:#fff;background:#f44336;border:none;border-radius:50%;cursor:pointer;";
       btnEliminar.addEventListener("click",()=>{ categoria.imagenes.splice(idx,1); localStorage.setItem('categoriasIniciales',JSON.stringify(categoriasIniciales)); mostrarCategoria(); });
       wrapper.append(miniatura,btnEliminar); contenedorCarrusel.appendChild(wrapper);
@@ -239,13 +240,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     iniciarCarrusel();
     textoTiempo.textContent=`Tiempo: ${(tiempoMenu/1000).toFixed(1)}s`;
-    btnVelocidad.textContent=`Velocidad Images ×${velocidadCarrusel.toFixed(1)}`;
+    btnVelocidad.textContent=`Velocidad Images ï¿½${velocidadCarrusel.toFixed(1)}`;
   }
 
   mostrarCategoria();
   reiniciarIntervaloMenu();
 
-  // ====== Cámara foto ======
+  // ====== Camara foto ======
+/*
   const videoCamara=document.getElementById('videoCamara');
   const canvasCamara=document.getElementById('canvasCamara');
   const fotoCamara=document.getElementById('fotoCamara');
@@ -263,8 +265,10 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.drawImage(videoCamara,0,0,canvasCamara.width,canvasCamara.height);
     fotoCamara.src=canvasCamara.toDataURL(); fotoCamara.style.display='block';
   });
+*/
 
-  // ====== Botón discreto Ropa1 ======
+
+  // ====== Botï¿½n discreto Ropa1 ======
   const ropa1=document.getElementById("ropa1")||document.querySelector(".ropa1");
   if(ropa1){ ropa1.style.display="none"; ropa1.style.opacity="0"; }
   const btnMostrarRopa1=document.createElement("button"); btnMostrarRopa1.id="btnMostrarRopa1"; btnMostrarRopa1.textContent="?? Ropa 1";
