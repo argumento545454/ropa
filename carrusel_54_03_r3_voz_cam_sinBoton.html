@@ -514,25 +514,39 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- VOICE CAMERA MODULE SOLO VOZ -->
 <div id="voiceCameraModule" aria-live="polite">
   <style>
+    #vc-video {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 640px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+      z-index: 10000;
+      display: none;
+    }
+
     #vc-captured {
       position: fixed;
       left: 50%;
-      top: 12px;
-      transform: translateX(-50%);
+      top: 50%;
+      transform: translate(-50%, -50%);
       max-width: 40vw;
       width: 320px;
       border-radius: 8px;
       box-shadow: 0 6px 22px rgba(0,0,0,0.45);
-      z-index: 10000;
+      z-index: 10001;
       display: none;
       background: #fff;
     }
+
     #vc-captured-label {
       position: fixed;
       left: 50%;
-      top: calc(12px + 100% + 8px);
+      top: calc(50% + 180px);
       transform: translateX(-50%);
-      z-index: 10000;
+      z-index: 10001;
       color: #111;
       display: none;
       font-size: 13px;
@@ -543,7 +557,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   </style>
 
-  <video id="vc-video" autoplay playsinline muted style="display:none;"></video>
+  <video id="vc-video" autoplay playsinline muted></video>
   <img id="vc-captured" alt="Foto tomada por voz" />
   <div id="vc-captured-label">Foto guardada</div>
 
@@ -552,6 +566,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const videoEl = document.getElementById('vc-video');
       const capturedImg = document.getElementById('vc-captured');
       const capturedLabel = document.getElementById('vc-captured-label');
+      const carrusel = document.getElementById('carruselAutomatico'); // ocultar mientras
+      const franja = document.getElementById('contenedorCarruselDerecha');
 
       let stream = null;
       let recognition = null;
@@ -559,6 +575,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       async function startCamera() {
         if (isCameraOn) return;
+
+        // Ocultar carrusel y franja
+        if(carrusel) carrusel.style.display = 'none';
+        if(franja) franja.style.display = 'none';
+
         try {
           stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" } });
           videoEl.srcObject = stream;
@@ -570,6 +591,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       function stopCamera() {
         if(!stream) return;
+
+        // Mostrar carrusel y franja de nuevo
+        if(carrusel) carrusel.style.display = 'flex';
+        if(franja) franja.style.display = 'flex';
+
         stream.getTracks().forEach(t=>t.stop());
         stream=null;
         videoEl.srcObject=null;
