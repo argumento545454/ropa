@@ -613,33 +613,21 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.width=w; canvas.height=h;
         canvas.getContext('2d').drawImage(videoEl,0,0,w,h);
 
-        canvas.toBlob(blob=>{
-          if(!blob) return;
+canvas.toBlob(blob=>{
+  if(!blob) return;
 
-          const url = URL.createObjectURL(blob);
-          capturedImg.onload=()=>URL.revokeObjectURL(url);
-          capturedImg.src=url;
-          capturedImg.style.display='block';
-          capturedLabel.style.display='block';
+  // Mostrar la foto sin crear enlace de descarga ni usar memoria extra
+  const reader = new FileReader();
+  reader.onload = e => {
+    capturedImg.src = e.target.result;
+    capturedImg.style.display = 'block';
+    capturedLabel.style.display = 'block';
+    stopCamera();
+    console.log('Foto tomada (solo vista previa, sin descarga)');
+  };
+  reader.readAsDataURL(blob);
 
-          const now=new Date();
-          const pad=n=>String(n).padStart(2,'0');
-          const filename=`foto_voz_${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.jpg`;
-
-          /*  DESCARGA FOTO A PC
-		  const a=document.createElement('a');
-          a.href=url; a.download=filename;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-
-          stopCamera();
-          console.log(`Foto tomada y descargada como ${filename}`);
-		  */
-		  stopCamera();
-          console.log('Foto tomada (descarga desactivada)');
-		  
-        },'image/jpeg',0.92);
+}, 'image/jpeg', 0.92);
       }
 
       function setupSpeechRecognition(){
