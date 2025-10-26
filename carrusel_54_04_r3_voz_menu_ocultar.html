@@ -384,52 +384,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-<!--5
-<video id="videoCamara" autoplay></video>
-<img id="fotoCamara" alt="Foto tomada"/>
-<button id="btnCamara" title="Abrir cámara"></button> 
--->
-
-
-<!--6
-CAMARA BOTON 1RA
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const btnCamara = document.getElementById('btnCamara');
-  const videoCamara = document.getElementById('videoCamara');
-  const fotoCamara = document.getElementById('fotoCamara');
-  let stream = null;
-
-  btnCamara.addEventListener("click", async () => {
-    if(videoCamara.style.display === 'block') {
-      // Segundo clic: tomar foto
-      const canvas = document.createElement('canvas');
-      canvas.width = videoCamara.videoWidth;
-      canvas.height = videoCamara.videoHeight;
-      canvas.getContext('2d').drawImage(videoCamara, 0, 0);
-      fotoCamara.src = canvas.toDataURL('image/png');
-      fotoCamara.style.display = 'block';
-      videoCamara.style.display = 'none';
-      // Detener cámara
-      if(stream) stream.getTracks().forEach(track => track.stop());
-      stream = null;
-    } else {
-      // Primer clic: activar cámara
-      fotoCamara.style.display = 'none';
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({video:true});
-        videoCamara.srcObject = stream;
-        videoCamara.style.display = 'block';
-      } catch(err) {
-        alert("No se pudo acceder a la cámara: " + err.message);
-      }
-    }
-  });
-});
-</script>
--->
-
-
 
 <!--7-->
 <script>
@@ -551,7 +505,7 @@ document.addEventListener("DOMContentLoaded", () => {
       width: 320px;
       border-radius: 8px;
       box-shadow: 0 6px 22px rgba(0,0,0,0.45);
-      z-index: 9000;
+      z-index: 10001;
       display: none;
       background: #fff;
     }
@@ -614,8 +568,55 @@ document.addEventListener("DOMContentLoaded", () => {
         videoEl.style.display='none';
         isCameraOn=false;
         console.log('Cámara apagada');
-      }
 
+
+
+	//TIME FOTO TOMADA
+	function takePhotoAndDownload(){
+	  if(!isCameraOn || !videoEl.srcObject){ 
+		console.log('Cámara apagada'); 
+		return; 
+	  }
+	
+	  const track = videoEl.srcObject.getVideoTracks()[0];
+	  const settings = track.getSettings ? track.getSettings() : {};
+	  const w = settings.width || videoEl.videoWidth || 1280;
+	  const h = settings.height || videoEl.videoHeight || 720;
+	
+	  const canvas = document.createElement('canvas');
+	  canvas.width = w;
+	  canvas.height = h;
+	  canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
+	
+	  canvas.toBlob(blob => {
+		if(!blob) return;
+	
+		const reader = new FileReader();
+		reader.onload = e => {
+		  // Ocultar foto anterior si está visible
+		  capturedImg.style.display = 'none';
+		  capturedLabel.style.display = 'none';
+	
+		  // Mostrar la nueva foto
+		  capturedImg.src = e.target.result;
+		  capturedImg.style.display = 'block';
+		  capturedLabel.style.display = 'block';
+		  
+		  stopCamera();
+		  console.log('Foto tomada (solo vista previa, sin descarga)');
+	
+		  // Ocultar automáticamente después de 30 segundos
+		  setTimeout(() => {
+			capturedImg.style.display = 'none';
+			capturedLabel.style.display = 'none';
+		  }, 30000); // 30 segundos
+		};
+		reader.readAsDataURL(blob);
+	  }, 'image/jpeg', 0.92);
+	}
+
+
+/*
       function takePhotoAndDownload(){
         if(!isCameraOn || !videoEl.srcObject){ console.log('Cámara apagada'); return; }
 
@@ -644,6 +645,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		
 		}, 'image/jpeg', 0.92);
 	  }
+*/
 
 
 
@@ -728,4 +730,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
-
