@@ -527,13 +527,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* panel compacto */
     #vc-panel {
-      background: );
-      /*background: rgba(18,18,18,0.85); */
+      background: rgba(18,18,18,0.85);
       color: #fff;
       border-radius: 12px;
       padding: 10px;
       box-shadow: 0 8px 30px rgba(0,0,0,0.45);
-      display: none;
+      display: flex;
       flex-direction: column;
       gap: 8px;
       align-items: stretch;
@@ -550,7 +549,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* botones mínimos, fácil de reubicar o esconder */
     .vc-controls {
-      display:none;
+      display:flex;
       gap:8px;
       justify-content: space-between;
       align-items:center;
@@ -561,7 +560,7 @@ document.addEventListener("DOMContentLoaded", () => {
       border-radius:8px;
       border: none;
       background: yellow;
-      color: black;
+      color: #fff;
       cursor: pointer;
       font-weight: 600;
       font-size: 13px;
