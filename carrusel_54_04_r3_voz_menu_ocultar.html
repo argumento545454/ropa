@@ -616,43 +616,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log('Cámara apagada');
       }
 
-
-function takePhotoAndDownload() {
-  if (!isCameraOn || !videoEl.srcObject) { 
-    console.log('Cámara apagada'); 
-    return; 
-  }
-
-  //  FOTO ANTERIOR OCULTAR
-  capturedImg.style.display = 'none';
-  capturedLabel.style.display = 'none';
-
-  const track = videoEl.srcObject.getVideoTracks()[0];
-  const settings = track.getSettings ? track.getSettings() : {};
-  const w = settings.width || videoEl.videoWidth || 1280;
-  const h = settings.height || videoEl.videoHeight || 720;
-
-  const canvas = document.createElement('canvas');
-  canvas.width = w; 
-  canvas.height = h;
-  canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
-
-  canvas.toBlob(blob => {
-    if (!blob) return;
-
-    const reader = new FileReader();
-    reader.onload = e => {
-      capturedImg.src = e.target.result;
-      capturedImg.style.display = 'block';
-      capturedLabel.style.display = 'block';
-      stopCamera();
-      console.log('Foto tomada (solo vista previa, sin descarga)');
-    };
-    reader.readAsDataURL(blob);
-  }, 'image/jpeg', 0.92);
-}
-
-/*
       function takePhotoAndDownload(){
         if(!isCameraOn || !videoEl.srcObject){ console.log('Cámara apagada'); return; }
 
@@ -681,7 +644,7 @@ function takePhotoAndDownload() {
 		
 		}, 'image/jpeg', 0.92);
 	  }
-*/
+
 
 
 
