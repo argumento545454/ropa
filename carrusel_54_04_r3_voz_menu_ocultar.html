@@ -513,6 +513,20 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- VOZ CAMERA MODULE -->
 <div id="voiceCameraModule" aria-live="polite">
   <style>
+	/*FOTO RECUADRO*/
+	#vc-video {
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  width: 100vw;      /* ancho completo */
+	  height: 100vh;     /* alto completo */
+	  object-fit: cover;  /* mantiene proporción, recorta si es necesario */
+	  border-radius: 0;   /* sin bordes redondeados */
+	  box-shadow: none;   /* sin sombra */
+	  z-index: 10000;
+	  display: none;
+	}
+/*
     #vc-video {
       position: fixed;
       top: 50%;
@@ -525,6 +539,7 @@ document.addEventListener("DOMContentLoaded", () => {
       z-index: 10000;
       display: none;
     }
+*/
 
     /* FOTO TOMADA EN CENTRO SUPERIOR */
     #vc-captured {
