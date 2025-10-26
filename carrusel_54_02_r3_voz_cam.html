@@ -725,11 +725,13 @@ document.addEventListener("DOMContentLoaded", () => {
           stopCamera();
 
           // ocultar la miniatura después de X segundos si desea (aquí 12s)
-          setTimeout(() => {
+          /*
+		  setTimeout(() => {
             capturedImg.style.display = 'none';
             capturedLabel.style.display = 'none';
           }, 12000);
-
+          */
+		  
           setStatus(`Foto tomada y descargada como ${filename}`);
         }, 'image/jpeg', 0.92);
       }
