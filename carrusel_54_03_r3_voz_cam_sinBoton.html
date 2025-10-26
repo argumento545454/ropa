@@ -512,6 +512,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <!--9-->
 <!-- VOICE CAMERA MODULE - pegar antes de </body> -->
 <!-- VOICE CAMERA MODULE SOLO VOZ -->
+<!-- VOICE CAMERA MODULE SOLO VOZ -->
 <div id="voiceCameraModule" aria-live="polite">
   <style>
     #vc-video {
@@ -527,11 +528,12 @@ document.addEventListener("DOMContentLoaded", () => {
       display: none;
     }
 
+    /* FOTO TOMADA EN CENTRO SUPERIOR */
     #vc-captured {
       position: fixed;
       left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      top: 12px;
+      transform: translateX(-50%);
       max-width: 40vw;
       width: 320px;
       border-radius: 8px;
@@ -541,10 +543,11 @@ document.addEventListener("DOMContentLoaded", () => {
       background: #fff;
     }
 
+    /* LABEL DE FOTO DEBAJO DE LA IMAGEN */
     #vc-captured-label {
       position: fixed;
       left: 50%;
-      top: calc(50% + 180px);
+      top: calc(12px + 100% + 8px);
       transform: translateX(-50%);
       z-index: 10001;
       color: #111;
@@ -566,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const videoEl = document.getElementById('vc-video');
       const capturedImg = document.getElementById('vc-captured');
       const capturedLabel = document.getElementById('vc-captured-label');
-      const carrusel = document.getElementById('carruselAutomatico'); // ocultar mientras
+      const carrusel = document.getElementById('carruselAutomatico'); 
       const franja = document.getElementById('contenedorCarruselDerecha');
 
       let stream = null;
@@ -575,8 +578,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       async function startCamera() {
         if (isCameraOn) return;
-
-        // Ocultar carrusel y franja
         if(carrusel) carrusel.style.display = 'none';
         if(franja) franja.style.display = 'none';
 
@@ -591,8 +592,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       function stopCamera() {
         if(!stream) return;
-
-        // Mostrar carrusel y franja de nuevo
         if(carrusel) carrusel.style.display = 'flex';
         if(franja) franja.style.display = 'flex';
 
