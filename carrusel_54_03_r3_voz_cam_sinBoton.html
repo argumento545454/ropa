@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>carrusel_54_03_r3_voz_cam_sinBoton</title>
+<title>carrusel_54_04_r3_voz_menu_ocultar</title>
 
 
 <!--1-->
@@ -668,6 +668,87 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 </div>
 <!-- FIN VOICE CAMERA MODULE -->
+
+
+
+
+
+
+
+<!--10-->
+<!-- VOZ - MENU 0/1 + BOTON - MOSTRAR/OCULTAR  -->
+<div id="voiceMenuToggle" aria-live="polite">
+  <style>
+    /* Botón discreto a la derecha abajo */
+    #menuToggleBtn {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: background 0.3s;
+    }
+    #menuToggleBtn:hover {
+      background: rgba(0,0,0,0.8);
+    }
+  </style>
+
+  <button id="menuToggleBtn" title="Mostrar/Ocultar menú">≡</button>
+
+  <script>
+    (function(){
+      const btn = document.getElementById('menuToggleBtn');
+      const menu = document.getElementById('menuInicial'); // <--- tu menú inicial
+      if(!menu){ console.warn('No se encontró elemento #menuInicial'); return; }
+
+      // Función para alternar
+      function toggleMenu(show){
+        if(show === undefined) menu.style.display = (menu.style.display === 'none') ? 'flex' : 'none';
+        else menu.style.display = show ? 'flex' : 'none';
+      }
+
+      // Botón clic
+      btn.addEventListener('click', ()=>toggleMenu());
+
+      // VOZ
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SR){ console.warn('Reconocimiento de voz no soportado'); return; }
+      const recognition = new SR();
+      recognition.lang = 'es-ES';
+      recognition.continuous = true;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event)=>{
+        const last = event.results[event.results.length-1];
+        const text = (last[0].transcript||'').trim().toLowerCase();
+        console.log('Comando menú:', text);
+
+        if(text === 'cero') toggleMenu(false);  // ocultar
+        else if(text === 'uno') toggleMenu(true); // mostrar
+      };
+
+      recognition.onend = ()=>{ try{ recognition.start(); }catch(e){} };
+      try{ recognition.start(); }catch(e){ console.warn('No se pudo iniciar reconocimiento automáticamente', e); }
+
+      console.log('VoiceMenuToggle cargado: botón o diga "cero/uno"');
+    })();
+  </script>
+</div>
+
+
+
+
 
 
 
