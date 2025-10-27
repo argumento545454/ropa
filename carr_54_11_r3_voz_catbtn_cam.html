@@ -793,17 +793,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = (last[0].transcript || '').trim().toLowerCase();
     console.log('🎙️ Voz detectada:', text);
 
-    // === 1️⃣ Prioridad: comandos de cámara (siempre activos) ===
+    // === 1️⃣ Comandos de cámara ===
     if (text.includes('encender cámara') || text.includes('encender camara') || text.includes('prender cámara') || text.includes('prender camara')) {
-      startCamera();
+      if (typeof startCamera === 'function') {
+        console.log('🎥 Ejecutando: startCamera()');
+        startCamera();
+      } else {
+        console.warn('⚠️ startCamera() no está definida o aún no cargada');
+      }
       return;
     }
+
     if (text.includes('tomar foto') || text.includes('sacar foto') || text.includes('sacar una foto') || text.includes('tomar una foto')) {
-      takePhotoAndDownload();
+      if (typeof takePhotoAndDownload === 'function') {
+        console.log('📸 Ejecutando: takePhotoAndDownload()');
+        takePhotoAndDownload();
+      } else {
+        console.warn('⚠️ takePhotoAndDownload() no está definida o aún no cargada');
+      }
       return;
     }
+
     if (text.includes('apagar cámara') || text.includes('apagar camara') || text.includes('cerrar cámara') || text.includes('cerrar camara')) {
-      stopCamera();
+      if (typeof stopCamera === 'function') {
+        console.log('🛑 Ejecutando: stopCamera()');
+        stopCamera();
+      } else {
+        console.warn('⚠️ stopCamera() no está definida o aún no cargada');
+      }
       return;
     }
 
