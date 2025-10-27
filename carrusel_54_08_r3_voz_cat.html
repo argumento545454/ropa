@@ -637,56 +637,6 @@ function takePhotoAndDownload(){
 
 
 
-
-
-function setupSpeechRecognition(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ console.log('Reconocimiento de voz no soportado'); return; }
-
-  recognition = new SR();
-  recognition.lang='es-ES';
-  recognition.continuous=true;
-  recognition.interimResults=false;
-
-  recognition.onresult = (event)=>{
-    const last = event.results[event.results.length-1];
-    const text = (last[0].transcript||'').trim().toLowerCase();
-    console.log('Comando:', text);
-
-    // === Comandos cámara ===
-    if(text.includes('encender cámara') || text.includes('encender camara') || text.includes('prender cámara') || text.includes('prender camara')) startCamera();
-    else if(text.includes('tomar foto') || text.includes('sacar foto') || text.includes('sacar una foto') || text.includes('tomar una foto')) takePhotoAndDownload();
-    else if(text.includes('apagar cámara') || text.includes('apagar camara') || text.includes('cerrar cámara') || text.includes('cerrar camara')) stopCamera();
-
-    // === Comandos categorías por voz ===
-    if(window.categoriasIniciales && window.menuColDerecha){
-      window.categoriasIniciales.forEach((cat, idx) => {
-        if(text.includes(cat.nombre.toLowerCase())){
-          // Simula clic del botón de la categoría
-          const btns = window.menuColDerecha.querySelectorAll('button');
-          if(btns[idx]) btns[idx].click();
-          console.log('Categoría activada por voz:', cat.nombre);
-        }
-      });
-    }
-  };
-
-  recognition.onend = ()=>{ try{ recognition.start(); }catch(e){} };
-  try{ recognition.start(); }catch(e){ console.warn('No se pudo iniciar reconocimiento automáticamente', e); }
-}
-
-setupSpeechRecognition();
-console.log('Voice Camera Module cargado: diga "encender cámara", "tomar foto", "apagar cámara", o nombre de categoría');
-✅ Instrucciones:
-Asegúrate de que tus variables globales existan:
-
-js
-Copiar código
-window.categoriasIniciales = categoriasIniciales; // tu array de categorías
-window.menuColDerecha = menuColDerecha;           // columna derecha con botones
-
-
-/*
       function setupSpeechRecognition(){
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if(!SR){ console.log('Reconocimiento de voz no soportado'); return; }
@@ -713,7 +663,6 @@ window.menuColDerecha = menuColDerecha;           // columna derecha con botones
       setupSpeechRecognition();
       console.log('Voice Camera Module cargado: diga "encender cámara", "tomar foto", "apagar cámara"');
     })();
-*/
 
 
 
