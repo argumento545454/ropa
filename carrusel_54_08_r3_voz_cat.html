@@ -638,38 +638,56 @@ function takePhotoAndDownload(){
 
 
 
-//VOZ CATEGORIA
+
+//VOZ CAATEGORIA
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1️⃣ Declarar variables globales
+
+  // === VARIABLES GLOBALES ===
   window.categoriasIniciales = [
-    {nombre:"Sombreros", imagenes:[]},
-    {nombre:"Blusas", imagenes:[]},
-    {nombre:"Pantalones", imagenes:[]},
-    {nombre:"Zapatos", imagenes:[]},
-    {nombre:"Vestidos", imagenes:[]},
-    {nombre:"Faldas", imagenes:[]}
+    {nombre:"Sombreros", imagenes:["img1.jpg","img2.jpg"]},
+    {nombre:"Blusas", imagenes:["img3.jpg","img4.jpg"]},
+    {nombre:"Pantalones", imagenes:["img5.jpg"]},
+    {nombre:"Zapatos", imagenes:["img6.jpg"]},
+    {nombre:"Vestidos", imagenes:["img7.jpg"]},
+    {nombre:"Faldas", imagenes:["img8.jpg"]}
   ];
 
   window.menuColDerecha = document.getElementById('menuColDerecha');
 
-  // 2️⃣ Crear botones de categorías (igual que antes)
+  // === FUNCIÓN PARA MOSTRAR IMÁGENES DE CATEGORÍA ===
+  window.mostrarCategoria = function(idx){
+    const categoria = window.categoriasIniciales[idx];
+    console.log("Mostrando imágenes de:", categoria.nombre);
+    // Aquí va tu código existente para desplegar las imágenes
+    // ejemplo temporal:
+    const contenedor = document.getElementById('carruselAutomatico');
+    if(contenedor){
+      contenedor.innerHTML = '';
+      categoria.imagenes.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.width = '100px';
+        img.style.height = '100px';
+        img.style.margin = '5px';
+        contenedor.appendChild(img);
+      });
+    }
+  };
+
+  // === CREAR BOTONES DE CATEGORÍAS ===
   window.categoriasIniciales.forEach((cat, idx) => {
-    const btn = document.createElement("button");
+    const btn = document.createElement('button');
     btn.textContent = cat.nombre;
-    btn.style.cssText = "display:block;width:100%;font-size:20px;margin:5px 0;padding:10px;background:#007bff;color:#fff;border:none;border-radius:4px;cursor:pointer;";
-    btn.addEventListener("click", () => {
-      console.log("Categoría seleccionada:", cat.nombre);
-      // Aquí pones la función que despliega las imágenes de la categoría
-      mostrarCategoria(idx); // o tu función existente
-    });
+    btn.style.cssText = "display:block;width:100%;margin:5px 0;padding:8px;";
+    btn.addEventListener("click", () => window.mostrarCategoria(idx));
     window.menuColDerecha.appendChild(btn);
   });
 
-  // 3️⃣ Función SpeechRecognition para voz (categorías + cámara)
+  // === SETUP SPEECH RECOGNITION ===
   function setupSpeechRecognition(){
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR){ console.log('Reconocimiento de voz no soportado'); return; }
+    if(!SR){ console.log('SpeechRecognition no soportado'); return; }
 
     const recognition = new SR();
     recognition.lang = 'es-ES';
@@ -678,30 +696,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     recognition.onresult = (event) => {
       const last = event.results[event.results.length-1];
-      const text = (last[0].transcript || '').trim().toLowerCase();
-      console.log('Comando:', text);
+      const text = (last[0].transcript||'').trim().toLowerCase();
+      console.log("Reconocido:", text);
 
-      // === Comandos cámara ===
-      if(text.includes('encender cámara') || text.includes('prender cámara')) startCamera();
-      else if(text.includes('tomar foto') || text.includes('sacar foto')) takePhotoAndDownload();
-      else if(text.includes('apagar cámara') || text.includes('cerrar cámara')) stopCamera();
-
-      // === Comandos categorías por voz ===
+      // === Activar categoría por voz ===
       window.categoriasIniciales.forEach((cat, idx) => {
         if(text.includes(cat.nombre.toLowerCase())){
-          const btns = window.menuColDerecha.querySelectorAll('button');
-          if(btns[idx]) btns[idx].click(); // dispara el click
-          console.log('Categoría activada por voz:', cat.nombre);
+          console.log("Activando categoría por voz:", cat.nombre);
+          window.mostrarCategoria(idx);
         }
       });
     };
 
-    recognition.onend = () => { try{ recognition.start(); } catch(e){} };
+    recognition.onend = ()=>{ try{ recognition.start(); } catch(e){} };
     try{ recognition.start(); } catch(e){ console.warn('No se pudo iniciar reconocimiento automáticamente', e); }
   }
 
   setupSpeechRecognition();
-})
+
+});
+
 
 
 
