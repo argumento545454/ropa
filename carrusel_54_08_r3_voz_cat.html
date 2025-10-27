@@ -637,6 +637,77 @@ function takePhotoAndDownload(){
 
 
 
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // 1️⃣ Declarar variables globales
+  window.categoriasIniciales = [
+    {nombre:"Sombreros", imagenes:[]},
+    {nombre:"Blusas", imagenes:[]},
+    {nombre:"Pantalones", imagenes:[]},
+    {nombre:"Zapatos", imagenes:[]},
+    {nombre:"Vestidos", imagenes:[]},
+    {nombre:"Faldas", imagenes:[]}
+  ];
+
+  window.menuColDerecha = document.getElementById('menuColDerecha');
+
+  // 2️⃣ Crear botones de categorías (igual que antes)
+  window.categoriasIniciales.forEach((cat, idx) => {
+    const btn = document.createElement("button");
+    btn.textContent = cat.nombre;
+    btn.style.cssText = "display:block;width:100%;font-size:20px;margin:5px 0;padding:10px;background:#007bff;color:#fff;border:none;border-radius:4px;cursor:pointer;";
+    btn.addEventListener("click", () => {
+      console.log("Categoría seleccionada:", cat.nombre);
+      // Aquí pones la función que despliega las imágenes de la categoría
+      mostrarCategoria(idx); // o tu función existente
+    });
+    window.menuColDerecha.appendChild(btn);
+  });
+
+  // 3️⃣ Función SpeechRecognition para voz (categorías + cámara)
+  function setupSpeechRecognition(){
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ console.log('Reconocimiento de voz no soportado'); return; }
+
+    const recognition = new SR();
+    recognition.lang = 'es-ES';
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      const last = event.results[event.results.length-1];
+      const text = (last[0].transcript || '').trim().toLowerCase();
+      console.log('Comando:', text);
+
+      // === Comandos cámara ===
+      if(text.includes('encender cámara') || text.includes('prender cámara')) startCamera();
+      else if(text.includes('tomar foto') || text.includes('sacar foto')) takePhotoAndDownload();
+      else if(text.includes('apagar cámara') || text.includes('cerrar cámara')) stopCamera();
+
+      // === Comandos categorías por voz ===
+      window.categoriasIniciales.forEach((cat, idx) => {
+        if(text.includes(cat.nombre.toLowerCase())){
+          const btns = window.menuColDerecha.querySelectorAll('button');
+          if(btns[idx]) btns[idx].click(); // dispara el click
+          console.log('Categoría activada por voz:', cat.nombre);
+        }
+      });
+    };
+
+    recognition.onend = () => { try{ recognition.start(); } catch(e){} };
+    try{ recognition.start(); } catch(e){ console.warn('No se pudo iniciar reconocimiento automáticamente', e); }
+  }
+
+  setupSpeechRecognition();
+});
+</script>
+
+
+
+
+/*
       function setupSpeechRecognition(){
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if(!SR){ console.log('Reconocimiento de voz no soportado'); return; }
@@ -663,6 +734,7 @@ function takePhotoAndDownload(){
       setupSpeechRecognition();
       console.log('Voice Camera Module cargado: diga "encender cámara", "tomar foto", "apagar cámara"');
     })();
+*/
 
 
 
