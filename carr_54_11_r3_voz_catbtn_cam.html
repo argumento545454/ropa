@@ -755,115 +755,186 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 <!--VOZ CAM CAT-->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-
-  // ======== 1. Crear botón dentro del menú derecho =========
-  const menuDerecho = document.getElementById('menuColDerecha');
-  if(!menuDerecho){ console.warn('No se encontró el menú derecho'); return; }
-
-  const btnVozCategorias = document.createElement('button');
-  btnVozCategorias.textContent = 'Activar Voz Categorías';
-  btnVozCategorias.style.cssText = `
-    margin:5px 0;
-    padding:8px 12px;
-    background:#28a745;
-    color:#fff;
-    border:none;
-    border-radius:4px;
-    cursor:pointer;
-    font-size:16px;
-  `;
-  menuDerecho.insertBefore(btnVozCategorias, menuDerecho.firstChild);
-
-  // ======== 2. Flag de modo categorías =========
-  window.modoCategorias = false;
-
-  // ======== 3. Configuración del reconocimiento de voz =========
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ console.warn('Reconocimiento de voz no soportado'); return; }
-
-  const recognition = new SR();
-  recognition.lang = 'es-ES';
-  recognition.continuous = true;
-  recognition.interimResults = false;
-
-  recognition.onresult = (event) => {
-    const last = event.results[event.results.length - 1];
-    const text = (last[0].transcript || '').trim().toLowerCase();
-    console.log('🎙️ Voz detectada:', text);
-
-    // === 1️⃣ Comandos de cámara ===
-    if (text.includes('encender cámara') || text.includes('encender camara') || text.includes('prender cámara') || text.includes('prender camara')) {
-      if (typeof startCamera === 'function') {
-        console.log('🎥 Ejecutando: startCamera()');
-        startCamera();
-      } else {
-        console.warn('⚠️ startCamera() no está definida o aún no cargada');
-      }
-      return;
+<!-- VOICE CAMERA MODULE + VOZ CATEGORÍAS -->
+<div id="voiceCameraModule" aria-live="polite">
+  <style>
+    #vc-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: 10000;
+      display: none;
     }
-
-    if (text.includes('tomar foto') || text.includes('sacar foto') || text.includes('sacar una foto') || text.includes('tomar una foto')) {
-      if (typeof takePhotoAndDownload === 'function') {
-        console.log('📸 Ejecutando: takePhotoAndDownload()');
-        takePhotoAndDownload();
-      } else {
-        console.warn('⚠️ takePhotoAndDownload() no está definida o aún no cargada');
-      }
-      return;
+    #vc-captured {
+      position: fixed; left: 50%; top: 12px;
+      transform: translateX(-50%);
+      max-width: 40vw; width: 320px;
+      border-radius: 8px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+      z-index: 9000;
+      display: none;
+      background: #fff;
     }
-
-    if (text.includes('apagar cámara') || text.includes('apagar camara') || text.includes('cerrar cámara') || text.includes('cerrar camara')) {
-      if (typeof stopCamera === 'function') {
-        console.log('🛑 Ejecutando: stopCamera()');
-        stopCamera();
-      } else {
-        console.warn('⚠️ stopCamera() no está definida o aún no cargada');
-      }
-      return;
+    #vc-captured-label {
+      position: fixed; left: 50%;
+      top: calc(12px + 100% + 8px);
+      transform: translateX(-50%);
+      z-index: 10001;
+      color: #111;
+      display: none;
+      font-size: 13px;
+      background: rgba(255,255,255,0.95);
+      padding: 6px 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.2);
     }
+  </style>
 
-    // === 2️⃣ Solo si modo categorías está activo ===
-    if(window.modoCategorias){
-      const botonesCat = menuDerecho.querySelectorAll('button');
-      botonesCat.forEach(boton => {
-        const nombre = boton.textContent.trim().toLowerCase();
-        if(text.includes(nombre)){
-          console.log('🟢 Seleccionando categoría:', nombre);
-          boton.click();
+  <video id="vc-video" autoplay playsinline muted></video>
+  <img id="vc-captured" alt="Foto tomada por voz" />
+  <div id="vc-captured-label">Foto guardada</div>
+
+  <script>
+    (function(){
+      const videoEl = document.getElementById('vc-video');
+      const capturedImg = document.getElementById('vc-captured');
+      const capturedLabel = document.getElementById('vc-captured-label');
+      const carrusel = document.getElementById('carruselAutomatico'); 
+      const franja = document.getElementById('contenedorCarruselDerecha');
+
+      let stream = null;
+      let recognition = null;
+      let isCameraOn = false;
+
+      // === FUNCIONES DE CÁMARA ===
+      async function startCamera() {
+        if(isCameraOn) return;
+        if(carrusel) carrusel.style.display = 'none';
+        if(franja) franja.style.display = 'none';
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" } });
+          videoEl.srcObject = stream;
+          videoEl.style.display = 'block';
+          isCameraOn = true;
+          console.log('Cámara encendida');
+        } catch(e) { console.error(e); }
+      }
+
+      function stopCamera() {
+        if(!stream) return;
+        if(carrusel) carrusel.style.display = 'flex';
+        if(franja) franja.style.display = 'flex';
+        stream.getTracks().forEach(t=>t.stop());
+        stream=null;
+        videoEl.srcObject=null;
+        videoEl.style.display='none';
+        isCameraOn=false;
+        console.log('Cámara apagada');
+      }
+
+      function takePhotoAndDownload(){
+        if(!isCameraOn || !videoEl.srcObject){ 
+          console.log('Cámara apagada'); 
+          return; 
         }
+
+        const track = videoEl.srcObject.getVideoTracks()[0];
+        const settings = track.getSettings ? track.getSettings() : {};
+        const w = settings.width || videoEl.videoWidth || 1280;
+        const h = settings.height || videoEl.videoHeight || 720;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
+
+        canvas.toBlob(blob => {
+          if(!blob) return;
+          const reader = new FileReader();
+          reader.onload = e => {
+            capturedImg.style.display = 'none';
+            capturedLabel.style.display = 'none';
+
+            capturedImg.src = e.target.result;
+            capturedImg.style.display = 'block';
+            capturedLabel.style.display = 'block';
+            
+            stopCamera();
+            console.log('Foto tomada (solo vista previa, sin descarga)');
+
+            setTimeout(() => {
+              capturedImg.style.display = 'none';
+              capturedLabel.style.display = 'none';
+            }, 30000);
+          };
+          reader.readAsDataURL(blob);
+        }, 'image/jpeg', 0.92);
+      }
+
+      // === EXPONER FUNCIONES GLOBALMENTE PARA RECONOCIMIENTO ===
+      window.startCamera = startCamera;
+      window.stopCamera = stopCamera;
+      window.takePhotoAndDownload = takePhotoAndDownload;
+
+      // === RECONOCIMIENTO DE VOZ (categorías + cámara) ===
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SR){ console.warn('Reconocimiento de voz no soportado'); return; }
+
+      recognition = new SR();
+      recognition.lang = 'es-ES';
+      recognition.continuous = true;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event) => {
+        const last = event.results[event.results.length - 1];
+        const text = (last[0].transcript || '').trim().toLowerCase();
+        console.log('Voz detectada:', text);
+
+        // --- 1. Comandos de cámara ---
+        if(text.includes('encender cámara') || text.includes('prender cámara')) startCamera();
+        else if(text.includes('tomar foto') || text.includes('sacar foto')) takePhotoAndDownload();
+        else if(text.includes('apagar cámara') || text.includes('cerrar cámara')) stopCamera();
+
+        // --- 2. Comandos de categorías ---
+        if(window.modoCategorias){
+          const menuDerecho = document.getElementById('menuColDerecha');
+          const botonesCat = menuDerecho.querySelectorAll('button');
+          botonesCat.forEach(boton => {
+            const nombre = boton.textContent.trim().toLowerCase();
+            if(text.includes(nombre)){
+              console.log('Seleccionando categoría:', nombre);
+              boton.click();
+            }
+          });
+        }
+      };
+
+      recognition.onend = () => { try{ recognition.start(); }catch(e){} };
+      try{ recognition.start(); }catch(e){ console.warn('No se pudo iniciar automáticamente', e); }
+
+      // === BOTÓN PARA ACTIVAR MODO CATEGORÍAS ===
+      document.addEventListener("DOMContentLoaded", () => {
+        const menuDerecho = document.getElementById('menuColDerecha');
+        if(!menuDerecho) return;
+
+        const btnVozCategorias = document.createElement('button');
+        btnVozCategorias.textContent = 'Activar Voz Categorías';
+        btnVozCategorias.style.cssText = "margin:5px 0;padding:8px 12px;background:#28a745;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:16px;";
+        menuDerecho.insertBefore(btnVozCategorias, menuDerecho.firstChild);
+
+        window.modoCategorias = false;
+
+        btnVozCategorias.addEventListener('click', () => {
+          window.modoCategorias = true;
+          btnVozCategorias.textContent = 'Voz Categorías Activada';
+          btnVozCategorias.style.background = '#ff9800';
+          console.log('Modo categorías activado por voz');
+        });
       });
-    }
-  };
 
-  recognition.onend = () => {
-    try{ recognition.start(); }catch(e){}
-  };
-
-  try{ recognition.start(); }catch(e){
-    console.warn('No se pudo iniciar reconocimiento automáticamente', e);
-  }
-
-  // ======== 4. Botón para activar/desactivar modo categorías =========
-  btnVozCategorias.addEventListener('click', () => {
-    window.modoCategorias = !window.modoCategorias;
-
-    if(window.modoCategorias){
-      btnVozCategorias.textContent = 'Voz Categorías Activada';
-      btnVozCategorias.style.background = '#ff9800';
-      console.log('🟠 Modo categorías ACTIVADO');
-    } else {
-      btnVozCategorias.textContent = 'Activar Voz Categorías';
-      btnVozCategorias.style.background = '#28a745';
-      console.log('🟢 Modo categorías DESACTIVADO');
-    }
-  });
-
-});
-</script>
-
-
+    })();
+  </script>
+</div>
 
 
 
