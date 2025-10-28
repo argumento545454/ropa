@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>d_arrastrar_logo_sobre_Vestido</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    .galeria {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px;
+    }
+
+    .vestido {
+      position: relative;
+      display: inline-block;
+      border: 2px solid #ccc;
+      padding: 5px;
+    }
+
+    .vestido img {
+      width: 150px;
+      height: auto;
+      display: block;
+    }
+
+    /* Contenedor del logo */
+    #logo-container {
+      width: 120px;
+      position: absolute;
+      cursor: move;
+      z-index: 10;
+    }
+
+    #logo-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h2>Arrastra logo sobre Vestido</h2>
+
+  <div class="galeria">
+    <div class="vestido"><img src="vestido1.jpg" alt="vestido1"></div>
+    <div class="vestido"><img src="vestido2.jpg" alt="vestido2"></div>
+    <div class="vestido"><img src="vestido3.jpg" alt="vestido3"></div>
+    <div class="vestido"><img src="vestido4.jpg" alt="vestido4"></div>    
+	<div class="vestido"><img src="vestido5.jpg" alt="vestido1"></div>
+    <div class="vestido"><img src="vestido6.jpg" alt="vestido2"></div>
+    <div class="vestido"><img src="vestido7.jpg" alt="vestido3"></div>
+    <div class="vestido"><img src="vestido8.jpg" alt="vestido4"></div>
+  </div>
+
+  <!-- Contenedor del logo -->
+  <div id="logo-container">
+    <img src="logo1.png" alt="logo1">
+  </div>
+
+  <script>
+    $(function() {
+      // Hacer el logo arrastrable y redimensionable
+      $("#logo-container").draggable({
+        revert: "invalid"
+      }).resizable({
+        aspectRatio: true,
+        handles: "n, e, s, w, ne, se, sw, nw"
+      });
+
+      // Vestidos como zonas droppable
+      $(".vestido").droppable({
+        accept: "#logo-container",
+        drop: function(event, ui) {
+          // Calcular posición relativa al vestido
+          let posVestido = $(this).offset();
+          let posLogo = ui.offset;
+
+          let left = posLogo.left - posVestido.left;
+          let top = posLogo.top - posVestido.top;
+
+          // Insertar el logo dentro del vestido
+          $(this).append(ui.helper);
+          ui.helper.css({
+            top: top,
+            left: left,
+            position: "absolute"
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
