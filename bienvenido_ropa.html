@@ -90,7 +90,7 @@ crearFavicon();
 
   <button onClick="carrusel()">Carrusel</button>
   <button onClick="galeria()">Galeria</button>
-  <button onClick="vestido()">Vestido</button>
+  <!--<button onClick="vestido()">Vestido</button>-->
   
   <p id="message" class="message"></p>
 
@@ -116,7 +116,7 @@ crearFavicon();
     const user = usuarios.find(u => u.u === username && u.p === password);
 
     if (user) {
-      window.location.href = "mi_proyecto/probador_22_7_auto_manual_saveLock.html";
+      window.location.href = "probador_22_7_auto_manual_saveLock.html";
     } else {
       message.textContent = "Usuario o clave incorrecta ❌";
       message.className = "message error";
@@ -131,14 +131,17 @@ crearFavicon();
     window.location.href = "carrusel_44_41_galeria_NUMERADO.html";
   } 
 
+  /*
   function vestido() {
     window.location.href = "d_arrastrar_logo_sobre_Vestido.html";
   }
+  */
 </script>
 
   
 </body>
 </html>
+
 
 
 
