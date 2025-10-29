@@ -665,137 +665,212 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 <!--14-->
-<script>
-(function(){
-  const videoEl = document.getElementById('vc-video');
-  const capturedImg = document.getElementById('vc-captured');
-  const capturedLabel = document.getElementById('vc-captured-label');
-  const carrusel = document.getElementById('carruselAutomatico'); 
-  const franja = document.getElementById('contenedorCarruselDerecha');
-
-  let stream = null;
-  let recognition = null;
-  let isCameraOn = false;
-  let cameraTimeoutId = null; // temporizador de 30s para cerrar cámara
-
-  // === FUNCIONES DE CÁMARA ===
-  async function startCamera() {
-    if(isCameraOn) return;
-    if(carrusel) carrusel.style.display = 'none';
-    if(franja) franja.style.display = 'none';
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" } });
-      videoEl.srcObject = stream;
-      videoEl.style.display = 'block';
-      isCameraOn = true;
-      console.log('Cámara encendida');
-
-      // ===== Inicia temporizador de 30s =====
-      clearTimeout(cameraTimeoutId);
-      cameraTimeoutId = setTimeout(() => {
-        console.log('No se tomó foto en 30s, cerrando cámara automáticamente');
-        stopCamera();
-      }, 30000);
-
-    } catch(e) { console.error(e); }
-  }
-
-  function stopCamera() {
-    if(!stream) return;
-    if(carrusel) carrusel.style.display = 'flex';
-    if(franja) franja.style.display = 'flex';
-    stream.getTracks().forEach(t=>t.stop());
-    stream=null;
-    videoEl.srcObject=null;
-    videoEl.style.display='none';
-    isCameraOn=false;
-    clearTimeout(cameraTimeoutId); // cancela temporizador
-    console.log('Cámara apagada');
-  }
-
-  function takePhotoAndDownload(){
-    if(!isCameraOn || !videoEl.srcObject){ 
-      console.log('Cámara apagada'); 
-      return; 
+<!-- VOICE CAMERA MODULE + VOZ CATEGORÍAS -->
+<div id="voiceCameraModule" aria-live="polite">
+  <style>
+    #vc-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: 10000;
+      display: none;
     }
+    #vc-captured {
+      position: fixed; left: 50%; top: 12px;
+      transform: translateX(-50%);
+      max-width: 40vw; width: 320px;
+      border-radius: 8px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+      z-index: 9000;
+      display: none;
+      background: #fff;
+    }
+    #vc-captured-label {
+      position: fixed; left: 50%;
+      top: calc(12px + 100% + 8px);
+      transform: translateX(-50%);
+      z-index: 10001;
+      color: #111;
+      display: none;
+      font-size: 13px;
+      background: rgba(255,255,255,0.95);
+      padding: 6px 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+    }
+  </style>
 
-    clearTimeout(cameraTimeoutId); // al tomar foto, cancelamos el temporizador
+  <video id="vc-video" autoplay playsinline muted></video>
+  <img id="vc-captured" alt="Foto tomada por voz" />
+  <div id="vc-captured-label">Foto guardada</div>
 
-    const track = videoEl.srcObject.getVideoTracks()[0];
-    const settings = track.getSettings ? track.getSettings() : {};
-    const w = settings.width || videoEl.videoWidth || 1280;
-    const h = settings.height || videoEl.videoHeight || 720;
+  <script>
+    (function(){
+      const videoEl = document.getElementById('vc-video');
+      const capturedImg = document.getElementById('vc-captured');
+      const capturedLabel = document.getElementById('vc-captured-label');
+      const carrusel = document.getElementById('carruselAutomatico'); 
+      const franja = document.getElementById('contenedorCarruselDerecha');
 
-    const canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
+      let stream = null;
+      let recognition = null;
+      let isCameraOn = false;
+      let cameraTimeoutId = null; // temporizador de cierre automático
 
-    canvas.toBlob(blob => {
-      if(!blob) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        capturedImg.style.display = 'none';
-        capturedLabel.style.display = 'none';
+      // === FUNCIONES DE CÁMARA ===
+      async function startCamera() {
+        if(isCameraOn) return;
 
-        capturedImg.src = e.target.result;
-        capturedImg.style.display = 'block';
-        capturedLabel.style.display = 'block';
-        
-        console.log('Foto tomada (solo vista previa, sin descarga)');
+        if(carrusel) carrusel.style.display = 'none';
+        if(franja) franja.style.display = 'none';
 
-        // Ocultar automáticamente después de 30 segundos
-        setTimeout(() => {
-          capturedImg.style.display = 'none';
-          capturedLabel.style.display = 'none';
-          stopCamera(); // opcional: cerrar cámara si quieres al desaparecer la foto
-        }, 30000);
-      };
-      reader.readAsDataURL(blob);
-    }, 'image/jpeg', 0.92);
-  }
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" } });
+          videoEl.srcObject = stream;
+          videoEl.style.display = 'block';
+          isCameraOn = true;
+          console.log('Cámara encendida');
 
-  // === EXPONER FUNCIONES GLOBALMENTE PARA RECONOCIMIENTO ===
-  window.startCamera = startCamera;
-  window.stopCamera = stopCamera;
-  window.takePhotoAndDownload = takePhotoAndDownload;
+          // Temporizador 30s para cerrar automáticamente si no se toma foto
+          cameraTimeoutId = setTimeout(() => {
+            stopCamera();
+            console.log('Cierre automático: no se tomó foto en 30s');
+          }, 30000);
 
-  // === RECONOCIMIENTO DE VOZ ===
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ console.warn('Reconocimiento de voz no soportado'); return; }
+        } catch(e) { console.error(e); }
+      }
 
-  recognition = new SR();
-  recognition.lang = 'es-ES';
-  recognition.continuous = true;
-  recognition.interimResults = false;
+      function stopCamera() {
+        if(!stream) return;
 
-  recognition.onresult = (event) => {
-    const last = event.results[event.results.length - 1];
-    const text = (last[0].transcript || '').trim().toLowerCase();
-    console.log('Voz detectada:', text);
+        if(carrusel) carrusel.style.display = 'flex';
+        if(franja) franja.style.display = 'flex';
 
-    if(text.includes('encender cámara') || text.includes('prender cámara')) startCamera();
-    else if(text.includes('tomar foto') || text.includes('sacar foto')) takePhotoAndDownload();
-    else if(text.includes('apagar cámara') || text.includes('cerrar cámara')) stopCamera();
+        stream.getTracks().forEach(t=>t.stop());
+        stream = null;
+        videoEl.srcObject = null;
+        videoEl.style.display = 'none';
+        isCameraOn = false;
 
-    // Comandos de categorías si está activado
-    if(window.modoCategorias){
-      const menuDerecho = document.getElementById('menuColDerecha');
-      const botonesCat = menuDerecho.querySelectorAll('button');
-      botonesCat.forEach(boton => {
-        const nombre = boton.textContent.trim().toLowerCase();
-        if(text.includes(nombre)){
-          console.log('Seleccionando categoría:', nombre);
-          boton.click();
+        // Limpiar temporizador si existe
+        if(cameraTimeoutId){
+          clearTimeout(cameraTimeoutId);
+          cameraTimeoutId = null;
         }
+
+        console.log('Cámara apagada');
+      }
+
+      function takePhotoAndDownload(){
+        if(!isCameraOn || !videoEl.srcObject) return;
+
+        // Cancelar temporizador de cierre automático
+        if(cameraTimeoutId){
+          clearTimeout(cameraTimeoutId);
+          cameraTimeoutId = null;
+        }
+
+        const track = videoEl.srcObject.getVideoTracks()[0];
+        const settings = track.getSettings ? track.getSettings() : {};
+        const w = settings.width || videoEl.videoWidth || 1280;
+        const h = settings.height || videoEl.videoHeight || 720;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
+
+        canvas.toBlob(blob => {
+          if(!blob) return;
+          const reader = new FileReader();
+          reader.onload = e => {
+            // Ocultar foto anterior si está visible
+            capturedImg.style.display = 'none';
+            capturedLabel.style.display = 'none';
+
+            // Mostrar la nueva foto
+            capturedImg.src = e.target.result;
+            capturedImg.style.display = 'block';
+            capturedLabel.style.display = 'block';
+            
+            stopCamera();
+            console.log('Foto tomada correctamente (vista previa)');
+            
+            // Ocultar foto después de 30s
+            setTimeout(() => {
+              capturedImg.style.display = 'none';
+              capturedLabel.style.display = 'none';
+            }, 30000);
+          };
+          reader.readAsDataURL(blob);
+        }, 'image/jpeg', 0.92);
+      }
+
+      // === EXPONER FUNCIONES GLOBALMENTE PARA RECONOCIMIENTO ===
+      window.startCamera = startCamera;
+      window.stopCamera = stopCamera;
+      window.takePhotoAndDownload = takePhotoAndDownload;
+
+      // === RECONOCIMIENTO DE VOZ ===
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SR){ console.warn('Reconocimiento de voz no soportado'); return; }
+
+      recognition = new SR();
+      recognition.lang = 'es-ES';
+      recognition.continuous = true;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event) => {
+        const last = event.results[event.results.length - 1];
+        const text = (last[0].transcript || '').trim().toLowerCase();
+        console.log('Voz detectada:', text);
+
+        // --- 1. Comandos de cámara ---
+        if(text.includes('encender cámara') || text.includes('prender cámara')) startCamera();
+        else if(text.includes('tomar foto') || text.includes('sacar foto') || text.includes('tomar una foto') || text.includes('sacar una foto'))
+            takePhotoAndDownload();
+        else if(text.includes('apagar cámara') || text.includes('cerrar cámara')) stopCamera();
+
+        // --- 2. Comandos de categorías ---
+        if(window.modoCategorias){
+          const menuDerecho = document.getElementById('menuColDerecha');
+          const botonesCat = menuDerecho.querySelectorAll('button');
+          botonesCat.forEach(boton => {
+            const nombre = boton.textContent.trim().toLowerCase();
+            if(text.includes(nombre)){
+              console.log('Seleccionando categoría:', nombre);
+              boton.click();
+            }
+          });
+        }
+      };
+
+      recognition.onend = () => { try{ recognition.start(); }catch(e){} };
+      try{ recognition.start(); }catch(e){ console.warn('No se pudo iniciar automáticamente', e); }
+
+      // === BOTÓN PARA ACTIVAR MODO CATEGORÍAS ===
+      document.addEventListener("DOMContentLoaded", () => {
+        const menuDerecho = document.getElementById('menuColDerecha');
+        if(!menuDerecho) return;
+
+        const btnVozCategorias = document.createElement('button');
+        btnVozCategorias.textContent = 'Activar Voz Categorías';
+        btnVozCategorias.style.cssText = "margin:5px 0;padding:8px 12px;background:#28a745;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:16px;";
+        menuDerecho.insertBefore(btnVozCategorias, menuDerecho.firstChild);
+
+        window.modoCategorias = false;
+
+        btnVozCategorias.addEventListener('click', () => {
+          window.modoCategorias = true;
+          btnVozCategorias.textContent = 'Voz Categorías Activada';
+          btnVozCategorias.style.background = '#ff9800';
+          console.log('Modo categorías activado por voz');
+        });
       });
-    }
-  };
 
-  recognition.onend = () => { try{ recognition.start(); }catch(e){} };
-  try{ recognition.start(); }catch(e){ console.warn('No se pudo iniciar automáticamente', e); }
-
-})();
-</script>
+    })();
+  </script>
+ </div>
 </div>
 
 
