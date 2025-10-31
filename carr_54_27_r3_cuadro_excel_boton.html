@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>carr_54_27_r3_cuadro_excel_boton</title>
+
+
+<!--1-->
+<style>
+  body {margin:0; padding:0; height:100vh; width:100vw; display:flex; background:#ddd; overflow:hidden; font-family:Arial,sans-serif;}
+  
+  /* ===== Men? lateral ===== */
+  #menuColDerecha {
+    flex:0 0 180px; background:#222; color:#fff; padding:10px; display:flex; flex-direction:column;
+  }
+  #botonesExtraDerecha { margin-top:auto; display:flex; flex-direction:column; gap:8px; }
+
+  /* ===== T?tulo categor?a ===== */
+#nombreCategoriaMenuDerecha {
+  position: absolute;
+  top: 25px;                /* m�s arriba */
+  left: 25%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;                /* menos separaci�n entre letras o elementos */
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 6px 20px;        /* antes 20px ? rect�ngulo mucho m�s peque�o */
+  width: 20%;               /* menos ancho */
+  max-width: 600px;         /* l�mite m�s compacto */
+  background: #ffeb3b;
+  border-radius: 6px;       /* bordes m�s peque�os */
+  justify-content: center;
+  align-items: center;
+  z-index: 4;
+  font-size: 40px;         /* texto proporcionado */
+  /*font-size: 1.2em;          texto proporcionado */
+  font-weight: bold;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.2); /* sombra suave */
+}
+
+
+  /* ===== Carrusel principal (ovalado) ===== */
+  #carruselAutomatico {
+    position:absolute; top:400px; left:50%; transform:translateX(-50%);
+    width:80%; max-width:1200px; height:320px;
+    perspective:1200px; display:flex; justify-content:center; align-items:center; overflow:visible; z-index:5;
+  }
+  #carruselAutomatico img {
+    position:absolute; width:500px; height:500px; object-fit:cover; border-radius:50%;
+    transition:transform 0.3s linear, opacity 0.3s linear; will-change: transform, opacity;
+  }
+
+  /* ===== Franja de miniaturas ===== */
+  #contenedorCarruselDerecha {
+    position:absolute; top:1050px; left:30%; transform:translateX(-50%);
+    display:flex; gap:20px; overflow-x:auto; white-space:nowrap; padding:20px;
+    width:85%; max-width:600px; scrollbar-width:thin; -webkit-overflow-scrolling:touch;
+    background:#ccc; border-radius:12px; justify-content:center; align-items:center; z-index:4;
+  }
+  #contenedorCarruselDerecha::-webkit-scrollbar { height:8px; }
+  #contenedorCarruselDerecha::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.3); border-radius:4px; }
+  #contenedorCarruselDerecha { -ms-overflow-style:none; scrollbar-width:none; }
+
+  /* ===== Bot?n Ropa 1 discreto ===== */
+  #btnMostrarRopa1 {
+    position:fixed; bottom:10px; right:10px;
+    background:#ff9800; color:#fff; border:none; border-radius:10px;
+    padding:8px 14px; cursor:pointer; z-index:9999; opacity:0.2;
+    transition:opacity 0.3s, transform 0.2s; font-size:16px;
+  }
+</style>
+
+
+
+<!--1.2-->
+<style>
+  /* OCULTAR FRANJA - Bot�n discreto en la izquierda de la franja */
+  #btnToggleFranja {
+    position: absolute;
+    top: 50%; /* centrado vertical respecto a la franja */
+    left: 0;  /* al inicio de la franja */
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background: #ff9800;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    z-index: 9999;
+    opacity: 0.3;
+    transition: transform 0.2s, opacity 0.3s;
+  }
+  #btnToggleFranja:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.7;
+  }
+</style>
+
+<!--1.3-->
+<button id="btnToggleFranja" title="Mostrar/Ocultar franja"></button>
+
+<!--1.4-->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const btnFranja = document.getElementById("btnToggleFranja");
+  const franja = document.getElementById("contenedorCarruselDerecha");
+
+  btnFranja.addEventListener("click", () => {
+    if (!franja) return;
+    const visible = franja.style.display !== "none";
+    franja.style.display = visible ? "none" : "flex";
+  });
+});
+</script>
+
+</head>
+
+
+<!--2-->
+
+<body>
+
+<!--2.1-->
+  <!-- Menu lateral -->
+  <div id="menuColDerecha">
+    <div id="botonesExtraDerecha"></div>
+  </div>
+
+<!--2.2-->
+
+  <!-- Zona principal -->
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+    <h2 id="nombreCategoriaMenuDerecha">T?tulo categor?a</h2>
+    <div id="carruselAutomatico"></div>
+    <div id="contenedorCarruselDerecha"></div>
+  </div>
+
+
+<!--3-->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ====== Variables principales ======
+  let categoriasIniciales = JSON.parse(localStorage.getItem('categoriasIniciales') || '[]');
+  if (categoriasIniciales.length===0){
+    categoriasIniciales = [
+      {nombre:"Sombreros", imagenes:[]},
+      {nombre:"Blusas", imagenes:[]},
+      {nombre:"Pantalones", imagenes:[]},
+      {nombre:"Zapatos", imagenes:[]},
+      {nombre:"Vestidos", imagenes:[]}
+    ];
+    localStorage.setItem('categoriasIniciales', JSON.stringify(categoriasIniciales));
+  }
+
+  let indiceCategoria=0;
+  let tiempoMenu=parseInt(localStorage.getItem('tiempoRotacion'))||3000;
+  let velocidadCarrusel=parseFloat(localStorage.getItem('velocidadCarrusel'))||1;
+  let intervaloCategorias;
+
+  const menuColDerecha = document.getElementById('menuColDerecha');
+  const botonesExtraDerecha = document.getElementById('botonesExtraDerecha');
+  const nombreCategoriaElem = document.getElementById('nombreCategoriaMenuDerecha');
+  const contenedorCarrusel = document.getElementById('contenedorCarruselDerecha');
+  const carruselAutomatico = document.getElementById('carruselAutomatico');
+
+  // ====== Men? lateral de categor?as ======
+  categoriasIniciales.forEach((cat, idx)=>{
+    const btn=document.createElement('button');
+    btn.textContent=cat.nombre;
+    btn.style.cssText="display:block;width:100%;font-size:20px;margin:5px 0;padding:10px;background:#007bff;color:#fff;border:none;border-radius:4px;cursor:pointer;";
+    btn.addEventListener('click',()=>{ indiceCategoria=idx; mostrarCategoria(); });
+    menuColDerecha.insertBefore(btn, botonesExtraDerecha);
+  });
+
+  // ====== Botones extra ======
+  const btnSubirImg=document.createElement("button");
+  btnSubirImg.textContent="Subir img";
+  btnSubirImg.style.cssText="padding:6px;background:#28a745;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:20px;";
+
+  const contTiempo=document.createElement("div");
+  contTiempo.style.cssText="display:flex;flex-direction:column;align-items:center;gap:4px;background:#ff9800;border-radius:6px;padding:6px;font-size:18px;";
+  const textoTiempo=document.createElement("div");
+  textoTiempo.style.cssText="color:#fff;font-weight:bold;";
+  const flechaArriba=document.createElement("button");
+  const flechaAbajo=document.createElement("button");
+  [flechaArriba,flechaAbajo].forEach(b=>{ b.style.cssText="width:100%;border:none;background:#fff;color:#ff9800;font-size:16px;border-radius:4px;cursor:pointer;"; });
+  flechaArriba.textContent="?"; flechaAbajo.textContent="?";
+  contTiempo.append(flechaArriba,textoTiempo,flechaAbajo);
+
+  const btnVelocidad=document.createElement("button");
+  btnVelocidad.textContent="Velocidad";
+  btnVelocidad.style.cssText="padding:6px;background:#673ab7;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:20px;";
+
+  botonesExtraDerecha.append(btnSubirImg,contTiempo,btnVelocidad);
+
+  // ====== Subir imagen ======
+  btnSubirImg.addEventListener("click",()=>{
+    const input=document.createElement("input");
+    input.type="file"; input.accept="image/*"; input.multiple=true;
+    input.onchange=e=>{
+      Array.from(e.target.files).forEach(f=>{
+        const fr=new FileReader();
+        fr.onload=ev=>{
+          categoriasIniciales[indiceCategoria].imagenes.push(ev.target.result);
+          localStorage.setItem('categoriasIniciales',JSON.stringify(categoriasIniciales));
+          mostrarCategoria();
+        };
+        fr.readAsDataURL(f);
+      });
+    };
+    input.click();
+  });
+
+  // ====== Control tiempo ======
+  function reiniciarIntervaloMenu(){
+    clearInterval(intervaloCategorias);
+    intervaloCategorias=setInterval(()=>{
+      indiceCategoria=(indiceCategoria+1)%categoriasIniciales.length;
+      mostrarCategoria();
+    }, tiempoMenu);
+    localStorage.setItem('tiempoRotacion',tiempoMenu);
+  }
+  flechaArriba.addEventListener("click",()=>{ tiempoMenu=Math.min(tiempoMenu+5000,90000); textoTiempo.textContent=`Tiempo: ${(tiempoMenu/1000).toFixed(1)}s`; reiniciarIntervaloMenu(); });
+  flechaAbajo.addEventListener("click",()=>{ tiempoMenu=Math.max(tiempoMenu-5000,5000); textoTiempo.textContent=`Tiempo: ${(tiempoMenu/1000).toFixed(1)}s`; reiniciarIntervaloMenu(); });
+
+  // ====== Control velocidad ======
+  btnVelocidad.addEventListener("click",()=>{
+    velocidadCarrusel+=0.2; if(velocidadCarrusel>3) velocidadCarrusel=0.4;
+    localStorage.setItem('velocidadCarrusel',velocidadCarrusel);
+    btnVelocidad.textContent=`Velocidad ?${velocidadCarrusel.toFixed(1)}`;
+  });
+
+  // ====== Carrusel ovalado ======
+  function iniciarCarrusel(){
+    carruselAutomatico.innerHTML="";
+    const categoria=categoriasIniciales[indiceCategoria];
+    if(!categoria || !categoria.imagenes || categoria.imagenes.length===0) return;
+
+    const radioX=Math.max(200,(carruselAutomatico.clientWidth/2)-120);
+
+    const radioY=Math.max(120,(carruselAutomatico.clientHeight/2)-40);
+
+    const imgs=[];
+    categoria.imagenes.forEach((url,idx)=>{
+      const img=document.createElement("img");
+      img.src=url; img.className="imgCarrusel"; img.dataset.index=idx; img._hover=false;
+      carruselAutomatico.appendChild(img); imgs.push(img);
+
+      img.addEventListener("mouseenter",()=>{ img._hover=true; window.__ropa3_paused=true; });
+      img.addEventListener("mouseleave",()=>{ img._hover=false; window.__ropa3_paused=false; });
+
+      img.addEventListener("click",()=>{
+        const arr=categoria.imagenes; const i=parseInt(img.dataset.index,10);
+        if(!isNaN(i) && arr[i]){
+          const item=arr.splice(i,1)[0]; arr.unshift(item);
+          localStorage.setItem('categoriasIniciales',JSON.stringify(categoriasIniciales));
+          mostrarCategoria();
+        }
+      });
+    });
+
+    let angulo=0; let ultimo=performance.now(); window.__ropa3_paused=false;
+    function animarOval(now){
+      const delta=(now-ultimo)/1000; ultimo=now;
+      if(!window.__ropa3_paused) angulo+=velocidadCarrusel*60*delta;
+      imgs.forEach((el,i)=>{
+        const fase=(i*360/imgs.length+angulo)*Math.PI/180;
+        const x=Math.cos(fase)*radioX;
+        const y=Math.sin(fase)*radioY*0.7;
+        const z=Math.sin(fase)*80;
+        const baseScale=1+z/400;
+        const hoverExtra=el._hover?1.35:1;
+        const escalaFinal=baseScale*hoverExtra;
+        const op=Math.min(1,Math.max(0.2,0.55+z/200));
+        el.style.transform=`translate3d(${x}px,${y}px,${z}px) scale(${escalaFinal})`;
+        el.style.opacity=op;
+        el.style.zIndex=Math.round(300+z);
+        el.dataset.index=i;
+      });
+      requestAnimationFrame(animarOval);
+    }
+    ultimo=performance.now(); requestAnimationFrame(animarOval);
+  }
+
+  // ====== Mostrar categor?a ======
+  function mostrarCategoria(){
+    const categoria=categoriasIniciales[indiceCategoria];
+    nombreCategoriaElem.textContent=categoria.nombre;
+
+    // Franja miniaturas
+    contenedorCarrusel.innerHTML="";
+    categoria.imagenes.forEach((imgSrc,idx)=>{
+      const wrapper=document.createElement("div"); wrapper.style.cssText="position:relative;width:60px;height:60px;";
+      const miniatura=document.createElement("img"); miniatura.src=imgSrc; miniatura.style.cssText="width:100%;height:100%;object-fit:cover;border-radius:8px;cursor:pointer;";
+      miniatura.addEventListener("click",()=>{ mostrarCategoria(); });
+      const btnEliminar=document.createElement("button"); btnEliminar.textContent="?";
+      btnEliminar.style.cssText="position:absolute;top:-6px;right:-6px;width:18px;height:18px;font-size:14px;color:#fff;background:#f44336;border:none;border-radius:50%;cursor:pointer;";
+      btnEliminar.addEventListener("click",()=>{ categoria.imagenes.splice(idx,1); localStorage.setItem('categoriasIniciales',JSON.stringify(categoriasIniciales)); mostrarCategoria(); });
+      wrapper.append(miniatura,btnEliminar); contenedorCarrusel.appendChild(wrapper);
+    });
+
+    iniciarCarrusel();
+    textoTiempo.textContent=`Tiempo: ${(tiempoMenu/1000).toFixed(1)}s`;
+    btnVelocidad.textContent=`Velocidad Images ?${velocidadCarrusel.toFixed(1)}`;
+  }
+
+  mostrarCategoria();
+  reiniciarIntervaloMenu();
+
+
+
+  // ====== Bot?n discreto Ropa1 ======
+  const ropa1=document.getElementById("ropa1")||document.querySelector(".ropa1");
+  if(ropa1){ ropa1.style.display="none"; ropa1.style.opacity="0"; }
+  const btnMostrarRopa1=document.createElement("button"); btnMostrarRopa1.id="btnMostrarRopa1"; btnMostrarRopa1.textContent="?? Ropa 1";
+  btnMostrarRopa1.title="Click o Ctrl+Alt+R para mostrar/ocultar Ropa 1";
+  btnMostrarRopa1.addEventListener("click",()=>{ 
+    if(!ropa1) return;
+    const visible=ropa1.style.display!=="none";
+    ropa1.style.display=visible?"none":"block";
+    ropa1.style.opacity=visible?"0":"1";
+  });
+  btnMostrarRopa1.addEventListener("mouseenter",()=>{ btnMostrarRopa1.style.opacity="1"; btnMostrarRopa1.style.transform="scale(1.05)"; });
+  btnMostrarRopa1.addEventListener("mouseleave",()=>{ btnMostrarRopa1.style.opacity="0.2"; btnMostrarRopa1.style.transform="scale(1)"; });
+  document.body.appendChild(btnMostrarRopa1);
+
+  document.addEventListener("keydown",(e)=>{ if(e.ctrlKey && e.altKey && e.key.toLowerCase()==="r"){ btnMostrarRopa1.click(); } });
+});
+</script>
+
+
+
+
+<!--4-->
+<!-- ================= C�mara independiente ================= -->
+<!-- Bot�n c�mara y c�mara funcional -->
+<!-- ================= C�mara independiente ================= -->
+
+
+<!--4.1-->
+<style>
+  #btnCamara {
+    position: fixed;
+    bottom: 80px; 
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: url('https://cdn-icons-png.flaticon.com/512/2920/2920222.png') no-repeat center center;
+    background-size: contain;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: transform 0.2s, opacity 0.3s;
+  }
+  #btnCamara:hover { transform: scale(1.1); opacity: 0.9; }
+
+  #videoCamara {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 900px; height: auto; /* video grande para tomar la foto */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    z-index: 9998;
+    display: none;
+  }
+
+  #fotoCamara {
+    position: fixed;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    width: 300px; height: auto;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 9998;
+    display: none;
+  }
+</style>
+
+
+
+
+
+<!--7-->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const ropa1Btn = document.getElementById("btnMostrarRopa1");
+  const colIzq = document.getElementById("menuColDerecha");
+  const zonaPrincipal = colIzq.nextElementSibling; // la zona principal junto a la columna
+
+  ropa1Btn.addEventListener("click", () => {
+    if (!colIzq) return;
+
+    const visible = colIzq.style.display !== "none";
+    colIzq.style.display = visible ? "none" : "flex";
+
+    // Ajustar flex del contenido principal
+    if (zonaPrincipal) zonaPrincipal.style.flex = visible ? "1 1 100%" : "1";
+  });
+});
+</script>
+
+
+
+
+
+
+<!--8-->
+<!--FRANJA - BOTON MOSTRAR / OCULTAR-->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const franja = document.getElementById("contenedorCarruselDerecha");
+  const zonaPrincipal = franja.parentNode; // contenedor de franja y carrusel
+
+  if(!franja) return;
+
+  // Crear zona clicable solo si no existe
+  if(!document.getElementById("zonaClickFranja")){
+    const zonaClick = document.createElement("div");
+    zonaClick.id = "zonaClickFranja";
+    zonaClick.textContent = "x";    //Franja mostrar/ocultar";
+    zonaClick.style.height = "30px";
+    zonaClick.style.backgroundColor = "#555";
+    zonaClick.style.color = "white";
+    zonaClick.style.display = "flex";
+    zonaClick.style.alignItems = "center";
+    zonaClick.style.justifyContent = "center";
+    zonaClick.style.cursor = "pointer";
+    zonaClick.style.fontWeight = "bold";
+    zonaClick.style.userSelect = "none";
+    zonaClick.style.marginBottom = "5px";
+    zonaClick.style.borderRadius = "6px";
+    zonaClick.style.position = "absolute";
+    zonaClick.style.top = (franja.offsetTop - 40) + "px"; // justo arriba de la franja
+    zonaClick.style.left = "15%";
+    zonaClick.style.transform = "translateX(-50%)";
+    zonaClick.style.zIndex = "9999";
+
+    zonaPrincipal.appendChild(zonaClick);
+
+    // Estado visible inicial
+    if(!window.__franjaVisible) window.__franjaVisible = true;
+
+    zonaClick.addEventListener("click", ()=>{
+      window.__franjaVisible = !window.__franjaVisible;
+      franja.style.display = window.__franjaVisible ? "flex" : "none";
+    });
+  }
+
+  // Aplicar estado inicial
+  franja.style.display = window.__franjaVisible ? "flex" : "none";
+});
+</script>
+
+
+
+
+
+
+
+<!--9-->
+<!-- VOICE CAMERA MODULE - pegar antes de </body> -->
+<!-- VOICE CAMERA MODULE SOLO VOZ -->
+<!-- VOICE CAMERA MODULE SOLO VOZ -->
+<div id="voiceCameraModule" aria-live="polite">
+  <style>
+	#vc-video {
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  width: 100vw;      /* ancho completo */
+	  height: 100vh;     /* alto completo */
+	  object-fit: cover;  /* mantiene proporci�n, recorta si es necesario */
+	  border-radius: 0;   /* sin bordes redondeados */
+	  box-shadow: none;   /* sin sombra */
+	  z-index: 10000;
+	  display: none;
+	}
+
+    /* FOTO TOMADA EN CENTRO SUPERIOR */
+    #vc-captured {
+      position: fixed;
+      left: 50%;
+      top: 12px;
+      transform: translateX(-50%);
+      max-width: 40vw;
+      width: 320px;
+      border-radius: 8px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+      z-index: 9000;
+      display: none;
+      background: #fff;
+    }
+
+    /* LABEL DE FOTO DEBAJO DE LA IMAGEN */
+    #vc-captured-label {
+      position: fixed;
+      left: 50%;
+      top: calc(12px + 100% + 8px);
+      transform: translateX(-50%);
+      z-index: 10001;
+      color: #111;
+      display: none;
+      font-size: 13px;
+      background: rgba(255,255,255,0.95);
+      padding: 6px 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+    }
+  </style>
+
+
+<!--10-->
+
+  <video id="vc-video" autoplay playsinline muted></video>
+  <img id="vc-captured" alt="Foto tomada por voz" />
+  <div id="vc-captured-label">Foto guardada</div>
+
+
+
+
+
+<!--11-->
+<!--CAMARA CONTROLES--> 
+<script>
+    (function(){
+      const videoEl = document.getElementById('vc-video');
+      const capturedImg = document.getElementById('vc-captured');
+      const capturedLabel = document.getElementById('vc-captured-label');
+      const carrusel = document.getElementById('carruselAutomatico'); 
+      const franja = document.getElementById('contenedorCarruselDerecha');
+
+      let stream = null;
+      let recognition = null;
+      let isCameraOn = false;
+
+      async function startCamera() {
+        if (isCameraOn) return;
+        if(carrusel) carrusel.style.display = 'none';
+        if(franja) franja.style.display = 'none';
+
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" } });
+          videoEl.srcObject = stream;
+          videoEl.style.display = 'block';
+          isCameraOn = true;
+          console.log('C�mara encendida');
+        } catch(e) { console.error(e); }
+      }
+
+      function stopCamera() {
+        if(!stream) return;
+        if(carrusel) carrusel.style.display = 'flex';
+        if(franja) franja.style.display = 'flex';
+
+        stream.getTracks().forEach(t=>t.stop());
+        stream=null;
+        videoEl.srcObject=null;
+        videoEl.style.display='none';
+        isCameraOn=false;
+        console.log('C�mara apagada');
+      }
+
+
+//FOTO 30s 
+	function takePhotoAndDownload(){
+	  if(!isCameraOn || !videoEl.srcObject){ 
+		console.log('C�mara apagada'); 
+		return; 
+	  }
+	
+	  const track = videoEl.srcObject.getVideoTracks()[0];
+	  const settings = track.getSettings ? track.getSettings() : {};
+	  const w = settings.width || videoEl.videoWidth || 1280;
+	  const h = settings.height || videoEl.videoHeight || 720;
+	
+	  const canvas = document.createElement('canvas');
+	  canvas.width = w;
+	  canvas.height = h;
+	  canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
+	
+	  canvas.toBlob(blob => {
+		if(!blob) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      // Ocultar foto anterior si est� visible
+      capturedImg.style.display = 'none';
+      capturedLabel.style.display = 'none';
+
+      // Mostrar la nueva foto
+      capturedImg.src = e.target.result;
+      capturedImg.style.display = 'block';
+      capturedLabel.style.display = 'block';
+      
+      stopCamera();
+      console.log('Foto tomada (solo vista previa, sin descarga)');
+
+      // Ocultar autom�ticamente despu�s de 30 segundos
+      setTimeout(() => {
+        capturedImg.style.display = 'none';
+        capturedLabel.style.display = 'none';
+      }, 30000); // 30 segundos
+    };
+    reader.readAsDataURL(blob);
+  }, 'image/jpeg', 0.92);
+}
+
+  </script>
+</div>
+<!-- FIN VOICE CAMERA MODULE -->
+
+
+
+
+
+<!--12-->
+<!--VOZ CAM CAT-->
+<!-- VOICE CAMERA MODULE + VOZ CATEGOR�AS -->
+<div id="voiceCameraModule" aria-live="polite">
+  <style>
+    #vc-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: 10000;
+      display: none;
+    }
+    #vc-captured {
+      position: fixed; left: 50%; top: 12px;
+      transform: translateX(-50%);
+      max-width: 40vw; width: 320px;
+      border-radius: 8px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+      z-index: 9000;
+      display: none;
+      background: #fff;
+    }
+    #vc-captured-label {
+      position: fixed; left: 50%;
+      top: calc(12px + 100% + 8px);
+      transform: translateX(-50%);
+      z-index: 10001;
+      color: #111;
+      display: none;
+      font-size: 13px;
+      background: rgba(255,255,255,0.95);
+      padding: 6px 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+    }
+  </style>
+
+
+
+
+<!--13-->
+  <video id="vc-video" autoplay playsinline muted></video>
+  <img id="vc-captured" alt="Foto tomada por voz" />
+  <div id="vc-captured-label">Foto guardada</div>
+
+
+
+
+<!--14-->
+<!-- VOICE CAMERA MODULE + VOZ CATEGOR�AS -->
+<div id="voiceCameraModule" aria-live="polite">
+  <style>
+    #vc-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: 10000;
+      display: none;
+    }
+    #vc-captured {
+      position: fixed; left: 50%; top: 12px;
+      transform: translateX(-50%);
+      max-width: 40vw; width: 320px;
+      border-radius: 8px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+      z-index: 9000;
+      display: none;
+      background: #fff;
+    }
+    #vc-captured-label {
+      position: fixed; left: 50%;
+      top: calc(12px + 100% + 8px);
+      transform: translateX(-50%);
+      z-index: 10001;
+      color: #111;
+      display: none;
+      font-size: 13px;
+      background: rgba(255,255,255,0.95);
+      padding: 6px 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+    }
+  </style>
+
+  <video id="vc-video" autoplay playsinline muted></video>
+  <img id="vc-captured" alt="Foto tomada por voz" />
+  <div id="vc-captured-label">Foto guardada</div>
+
+  <script>
+    (function(){
+      const videoEl = document.getElementById('vc-video');
+      const capturedImg = document.getElementById('vc-captured');
+      const capturedLabel = document.getElementById('vc-captured-label');
+      const carrusel = document.getElementById('carruselAutomatico'); 
+      const franja = document.getElementById('contenedorCarruselDerecha');
+
+      let stream = null;
+      let recognition = null;
+      let isCameraOn = false;
+      let cameraTimeoutId = null; // temporizador de cierre autom�tico
+
+      // === FUNCIONES DE C�MARA ===
+      async function startCamera() {
+        if(isCameraOn) return;
+
+        if(carrusel) carrusel.style.display = 'none';
+        if(franja) franja.style.display = 'none';
+
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" } });
+          videoEl.srcObject = stream;
+          videoEl.style.display = 'block';
+          isCameraOn = true;
+          console.log('C�mara encendida');
+
+          // Temporizador 30s para cerrar autom�ticamente si no se toma foto
+          cameraTimeoutId = setTimeout(() => {
+            stopCamera();
+            console.log('Cierre autom�tico: no se tom� foto en 30s');
+          }, 30000);
+
+        } catch(e) { console.error(e); }
+      }
+
+      function stopCamera() {
+        if(!stream) return;
+
+        if(carrusel) carrusel.style.display = 'flex';
+        if(franja) franja.style.display = 'flex';
+
+        stream.getTracks().forEach(t=>t.stop());
+        stream = null;
+        videoEl.srcObject = null;
+        videoEl.style.display = 'none';
+        isCameraOn = false;
+
+        // Limpiar temporizador si existe
+        if(cameraTimeoutId){
+          clearTimeout(cameraTimeoutId);
+          cameraTimeoutId = null;
+        }
+
+        console.log('C�mara apagada');
+      }
+
+      function takePhotoAndDownload(){
+        if(!isCameraOn || !videoEl.srcObject) return;
+
+        // Cancelar temporizador de cierre autom�tico
+        if(cameraTimeoutId){
+          clearTimeout(cameraTimeoutId);
+          cameraTimeoutId = null;
+        }
+
+        const track = videoEl.srcObject.getVideoTracks()[0];
+        const settings = track.getSettings ? track.getSettings() : {};
+        const w = settings.width || videoEl.videoWidth || 1280;
+        const h = settings.height || videoEl.videoHeight || 720;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
+
+        canvas.toBlob(blob => {
+          if(!blob) return;
+          const reader = new FileReader();
+          reader.onload = e => {
+            // Ocultar foto anterior si est� visible
+            capturedImg.style.display = 'none';
+            capturedLabel.style.display = 'none';
+
+            // Mostrar la nueva foto
+            capturedImg.src = e.target.result;
+            capturedImg.style.display = 'block';
+            capturedLabel.style.display = 'block';
+            
+            stopCamera();
+            console.log('Foto tomada correctamente (vista previa)');
+            
+            // Ocultar foto despu�s de 30s
+            setTimeout(() => {
+              capturedImg.style.display = 'none';
+              capturedLabel.style.display = 'none';
+            }, 30000);
+          };
+          reader.readAsDataURL(blob);
+        }, 'image/jpeg', 0.92);
+      }
+
+      // === EXPONER FUNCIONES GLOBALMENTE PARA RECONOCIMIENTO ===
+      window.startCamera = startCamera;
+      window.stopCamera = stopCamera;
+      window.takePhotoAndDownload = takePhotoAndDownload;
+
+      // === RECONOCIMIENTO DE VOZ ===
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SR){ console.warn('Reconocimiento de voz no soportado'); return; }
+
+      recognition = new SR();
+      recognition.lang = 'es-ES';
+      recognition.continuous = true;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event) => {
+        const last = event.results[event.results.length - 1];
+        const text = (last[0].transcript || '').trim().toLowerCase();
+        console.log('Voz detectada:', text);
+
+        // --- 1. Comandos de c�mara ---
+        if(text.includes('encender c�mara') || text.includes('prender c�mara')) startCamera();
+        else if(text.includes('tomar foto') || text.includes('sacar foto') || text.includes('tomar una foto') || text.includes('sacar una foto'))
+            takePhotoAndDownload();
+        else if(text.includes('apagar c�mara') || text.includes('cerrar c�mara')) stopCamera();
+
+        // --- 2. Comandos de categor�as ---
+        if(window.modoCategorias){
+          const menuDerecho = document.getElementById('menuColDerecha');
+          const botonesCat = menuDerecho.querySelectorAll('button');
+          botonesCat.forEach(boton => {
+            const nombre = boton.textContent.trim().toLowerCase();
+            if(text.includes(nombre)){
+              console.log('Seleccionando categor�a:', nombre);
+              boton.click();
+            }
+          });
+        }
+      };
+
+      recognition.onend = () => { try{ recognition.start(); }catch(e){} };
+      try{ recognition.start(); }catch(e){ console.warn('No se pudo iniciar autom�ticamente', e); }
+
+      // === BOT�N PARA ACTIVAR MODO CATEGOR�AS ===
+      document.addEventListener("DOMContentLoaded", () => {
+        const menuDerecho = document.getElementById('menuColDerecha');
+        if(!menuDerecho) return;
+
+        const btnVozCategorias = document.createElement('button');
+        btnVozCategorias.textContent = 'Activar Voz Categor�as';
+        btnVozCategorias.style.cssText = "margin:5px 0;padding:8px 12px;background:#28a745;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:16px;";
+        menuDerecho.insertBefore(btnVozCategorias, menuDerecho.firstChild);
+
+        window.modoCategorias = false;
+
+        btnVozCategorias.addEventListener('click', () => {
+          window.modoCategorias = true;
+          btnVozCategorias.textContent = 'Voz Categor�as Activada';
+          btnVozCategorias.style.background = '#ff9800';
+          console.log('Modo categor�as activado por voz');
+        });
+      });
+
+    })();
+  </script>
+ </div>
+</div>
+
+
+
+
+
+<!--15-->
+<!--VOZ - CUADRO - TAB EXCEL - CATEGORIA - CARRUSEL - FRANJA -->
+<!-- === CONTROL UNIFICADO DE VOZ Y BOT�N CUADRO === -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const menuDerecho = document.getElementById('menuColDerecha');
+  if (!menuDerecho) return;
+
+  // --- Crear botón Subir Tabla ---
+  const btnSubir = document.createElement('button');
+  btnSubir.textContent = 'Subir Tabla';
+  btnSubir.style.cssText = `
+    padding: 8px 12px;
+    margin: 5px;
+    cursor: pointer;
+  `;
+  menuDerecho.appendChild(btnSubir);
+
+  // --- Crear input Excel ---
+  const inputExcel = document.createElement('input');
+  inputExcel.type = 'file';
+  inputExcel.accept = '.xlsx';
+  inputExcel.style.display = 'none';
+  menuDerecho.appendChild(inputExcel);
+
+  // --- Crear contenedor de tabla ---
+  const display = document.createElement('div');
+  display.id = 'displayExcel';
+  display.style.cssText = `
+    position:fixed;
+    top:50px;
+    right:20px;
+    max-width:40vw;
+    max-height:50vh;
+    overflow:auto;
+    background:#fff;
+    border:2px solid #222;
+    padding:10px;
+    border-radius:10px;
+    display:none;
+    z-index:99999;
+  `;
+  document.body.appendChild(display);
+
+  // --- Crear botón Mostrar/Ocultar ---
+  const btnMostrar = document.createElement('button');
+  btnMostrar.textContent = '👁️ Mostrar Tabla';
+  btnMostrar.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: red;
+    border: 1px solid #888;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    z-index: 100000;
+    opacity: 0.7;
+  `;
+  document.body.appendChild(btnMostrar);
+
+  // Alternar visibilidad del display
+  btnMostrar.addEventListener('click', () => {
+    const visible = display.style.display === 'block';
+    display.style.display = visible ? 'none' : 'block';
+    btnMostrar.textContent = visible ? '👁️ Mostrar Tabla' : '❌ Ocultar Tabla';
+  });
+
+  const COD_EMPRESA = "E001";
+  const CLAVE_LOCAL = `ropa3_${COD_EMPRESA}`;
+
+  // --- Click abre selector ---
+  btnSubir.addEventListener("click", () => inputExcel.click());
+
+  // --- Leer Excel ---
+  inputExcel.addEventListener("change", () => {
+    const archivo = inputExcel.files[0];
+    if (!archivo) return;
+
+    const lector = new FileReader();
+    lector.onload = (e) => {
+      const datos = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(datos, { type: "array" });
+      const hoja = workbook.Sheets[workbook.SheetNames[0]];
+      const datosJSON = XLSX.utils.sheet_to_json(hoja);
+
+      // Guardar en LocalStorage
+      localStorage.setItem(CLAVE_LOCAL, JSON.stringify(datosJSON));
+
+      // Mostrar tabla
+      mostrarTabla(datosJSON);
+      display.style.display = 'block';
+      btnMostrar.textContent = '❌ Ocultar Tabla';
+    };
+    lector.readAsArrayBuffer(archivo);
+  });
+
+  // --- Mostrar tabla no editable ---
+  function mostrarTabla(datos) {
+    if (!datos || datos.length === 0) return;
+    const columnas = Object.keys(datos[0]);
+    let html = '<table><thead><tr>';
+    columnas.forEach(c => html += `<th>${c}</th>`);
+    html += '</tr></thead><tbody>';
+    datos.forEach(fila => {
+      html += '<tr>';
+      columnas.forEach(c => html += `<td>${fila[c] || ""}</td>`);
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    display.innerHTML = html;
+
+    const table = display.querySelector("table");
+    table.style.borderCollapse = "collapse";
+    table.style.width = "100%";
+    table.querySelectorAll("td, th").forEach(cell => {
+      cell.style.border = "1px solid #666";
+      cell.style.padding = "4px 6px";
+    });
+  }
+
+  // --- Mostrar última tabla guardada si existe ---
+  const guardado = localStorage.getItem(CLAVE_LOCAL);
+  if (guardado) {
+    mostrarTabla(JSON.parse(guardado));
+    display.style.display = 'block';
+  }
+});
+</script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
