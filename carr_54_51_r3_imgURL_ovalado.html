@@ -42,6 +42,31 @@
   box-shadow: 1px 1px 4px rgba(0,0,0,0.2); /* sombra suave */
 }
 
+  /* ===== T�tulo categor�a ===== */
+#Empresa {
+  position: absolute;
+  top: 225px;                /* más arriba */
+  left: 55%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;                /* menos separación entre letras o elementos */
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 6px 20px;        /* antes 20px → rectángulo mucho más pequeño */
+  width: 20%;               /* menos ancho */
+  max-width: 600px;         /* límite más compacto */
+  background: #ffeb3b;
+  border-radius: 6px;       /* bordes más pequeños */
+  justify-content: center;
+  align-items: center;
+  z-index: 4;
+  font-size: 40px;         /* texto proporcionado */
+  /*font-size: 1.2em;          texto proporcionado */
+  font-weight: bold;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.2); /* sombra suave */
+}
+
+
 
   /* ===== Carrusel principal (ovalado) ===== */
   #carruselAutomatico {
@@ -131,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div id="botonesExtraDerecha"></div>
   </div>
 
-
+jorge luis
 <!--2.2-->
   <!-- Zona principal -->
   <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
@@ -139,6 +164,16 @@ document.addEventListener("DOMContentLoaded", () => {
     <div id="carruselAutomatico"></div>
     <div id="contenedorCarruselDerecha"></div>
   </div>
+
+
+<!--2.3-->
+  <!-- Empresa -->
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+    <h2 id="Empresa">Empresa 123</h2>
+    <div id="carruselAutomatico"></div>
+    <div id="contenedorCarruselDerecha"></div>
+  </div>
+
 
 
 <!--3-->
@@ -1176,7 +1211,7 @@ document.addEventListener("DOMContentLoaded", () => {
   #panelURLs {
     position: fixed;
     top: 800px;
-    left: 1000px;
+    left: 1300px;
     width: 600px;
     height: 400px;
     background: khaki;
