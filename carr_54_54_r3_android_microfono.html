@@ -1395,5 +1395,70 @@ if (botonVoz) {
 
 
 
+<!-- MÓDULO DE MICRÓFONO -->
+<script>
+document.addEventListener("DOMContentLoaded", ()=>{
+  // Soporte nativo Chrome Android
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    console.warn("Reconocimiento de voz no soportado en este navegador");
+    return;
+  }
+
+  // Crear reconocimiento
+  const recognition = new SpeechRecognition();
+  recognition.lang = "es-ES";
+  recognition.continuous = true;
+  recognition.interimResults = false;
+
+  // Indicador visual
+  const indicador = document.createElement("div");
+  indicador.textContent = "🎤 Micrófono activo";
+  indicador.style.cssText = `
+    position:fixed;bottom:160px;right:20px;
+    background:#4caf50;color:#fff;padding:10px 15px;
+    border-radius:10px;font-size:18px;z-index:9999;
+    display:none;box-shadow:0 4px 8px rgba(0,0,0,0.3);
+  `;
+  document.body.appendChild(indicador);
+
+  // Eventos
+  recognition.onstart = ()=>{indicador.style.display="block";};
+  recognition.onend = ()=>{indicador.style.display="none"; recognition.start();};
+  recognition.onerror = e=>console.log("Error voz:",e);
+
+  // Reacción a comandos
+  recognition.onresult = (e)=>{
+    const texto = e.results[e.results.length-1][0].transcript.trim().toLowerCase();
+    console.log("Dijiste:", texto);
+
+    if(texto.includes("foto") || texto.includes("captura")){
+      console.log("Comando: tomar foto");
+      takePhotoAndDownload();
+    }
+    if(texto.includes("abrir cámara")){
+      console.log("Comando: abrir cámara");
+      startCamera();
+    }
+    if(texto.includes("cerrar cámara")){
+      console.log("Comando: cerrar cámara");
+      stopCamera();
+    }
+  };
+
+  // Iniciar
+  recognition.start();
+});
+</script>
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>
