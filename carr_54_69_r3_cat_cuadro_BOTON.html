@@ -1323,9 +1323,48 @@ document.addEventListener("DOMContentLoaded", () => {
       // --- Guardar tabla Excel ---
       localStorage.setItem(CLAVE_LOCAL_TABLA, JSON.stringify(json));
 
+
+
+<!--16.2.10-->
+// CATEGORIAS MANTENER - INGRESAR - BORRAR
+// --- Detectar y sincronizar categorías ---
+let categoriasAntiguas = JSON.parse(localStorage.getItem(CLAVE_LOCAL_CATS)) || [];
+let categoriasNuevas = [];
+
+// --- DATA DIVISION ---
+json.forEach(fila => {
+  const catNombre = fila.nameCat?.trim() || 'SinCategoria';
+  if (!categoriasNuevas.includes(catNombre)) {
+    categoriasNuevas.push(catNombre);
+  }
+});
+
+// --- PROCEDURE DIVISION ---
+// 1️⃣ Mantener las categorías que aún existen (conservan imágenes)
+let categoriasFinales = categoriasAntiguas.filter(cat =>
+  categoriasNuevas.includes(cat.nombre)
+);
+
+// 2️⃣ Agregar las nuevas que no existían antes
+categoriasNuevas.forEach(nombreNuevo => {
+  const existe = categoriasAntiguas.find(c => c.nombre === nombreNuevo);
+  if (!existe) {
+    categoriasFinales.push({ nombre: nombreNuevo, imagenes: [] });
+  }
+});
+
+// 3️⃣ Guardar resultado final
+localStorage.setItem(CLAVE_LOCAL_CATS, JSON.stringify(categoriasFinales));
+
+// 4️⃣ Guardar también para el botón "PRODUCTOS"
+localStorage.setItem('tablaExcelDuplicar', JSON.stringify(categoriasFinales));
+
+
+
 <!--16.2.10-->
 	  // CATEGORIAS MANTENER - INGRESAR - BORRAR
       // --- Detectar y sincronizar categorías ---
+/*
       let categoriasAntiguas = JSON.parse(localStorage.getItem(CLAVE_LOCAL_CATS)) || [];
       let categoriasNuevas = [];
 
@@ -1353,6 +1392,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // 3️⃣ Guardar resultado final
       localStorage.setItem(CLAVE_LOCAL_CATS, JSON.stringify(categoriasFinales));
+*/
+
 
 <!--16.2.11-->
       // --- Mostrar tabla y botones ---
@@ -1658,7 +1699,8 @@ document.addEventListener("DOMContentLoaded", () => {
 <!--19-->
 <!-- CATEGORÍAS CUADRO BOTÓN "PRODUCTOS" MOSTRAR/OCULTAR -->
 <!-- BOTÓN PARA DUPLICAR CATEGORÍAS -->
-<!--19--> 
+<!--19 – NUEVO CÓDIGO DUPLICAR CATEGORÍAS -->
+<!--19-->
 <!-- CATEGORÍAS CUADRO BOTÓN "PRODUCTOS" MOSTRAR/OCULTAR -->
 <button id="duplicarCatsBtn" style=" 
   position: fixed; top: 20px; right: 150px; z-index: 1000;
@@ -1672,14 +1714,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let contenedorBody = null;
 
   function toggleDuplicarCategorias() {
-    // Si no existe contenedor, lo creamos
+    // Crear contenedor si no existe
     if(!contenedorBody){
       contenedorBody = document.createElement("div");
       contenedorBody.id = "duplicadoCategorias";
       contenedorBody.style.cssText = `
         position: fixed;
         top: 600px;
-        left: 55%;
+        left: 50%;
         transform: translateX(-50%);
         width: 80%;
         background: rgba(255,255,255,0.95);
@@ -1711,15 +1753,7 @@ document.addEventListener("DOMContentLoaded", () => {
       contenedorBody.innerHTML = ""; // Limpiar duplicados anteriores
       copiaCategorias.forEach((cat, i) => {
         const btn = document.createElement("button");
-        
-        /* 🔥 AQUÍ VA LO QUE PEDISTE 🔥 */
-        btn.innerHTML = `
-          <div style="display:flex; flex-direction:column; text-align:center; font-size:14px; line-height:1.2;">
-            <span><b>${cat.nameCat || cat.nombre || `Categoría ${i+1}`}</b></span>
-            <span style="font-size:12px; color:#333;">${cat.codCat || "Sin código"}</span>
-          </div>
-        `;
-
+        btn.textContent = cat.nameCat || cat.nombre || `Categoría ${i+1}`;
         btn.style.cssText = `
           padding: 8px 12px;
           border-radius: 6px;
@@ -1727,8 +1761,7 @@ document.addEventListener("DOMContentLoaded", () => {
           background: #f0f8ff;
           cursor: pointer;
         `;
-
-        btn.onclick = () => abrirCarrusel(cat.nameCat);
+        btn.onclick = () => abrirCarrusel(btn.textContent);
         contenedorBody.appendChild(btn);
       });
     }
@@ -1742,6 +1775,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
+
+
 
 
 
