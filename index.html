@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>index Logo VO Vitrinas Online RESPONSIVE</title>
 
-<!-- ir a otra page luego de 3 segundos 3-->
+<!-- ir a otra page luego de 3 segundos -->
 <meta http-equiv="refresh" content="3;URL='DEMO_01_carrusel_50_01_02_carr_galeria.html'">
 
 <style>
@@ -24,7 +24,8 @@ body {
 /* ==== LOGO ==== */
 .logo {
   position: relative;
-  font-size: clamp(48px, 18vw, 120px); 
+
+  font-size: clamp(192px, 72vw, 480px); /* DUPLICADO */
   color: blue;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease;
@@ -62,7 +63,7 @@ body {
   position: relative;
   display: block;
   margin-top: 10px;
-  font-size: clamp(16px, 4vw, 28px);
+  font-size: clamp(64px, 16vw, 112px); /* DUPLICADO */
   font-family: Arial, sans-serif;
   color: blue;
   letter-spacing: 2px;
@@ -91,19 +92,19 @@ body {
     background: #fff8dc;
   }
   .logo {
-    font-size: 18vw;
+    font-size: 36vw; /* 18vw × 2 */
   }
   .subtitulo {
-    font-size: 5vw;
+    font-size: 10vw; /* 5vw × 2 */
   }
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
   .logo {
-    font-size: 12vw;
+    font-size: 24vw; /* 12vw × 2 */
   }
   .subtitulo {
-    font-size: 3.5vw;
+    font-size: 7vw; /* 3.5vw × 2 */
   }
 }
 
@@ -113,15 +114,15 @@ body {
 // === CREAR FAVICON DINÁMICO ===
 function crearFavicon() {
   const canvas = document.createElement('canvas');
-  canvas.width = 84;
-  canvas.height = 84;
+  canvas.width = 168;   // DUPLICADO
+  canvas.height = 168;  // DUPLICADO
   const ctx = canvas.getContext('2d');
 
   ctx.fillStyle = 'khaki';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = 'blue';
-  ctx.font = 'bold 40px Arial';
+  ctx.font = 'bold 80px Arial'; // DUPLICADO
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('VO', canvas.width / 2, canvas.height / 2);
