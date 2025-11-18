@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>index Logo VV Vitrinas Virtuales RESPONSIVE</title>
+<title>index Logo VO Vitrinas Online RESPONSIVE</title>
 
 <!-- ir a otra page luego de 3 segundos 3-->
 <meta http-equiv="refresh" content="3;URL='DEMO_01_carrusel_50_01_02_carr_galeria.html'">
 
-  <!--<meta http-equiv="refresh" content="3;URL='bienvenido_ropa.html'">-->
 <style>
 
 /* ==== ESTILO GENERAL ==== */
@@ -22,18 +21,35 @@ body {
   margin: 0;
 }
 
-
 /* ==== LOGO ==== */
 .logo {
   position: relative;
   font-size: clamp(48px, 18vw, 120px); 
-/* adaptable a pantalla */
   color: blue;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease;
   text-align: center;
   line-height: 1;
-  margin-top: -10px; /* 🔹 valor negativo = sube / positivo = baja */
+  margin-top: -10px;
+}
+
+/* ==== EFECTO ENTRADA AUTOMÁTICO ==== */
+.logo {
+  animation: entradaLogo 1.2s ease-out 0.2s both;
+}
+
+@keyframes entradaLogo {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1) rotate(-5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .logo:hover {
@@ -46,20 +62,20 @@ body {
   position: relative;
   display: block;
   margin-top: 10px;
-  
-font-size: clamp(16px, 4vw, 28px);
+  font-size: clamp(16px, 4vw, 28px);
   font-family: Arial, sans-serif;
   color: blue;
   letter-spacing: 2px;
 }
 
-
 /* ==== EFECTO BRILLO ==== */
 .logo::after {
   content: '';
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
   background: linear-gradient(120deg, khaki, rgba(255,255,255,0));
   transform: translateX(-100%);
   transition: transform 0.5s;
@@ -70,11 +86,9 @@ font-size: clamp(16px, 4vw, 28px);
 }
 
 /* ==== MEDIA QUERIES ==== */
-
-/* Pantallas pequeñas (celulares) */
 @media (max-width: 600px) {
   body {
-    background: #fff8dc; /* tono más claro para móviles */
+    background: #fff8dc;
   }
   .logo {
     font-size: 18vw;
@@ -84,7 +98,6 @@ font-size: clamp(16px, 4vw, 28px);
   }
 }
 
-/* Pantallas medianas (tablets) */
 @media (min-width: 601px) and (max-width: 1024px) {
   .logo {
     font-size: 12vw;
@@ -93,31 +106,25 @@ font-size: clamp(16px, 4vw, 28px);
     font-size: 3.5vw;
   }
 }
+
 </style>
-
-
 
 <script>
 // === CREAR FAVICON DINÁMICO ===
-
 function crearFavicon() {
   const canvas = document.createElement('canvas');
-  canvas.width = 64;
-  canvas.height = 64;
+  canvas.width = 84;
+  canvas.height = 84;
   const ctx = canvas.getContext('2d');
-
-
 
   ctx.fillStyle = 'khaki';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
 
   ctx.fillStyle = 'blue';
   ctx.font = 'bold 40px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('VV', canvas.width / 2, canvas.height / 2);
-
+  ctx.fillText('VO', canvas.width / 2, canvas.height / 2);
 
   const link = document.createElement('link');
   link.rel = 'icon';
@@ -125,44 +132,23 @@ function crearFavicon() {
   document.head.appendChild(link);
 }
 
-
 crearFavicon();
 </script>
 
 </head>
 
-
 <body>
+
   <div class="logo">
-    VV
-    <div class="subtitulo">Vitrinas Virtuales</div>
+    VO
+    <div class="subtitulo">Vitrinas Online</div>
   </div>
 
-  
-
 <script>
-    function carrusel() {
-      window.location.href = "DEMO_01_carrusel_50_01_02_carr_galeria.html";
-    }
-  </script>
-
-
-
-
-<!--
-<script>
-    function carrusel() {
-      window.location.href = "bienvenido_ropa.html";
-    }
-  </script>
--->
+function carrusel() {
+  window.location.href = "DEMO_01_carrusel_50_01_02_carr_galeria.html";
+}
+</script>
 
 </body>
 </html>
-
-
-
-
-
-
-
